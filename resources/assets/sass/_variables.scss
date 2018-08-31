@@ -8,6 +8,22 @@ $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // Colors
+
+$c-app-primary: #a52422;
+$c-app-primary-dark: #96211f;
+$c-app-primary-light: #d54f4e;
+$c-app-secondary: #343a3a;
+$c-app-secondary-dark: #262b2b;
+$c-app-secondary-light: #6b6f6f;
+$c-app-accent: #18536f;
+$c-app-accent-dark: #002642;
+$c-app-accent-light: #488aaa;
+$c-app-inactive: #999999;
+
+$c-social-facebook: #3b5998;
+$c-social-twitter: #00aced;
+$c-social-google: #dd4b39;
+
 $blue: #3490dc;
 $indigo: #6574cd;
 $purple: #9561e2;
@@ -18,3 +34,9 @@ $yellow: #ffed4a;
 $green: #38c172;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
+
+
+// Paths
+
+$base-image-path: '/images';
+$base-video-path: '/videos';

@@ -2,26 +2,22 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
+// FontAwesome
+@import "~font-awesome/scss/font-awesome";
+
 // Variables
 @import 'variables';
 
 // Bootstrap
+@import 'theme/custom_bootstrap_variables';
 @import '~bootstrap/scss/bootstrap';
 
+@import "layout/general";
+@import "module/nav";
+@import "landing-page/login";
+
+
 .navbar-laravel {
-  background-color: #0099D3;
+  background-color: $c-app-accent;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
-body {
-    background: url('/img/bowling-login.jpg') no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
-
-div.auth-box {
-    opacity: 0.5;
-    filter: alpha(opacity=50);
 }
