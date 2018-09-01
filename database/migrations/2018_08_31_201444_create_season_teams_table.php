@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateScoresTable extends Migration
+class CreateSeasonTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateScoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('scores', function (Blueprint $table) {
+        Schema::create('season_teams', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedSmallInteger('match_id');
-            $table->unsignedSmallInteger('season_player_id');
-            $table->unsignedSmallInteger('score');
-            $table->unsignedTinyInteger('handicap');
-            $table->unsignedSmallInteger('score_handicap');
+            $table->unsignedTinyInteger('team_id');
+            $table->unsignedTinyInteger('season_id');
+            $table->unsignedTinyInteger('category_id');
+            $table->unsignedTinyInteger('point_score');
+            $table->unsignedSmallInteger('pin_score');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateScoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scores');
+        Schema::dropIfExists('season_teams');
     }
 }

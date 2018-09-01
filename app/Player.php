@@ -12,6 +12,11 @@ class Player extends Model
     }
 
     public function scores(){
-        return $this->hasMany();
+        return $this->hasMany(Score::class, 'player_id', 'id');
     }
+    /*
+    public function seasonScores(int $seasonId){
+        return $this->scores()->get()->where('', '=', $seasonId)->get();
+    }
+    */
 }
