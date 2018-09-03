@@ -1,6 +1,8 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class TeamCategoriesSeeder extends Seeder
 {
@@ -12,5 +14,20 @@ class TeamCategoriesSeeder extends Seeder
     public function run()
     {
         //
+        DB::table('team_categories')->insert([
+            [
+                'name' => 'AA',
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'A',
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+            ],
+            [
+                'name' => 'B',
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+            ]
+        ]);
     }
+
 }

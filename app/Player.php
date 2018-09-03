@@ -8,12 +8,13 @@ class Player extends Model
 {
     //
     public function team(){
-        return $this->hasOne(Team::class, 'id', "id");
+        return $this->hasOne(Team::class, 'id', "id")->first();
     }
 
     public function scores(){
-        return $this->hasMany(Score::class, 'player_id', 'id');
+        return $this->hasMany(Score::class, 'player_id', 'id')->get();
     }
+
     /*
     public function seasonScores(int $seasonId){
         return $this->scores()->get()->where('', '=', $seasonId)->get();

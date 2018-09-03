@@ -6,17 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Season extends Model
 {
-    //
-
-    public function players() {
-        return $this->teams(); //TODO: fix to obtain all team's players
+    public function matchdays() {
+        return $this->hasMany(Matchday::class, 'season_id', 'id')->get();
     }
 
     public function teams() {
-        return $this->hasMany(SeasonTeam::class, 'season_id', 'id');
+        return $this->hasMany(SeasonTeam::class, 'season_id', 'id')->get();
     }
 
-    public function matchdays() {
-        return $this->hasMany(Matchday::class, 'season_id', 'id')->get();
+    public function players() {
+        return $this->hasMany(SeasonPlayer::class, 'season_id', 'id')->get();
     }
 }
