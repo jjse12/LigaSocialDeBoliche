@@ -11,7 +11,7 @@ class Team extends Model
         return $this->hasMany(SeasonTeam::class, 'season_id', 'id')->get();
     }
 
-    public function playedSeasons() {
+    public function playedSeasons(): Collection {
         $seasons = new Collection();
         $seasonTeams = $this->seasonTeams();
         foreach ($seasonTeams as $seasonTeam) {

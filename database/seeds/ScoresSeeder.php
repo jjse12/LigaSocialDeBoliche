@@ -24,26 +24,60 @@ class ScoresSeeder extends Seeder
 
         $fake = Faker::create('es_ES');
         for($i = 1; $i <= 3; $i++){
-            foreach ($p1 as $p) {
-                DB::table('scores')->insert([
-                    'season_player_id' => $p->id,
-                    'match_id' => 1,
-                    'game_number' => $i,
-                    'score' => rand(160, 220),
-                    'handicap' => rand(0, 25),
-                    'score_handicap' => rand(160, 235),
-                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
-                ]);
-            }
+            foreach ($p1->toBase()->merge($p2) as $p) {
+                $cat = $p->category()->id;
+                $handicap = 0;
+                $score = 0;
+                switch ($cat){
+                    case 1:
+                        if ($p->player()->gender == 'M'){
+                            $score = rand(175, 240);
+                            $handicap = rand(0, 15);
+                        }
+                        else {
+                            $score = rand(155, 215);
+                            $handicap = rand(0, 25);
+                        }
+                        break;
+                    case 2:
+                        if ($p->player()->gender == 'M'){
+                            $score = rand(150, 210);
+                            $handicap = rand(15, 32);
+                        }
+                        else {
+                            $score = rand(130, 180);
+                            $handicap = rand(20, 40);
+                        }
+                        break;
+                    case 3:
+                        if ($p->player()->gender == 'M'){
+                            $score = rand(125, 165);
+                            $handicap = rand(30, 52);
+                        }
+                        else {
+                            $score = rand(115, 145);
+                            $handicap = rand(45, 65);
+                        }
+                        break;
+                    case 4:
+                        if ($p->player()->gender == 'M'){
+                            $score = rand(90, 130);
+                            $handicap = rand(55, 80);
+                        }
+                        else {
+                            $score = rand(70, 120);
+                            $handicap = rand(65, 80);
+                        }
+                        break;
+                }
 
-            foreach ($p2 as $p) {
                 DB::table('scores')->insert([
                     'season_player_id' => $p->id,
                     'match_id' => 1,
                     'game_number' => $i,
-                    'score' => rand(120, 170),
-                    'handicap' => rand(30, 70),
-                    'score_handicap' => rand(150, 190),
+                    'score' => $score,
+                    'handicap' => $handicap,
+                    'score_handicap' => $score + $handicap,
                     'created_at' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
             }

@@ -2,16 +2,17 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Player extends Model
 {
     //
-    public function team(){
+    public function team(): Team{
         return $this->hasOne(Team::class, 'id', "id")->first();
     }
 
-    public function scores(){
+    public function scores(): Collection{
         return $this->hasMany(Score::class, 'player_id', 'id')->get();
     }
 

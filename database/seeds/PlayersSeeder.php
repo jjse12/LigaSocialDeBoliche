@@ -19,7 +19,7 @@ class PlayersSeeder extends Seeder
             $gender = $fake->randomElement(['M', 'F']);
             DB::table('players')->insert([
                 'gender' => $gender,
-                'name' => $gender == 'M' ? $fake->firstNameMale : $fake->firstNameFemale,
+                'first_name' => $gender == 'M' ? $fake->firstNameMale : $fake->firstNameFemale,
                 'last_name' => $fake->lastName,
                 'email' => $fake->email,
                 'phone' => $fake->phoneNumber,
