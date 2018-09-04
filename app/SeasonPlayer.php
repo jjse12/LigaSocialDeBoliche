@@ -66,6 +66,10 @@ class SeasonPlayer extends Model
         return $this->scores()->where('match_id', '=', "$match_id");
     }
 
+    public function matchGameScore(int $match_id, $game_number): Score {
+        return $this->matchScores($match_id)->where('game_number', '=', "$game_number")->first();
+    }
+
     public function matchScoresArray(int $match_id): array {
         $scores = $this->matchScores($match_id);
         return [

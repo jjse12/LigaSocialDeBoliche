@@ -13,7 +13,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <p class="mb-5 text-white">Por favor ingresa tu correo electrónico. Se te enviará un link para que puedas restablecer tu contraseña</p>
+                    <p class="mb-5 text-white">Por favor ingresa tu correo electrónico. Por este medio te enviaremos un link para que puedas restablecer tu contraseña.</p>
                     <form method="POST" action="{{ route('password.email') }}" aria-label="{{ __('Reset Password') }}">
                         @csrf
 
@@ -33,6 +33,9 @@
                         <div class="form-group row">
                             <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 offset-xl-2 offset-lg-2 offset-md-2">
                                 <button type="submit"  class="col-12 btn btn-accent-dark btn-lg">Enviar link</button>
+                            </div>
+                            <div class="mt-2 col-xl-8 col-lg-8 col-md-8 col-sm-12 offset-xl-2 offset-lg-2 offset-md-2">
+                                <a href="/login"  class="col-12 btn btn-light btn-lg">Cancelar</a>
                             </div>
                         </div>
                     </form>

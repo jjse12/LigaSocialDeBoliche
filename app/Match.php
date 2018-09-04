@@ -63,50 +63,66 @@ class Match extends Model
     }
 
     public function team1Points(): int {
-        $scoresTeam1 = $this->team1Scores();
-        $scoresTeam2 = $this->team2Scores();
-
+        $team1 = $this->team1();
+        $team2 = $this->team2();
+        $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
+        $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
+        $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
+        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, null);
+        $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
+        $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
+        $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
+        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, null);
+        
         $team1Points = 0;
-        if ($scoresTeam1['first_game'] > $scoresTeam2['first_game'])
+        if ($team1FirstGameScore > $team2FirstGameScore)
             $team1Points += 2;
-        else if ($scoresTeam1['first_game'] == $scoresTeam2['first_game'])
+        else if ($team1FirstGameScore == $team2FirstGameScore)
             $team1Points++;
-        if ($scoresTeam1['second_game'] > $scoresTeam2['second_game'])
+        if ($team1SecondGameScore > $team2SecondGameScore)
             $team1Points += 2;
-        else if ($scoresTeam1['second_game'] == $scoresTeam2['second_game'])
+        else if ($team1SecondGameScore == $team2SecondGameScore)
             $team1Points++;
-        if ($scoresTeam1['third_game'] > $scoresTeam2['third_game'])
+        if ($team1ThirdGameScore > $team2ThirdGameScore)
             $team1Points += 2;
-        else if ($scoresTeam1['third_game'] == $scoresTeam2['third_game'])
+        else if ($team1ThirdGameScore == $team2ThirdGameScore)
             $team1Points++;
-        if ($scoresTeam1['total'] > $scoresTeam2['total'])
+        if ($team1TotalGameScore > $team2TotalGameScore)
             $team1Points += 2;
-        else if ($scoresTeam1['total'] == $scoresTeam2['total'])
+        else if ($team1TotalGameScore == $team2TotalGameScore)
             $team1Points++;
 
         return $team1Points;
     }
 
     public function team2Points(): int {
-        $scoresTeam1 = $this->team1Scores();
-        $scoresTeam2 = $this->team2Scores();
+        $team1 = $this->team1();
+        $team2 = $this->team2();
+        $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
+        $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
+        $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
+        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, null);
+        $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
+        $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
+        $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
+        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, null);
 
         $team2Points = 0;
-        if ($scoresTeam1['first_game'] < $scoresTeam2['first_game'])
+        if ($team2FirstGameScore < $team2FirstGameScore)
             $team2Points += 2;
-        else if ($scoresTeam1['first_game'] == $scoresTeam2['first_game'])
+        else if ($team1FirstGameScore == $team2FirstGameScore)
             $team2Points++;
-        if ($scoresTeam1['second_game'] < $scoresTeam2['second_game'])
+        if ($team1SecondGameScore < $team2SecondGameScore)
             $team2Points += 2;
-        else if ($scoresTeam1['second_game'] == $scoresTeam2['second_game'])
+        else if ($team1SecondGameScore == $team2SecondGameScore)
             $team2Points++;
-        if ($scoresTeam1['third_game'] < $scoresTeam2['third_game'])
+        if ($team1ThirdGameScore < $team2ThirdGameScore)
             $team2Points += 2;
-        else if ($scoresTeam1['third_game'] == $scoresTeam2['third_game'])
+        else if ($team1ThirdGameScore == $team2ThirdGameScore)
             $team2Points++;
-        if ($scoresTeam1['total'] < $scoresTeam2['total'])
+        if ($team1TotalGameScore < $team2TotalGameScore)
             $team2Points += 2;
-        else if ($scoresTeam1['total'] == $scoresTeam2['total'])
+        else if ($team1TotalGameScore == $team2TotalGameScore)
             $team2Points++;
 
         return $team2Points;
