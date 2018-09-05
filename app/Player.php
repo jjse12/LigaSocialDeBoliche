@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Player extends Model
 {
-    //
+    public function fullName(): string {
+        return "$this->first_name $this->last_name";
+    }
+
     public function team(): Team{
         return $this->hasOne(Team::class, 'id', "id")->first();
     }

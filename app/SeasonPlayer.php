@@ -14,8 +14,8 @@ class SeasonPlayer extends Model
         return $this->belongsTo(Player::class, 'player_id', 'id')->first();
     }
 
-    public function name(): string {
-        return $this->player()->first_name;
+    public function fullName(): string {
+        return $this->player()->fullName();
     }
 
     public function team(): SeasonTeam {

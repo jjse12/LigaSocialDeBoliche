@@ -68,12 +68,12 @@ class Match extends Model
         $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
         $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
         $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
-        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, null);
+        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, 0);
         $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
         $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
         $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
-        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, null);
-        
+        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, 0);
+
         $team1Points = 0;
         if ($team1FirstGameScore > $team2FirstGameScore)
             $team1Points += 2;
@@ -101,11 +101,11 @@ class Match extends Model
         $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
         $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
         $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
-        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, null);
+        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, 0);
         $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
         $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
         $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
-        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, null);
+        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, 0);
 
         $team2Points = 0;
         if ($team2FirstGameScore < $team2FirstGameScore)

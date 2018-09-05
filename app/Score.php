@@ -8,8 +8,12 @@ class Score extends Model
 {
     //
 
-    public function player(): Player {
-        return $this->belongsTo(Player::class, 'player_id','id')->first();
+    public function player(): SeasonPlayer {
+        return $this->belongsTo(SeasonPlayer::class, 'season_player_id','id')->first();
+    }
+
+    public function playerFullName(): string {
+        return $this->player()->fullName();
     }
 
     public function match(): Match {
