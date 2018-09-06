@@ -12,16 +12,21 @@ class Match extends Model
         return $this->belongsTo(Matchday::class, 'matchday_id', 'id')->first();
     }
 
-    public function scores(): Collection {
-        return $this->hasMany(Score::class, 'score_id', 'id')->get();
-    }
-
     public function team1(): SeasonTeam {
         return $this->belongsTo(SeasonTeam::class, 'season_team1_id', 'id')->first();
     }
 
     public function team2(): SeasonTeam {
         return $this->belongsTo(SeasonTeam::class, 'season_team2_id', 'id')->first();
+    }
+
+    public function getTeamById(int $season_team_id): SeasonTeam {
+        if ($this->team1()->id == $season_team_id)
+            return $this->team1();
+        if ($this->team2()->id == $season_team_id)
+            return $this->team2();
+
+        return null;
     }
 
     public function team1Scores(): array {

@@ -46,6 +46,14 @@ class MatchesSeeder extends Seeder
                 'season_team1_id' => 7,
                 'season_team2_id' => 8,
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+            ],
+            [
+                'matchday_id' => 9,
+                'team1_lane' => 3,
+                'team2_lane' => 4,
+                'season_team1_id' => 9,
+                'season_team2_id' => 10,
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);
     }

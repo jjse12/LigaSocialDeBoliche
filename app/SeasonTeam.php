@@ -34,7 +34,7 @@ class SeasonTeam extends Model
     public function playersMatchScores(int $match_id): Collection {
         $scores = new Collection();
         foreach ($this->players() as $player) {
-            $scores = $scores->merge($player->scores()->where('match_id','=', "$match_id"));
+            $scores = $scores->merge($player->matchScores());
         }
         return $scores;
     }

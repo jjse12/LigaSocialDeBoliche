@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Matchday extends Model
 {
-    //
-    public function season(): Season {
-        return $this->belongsTo(Season::class, 'season_id', 'id')->first();
-    }
-
     public function matches(): Collection {
         return $this->hasMany(Match::class, 'matchday_id', 'id')->get();
+    }
+
+    public function season(): Season {
+        return $this->belongsTo(Season::class, 'season_id', 'id')->first();
     }
 }

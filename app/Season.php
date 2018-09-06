@@ -16,6 +16,10 @@ class Season extends Model
     }
 
     public function players(): Collection {
-        return $this->hasMany(SeasonPlayer::class, 'season_id', 'id')->get();
+        $players = new Collection();
+        foreach ($this->teams() as $team) {
+            $players = $players->merge($team->players());
+        }
+        return $players;
     }
 }
