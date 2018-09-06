@@ -16,6 +16,10 @@ class SeasonPlayer extends Model
         return $this->player()->fullName();
     }
 
+    public function gender() {
+        return $this->player()->gender;
+    }
+
     public function team(): SeasonTeam {
         return $this->belongsTo(SeasonTeam::class, 'season_team_id', 'id')->first();
     }

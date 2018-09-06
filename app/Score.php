@@ -16,6 +16,10 @@ class Score extends Model
         return $this->player()->fullName();
     }
 
+    public function playerGender() {
+        return $this->player()->gender();
+    }
+
     public function match(): Match {
         return $this->belongsTo(Match::class, 'match_id', 'id')->first();
     }

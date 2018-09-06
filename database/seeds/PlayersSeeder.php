@@ -16,7 +16,7 @@ class PlayersSeeder extends Seeder
     {
         for ($i = 0; $i < 125; $i++){
             $fake = Faker::create('es_ES');
-            $gender = $fake->randomElement(['M', 'F']);
+            $gender = $fake->randomElement(['M', 'F', 'M']);
             DB::table('players')->insert([
                 'gender' => $gender,
                 'first_name' => $gender == 'M' ? $fake->firstNameMale : $fake->firstNameFemale,

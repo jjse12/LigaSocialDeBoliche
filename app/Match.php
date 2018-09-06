@@ -12,6 +12,14 @@ class Match extends Model
         return $this->belongsTo(Matchday::class, 'matchday_id', 'id')->first();
     }
 
+    public function scores(): Collection {
+        return $this->hasMany(Score::class, 'match_id', 'id')->get();
+    }
+
+    public function gameScores(int $game_number): Collection {
+        return $this->scores()->where('game_number', "$game_number");
+    }
+
     public function team1(): SeasonTeam {
         return $this->belongsTo(SeasonTeam::class, 'season_team1_id', 'id')->first();
     }
