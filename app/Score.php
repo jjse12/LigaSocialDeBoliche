@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Score extends Model
 {
-    //
+    protected $guarded = ['id'];
 
     public function player(): SeasonPlayer {
         return $this->belongsTo(SeasonPlayer::class, 'season_player_id','id')->first();
