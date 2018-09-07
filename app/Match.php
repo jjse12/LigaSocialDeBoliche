@@ -16,7 +16,10 @@ class Match extends Model
         return $this->hasMany(Score::class, 'match_id', 'id')->get();
     }
 
-    public function gameScores(int $game_number): Collection {
+    public function gameScores(int $game_number = 0): Collection {
+        if ($game_number == 0)
+            return $this->scores();
+
         return $this->scores()->where('game_number', "$game_number");
     }
 
@@ -28,7 +31,7 @@ class Match extends Model
         return $this->belongsTo(SeasonTeam::class, 'season_team2_id', 'id')->first();
     }
 
-    public function getTeamById(int $season_team_id): SeasonTeam {
+    public function getTeamById(int $season_team_id): ?SeasonTeam {
         if ($this->team1()->id == $season_team_id)
             return $this->team1();
         if ($this->team2()->id == $season_team_id)
