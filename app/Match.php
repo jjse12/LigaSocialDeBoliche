@@ -31,6 +31,22 @@ class Match extends Model
         return $this->belongsTo(SeasonTeam::class, 'season_team2_id', 'id')->first();
     }
 
+    public function team1Name(): string {
+        return $this->team1()->name();
+    }
+
+    public function team2Name(): string {
+        return $this->team2()->name();
+    }
+
+    public function team1PinTotal(): int {
+        return $this->team1()->matchGameTeamScore($this->id, 0);
+    }
+
+    public function team2PinTotal(): int {
+        return $this->team2()->matchGameTeamScore($this->id, 0);
+    }
+
     public function getTeamById(int $season_team_id): ?SeasonTeam {
         if ($this->team1()->id == $season_team_id)
             return $this->team1();

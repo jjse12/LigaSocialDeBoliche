@@ -18,9 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'match'], function(){
+    Route::get('/{id}', 'MatchController@get');
     Route::get('/{id}/scores', 'MatchController@scores');
 });
 
 Route::group(['prefix' => 'score'], function (){
-    Route::get('/', 'ScoreController@store');
+    Route::get('/{id}', 'ScoreController@get');
+    Route::post('/', 'ScoreController@store');
 });
