@@ -16,10 +16,12 @@ class CreateMatchesTable extends Migration
         Schema::create('matches', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedSmallInteger('matchday_id');
-            $table->unsignedTinyInteger('team1_lane');
-            $table->unsignedTinyInteger('team2_lane');
             $table->unsignedSmallInteger('season_team1_id');
             $table->unsignedSmallInteger('season_team2_id');
+            $table->unsignedTinyInteger('team1_lane');
+            $table->unsignedTinyInteger('team2_lane');
+            $table->mediumText('team1_comments')->default(null)->nullable();
+            $table->mediumText('team2_comments')->default(null)->nullable();
             $table->timestamps();
         });
     }

@@ -15,6 +15,10 @@ class Season extends Model
         return $this->hasMany(SeasonTeam::class, 'season_id', 'id')->get();
     }
 
+    public function categoryTeams(int $category_id): Collection {
+        return $this->teams()->where('category_id', "$category_id");
+    }
+
     public function players(): Collection {
         $players = new Collection();
         foreach ($this->teams() as $team) {

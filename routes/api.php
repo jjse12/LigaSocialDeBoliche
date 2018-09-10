@@ -17,10 +17,22 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => 'season'], function(){
+    Route::group(['prefix' => '/{seasonId}'], function(){
+        Route::group(['prefix' => '/scoreboards'], function(){
+            Route::get('/category/{categoryId}/', 'SeasonController@categoryScoreBoard');
+            Route::get('/categories', 'SeasonController@allCategoriesScoreBoards');
+        });
+    });
+
+    Route::get('/index', 'SeasonController@index');
+});
+
 Route::group(['prefix' => 'match'], function(){
     Route::get('/{id}', 'MatchController@get');
     Route::get('/{id}/scores', 'MatchController@scores');
 });
+
 
 Route::group(['prefix' => 'score'], function (){
     Route::get('/{id}', 'ScoreController@get');
