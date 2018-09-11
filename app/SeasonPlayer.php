@@ -16,7 +16,7 @@ class SeasonPlayer extends Model
         return $this->player()->fullName();
     }
 
-    public function gender() {
+    public function gender(): string {
         return $this->player()->gender;
     }
 

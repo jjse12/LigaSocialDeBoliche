@@ -17,8 +17,10 @@ class NextMatchCardResource extends JsonResource
         return [
             'team1' => $this->team1()->name(),
             'team2' => $this->team2()->name(),
-            'team1_lane' => $this->team1Lane(),
-            'team2_lane' => $this->team2Lane()
+            'team1Category' => $this->team1Lane(),
+            'team2Category' => $this->team2Lane(),
+            'team1Lane' => $this->team1Lane(),
+            'team2Lane' => $this->team2Lane()
         ];
     }
 }

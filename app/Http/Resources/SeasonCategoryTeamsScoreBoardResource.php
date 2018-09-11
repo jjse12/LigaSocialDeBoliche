@@ -6,7 +6,7 @@ use App\Season;
 use App\TeamCategory;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SeasonCategoryTeamsScoreBoardResource extends JsonResource
+class SeasonCategoryTeamsScoreboardResource extends JsonResource
 {
     private $categoryId;
 

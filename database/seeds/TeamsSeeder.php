@@ -20,5 +20,8 @@ class TeamsSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+        $ch = App\Team::first();
+        $ch->name = "Chiribiscos Bowling";
+        $ch->update();
     }
 }

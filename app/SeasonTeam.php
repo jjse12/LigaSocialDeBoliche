@@ -39,21 +39,19 @@ class SeasonTeam extends Model
         return $scores;
     }
 
-    public function matchGameTeamScore(int $match_id, int $game_number, bool $withHandicap = true){
+    public function matchGameTeamScore(int $match_id, int $game_number, bool $withHandicap = true): int{
         if ($game_number == 0)
             return $this->playersMatchScores($match_id)->sum($withHandicap ? 'score_handicap' : 'score');
         return $this->playersMatchScores($match_id)->where('game_number', "$game_number")->sum($withHandicap ? 'score_handicap' : 'score');
-    }
-
-    public function getMatchTeamScoresTable(int $match_id): array {
-        $result = [];
-
-        return null;
     }
 
     public function matches(): Collection {
         return $this->hasMany(Match::class, 'season_team1_id', 'id')->get()->merge(
             $this->hasMany(Match::class, 'season_team2_id', 'id')->get()
         );
+    }
+
+    public function match(int $matchId): ?Match {
+        return $this->matches()->where('id', "$matchId")->first();
     }
 }

@@ -20,8 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'season'], function(){
     Route::group(['prefix' => '/{seasonId}'], function(){
         Route::group(['prefix' => '/scoreboards'], function(){
-            Route::get('/category/{categoryId}/', 'SeasonController@categoryScoreBoard');
-            Route::get('/categories', 'SeasonController@allCategoriesScoreBoards');
+            Route::get('/category/{categoryId}/', 'SeasonController@categoryScoreboard');
+            Route::get('/categories', 'SeasonController@allCategoriesScoreboards');
         });
     });
 
@@ -31,6 +31,8 @@ Route::group(['prefix' => 'season'], function(){
 Route::group(['prefix' => 'match'], function(){
     Route::get('/{id}', 'MatchController@get');
     Route::get('/{id}/scores', 'MatchController@scores');
+    Route::get('/{id}/scoreboards', 'MatchController@scoreboards');
+    Route::get('/{matchId}/scoreboard/team/{seasonTeamId}', 'MatchController@teamScoreboard');
 });
 
 

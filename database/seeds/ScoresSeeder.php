@@ -80,6 +80,7 @@ class ScoresSeeder extends Seeder
                     'season_player_id' => $p->id,
                     'match_id' => $p->season_team_id <= 8 ? 1 : 5,
                     'game_number' => $i,
+                    'turn_number' => rand(1, 4),
                     'score' => $score,
                     'handicap' => $handicap,
                     'score_handicap' => $score + $handicap,

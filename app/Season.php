@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,13 @@ class Season extends Model
 {
     public function matchdays(): Collection {
         return $this->hasMany(Matchday::class, 'season_id', 'id')->get();
+    }
+
+    public function nextMatchday(): ?Matchday {
+        $now = time();
+        return $this->matchdays()->filter(function ($item) use ($now) {
+            return (strtotime("$item->date") - $now) > 0;
+        })->first();
     }
 
     public function teams(): Collection {

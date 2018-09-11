@@ -22,6 +22,7 @@ class CreateMatchesTable extends Migration
             $table->unsignedTinyInteger('team2_lane');
             $table->mediumText('team1_comments')->default(null)->nullable();
             $table->mediumText('team2_comments')->default(null)->nullable();
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

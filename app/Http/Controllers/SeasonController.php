@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SeasonCategoryTeamsScoreBoardResource;
+use App\Http\Resources\SeasonCategoryTeamsScoreboardResource;
 use App\Http\Resources\SeasonsResource;
 use App\Season;
 use App\TeamCategory;
@@ -16,15 +16,15 @@ class SeasonController extends Controller
         return response()->json(new SeasonsResource(Season::all()));
     }
 
-    public function categoryScoreBoard(int $seasonId, int $categoryId): JsonResponse{
-        return response()->json(new SeasonCategoryTeamsScoreBoardResource(Season::find($seasonId), $categoryId));
+    public function categoryScoreboard(int $seasonId, int $categoryId): JsonResponse{
+        return response()->json(new SeasonCategoryTeamsScoreboardResource(Season::find($seasonId), $categoryId));
     }
 
-    public function allCategoriesScoreBoards(int $seasonId): JsonResponse {
+    public function allCategoriesScoreboards(int $seasonId): JsonResponse {
 
         $results = [];
         foreach (TeamCategory::all() as $category){
-            $results[$category->name] = new SeasonCategoryTeamsScoreBoardResource(Season::find($seasonId), $category->id);
+            $results[$category->name] = new SeasonCategoryTeamsScoreboardResource(Season::find($seasonId), $category->id);
         }
 
         return response()->json($results);

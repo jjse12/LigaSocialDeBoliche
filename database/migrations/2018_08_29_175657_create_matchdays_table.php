@@ -15,7 +15,7 @@ class CreateMatchdaysTable extends Migration
     {
         Schema::create('matchdays', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('date');
+            $table->dateTime('date');
             $table->unsignedTinyInteger('number');
             $table->unsignedTinyInteger('season_id');
             $table->boolean('is_red_pin_game')->default(false);

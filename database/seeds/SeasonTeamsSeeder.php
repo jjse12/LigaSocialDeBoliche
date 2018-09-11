@@ -44,5 +44,9 @@ class SeasonTeamsSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+        $ch = App\SeasonTeam::first();
+        $ch->category_id = 1;
+        $ch->point_score = 49;
+        $ch->save();
     }
 }

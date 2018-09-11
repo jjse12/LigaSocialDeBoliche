@@ -17,7 +17,8 @@ class CreateScoresTable extends Migration
             $table->increments('id');
             $table->unsignedTinyInteger('season_player_id');
             $table->unsignedSmallInteger('match_id');
-            $table->unsignedSmallInteger('game_number');
+            $table->unsignedTinyInteger('game_number');
+            $table->unsignedTinyInteger('turn_number');
             $table->unsignedSmallInteger('score');
             $table->unsignedTinyInteger('handicap');
             $table->unsignedSmallInteger('score_handicap');
