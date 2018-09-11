@@ -4,15 +4,34 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
-class Player extends Model
+class Player extends User
 {
+    use Notifiable;
+
+    protected $table = 'players';
+    protected $primaryKey = 'email';
+
+    protected $guarded = ['id'];
+    protected $hidden = array('password', 'remember_token');
+
+    public function getAuthIdentifier()
+    {
+        return $this->email;
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return "email";
+    }
+
     public function fullName(): string {
         return "$this->first_name $this->last_name";
     }
 
-    public function team(): Team{
-        return $this->hasOne(Team::class, 'id', "id")->first();
+    public function currentSeasonPlayer(): ?SeasonPlayer {
+        return $this->seasonPlayer(Season::find(Season::count())->id);
     }
 
     public function allSeasonPlayers(): Collection {
@@ -41,5 +60,4 @@ class Player extends Model
 
         return $scores;
     }
-
 }

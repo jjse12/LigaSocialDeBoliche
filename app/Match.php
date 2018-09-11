@@ -28,6 +28,14 @@ class Match extends Model
         return $this->team2()->name();
     }
 
+    public function team1CategoryName(): string {
+        return $this->team1()->categoryName();
+    }
+
+    public function team2CategoryName(): string {
+        return $this->team2()->categoryName();
+    }
+
     public function scores(): Collection {
         return $this->hasMany(Score::class, 'match_id', 'id')->get();
     }

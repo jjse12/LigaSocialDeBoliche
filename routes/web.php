@@ -11,10 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/app', 'HomeController@index')->name('home');
+Route::get('/app{catchall}', 'HomeController@index')->where('catchall', '\/?.*');
+
+Route::get('/{catchall}', 'HomeController@redirectApp')->where('catchall', '\/?.*');

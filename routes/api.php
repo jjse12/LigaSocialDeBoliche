@@ -23,6 +23,8 @@ Route::group(['prefix' => 'season'], function(){
             Route::get('/category/{categoryId}/', 'SeasonController@categoryScoreboard');
             Route::get('/categories', 'SeasonController@allCategoriesScoreboards');
         });
+
+        Route::get('/next-matches', 'SeasonController@nextMatchdayMatches');
     });
 
     Route::get('/index', 'SeasonController@index');

@@ -15,12 +15,17 @@ class NextMatchCardResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'team1' => $this->team1()->name(),
-            'team2' => $this->team2()->name(),
-            'team1Category' => $this->team1Lane(),
-            'team2Category' => $this->team2Lane(),
-            'team1Lane' => $this->team1Lane(),
-            'team2Lane' => $this->team2Lane()
+            'team1' => [
+                'name' => $this->team1()->name(),
+                'category' => $this->team1CategoryName(),
+                'laneNumber' => $this->team1_lane,
+            ],
+
+            'team2' => [
+                'name' => $this->team2()->name(),
+                'category' => $this->team2CategoryName(),
+                'laneNumber' => $this->team2_lane,
+            ]
         ];
     }
 }

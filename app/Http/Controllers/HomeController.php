@@ -6,16 +6,7 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
+    
     /**
      * Show the application dashboard.
      *
@@ -23,6 +14,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+//        if (auth()->check())
+//            //dd(auth()->user()->name);
+//            return view('layouts.app')->with([
+//                'admin' => auth()->user()->owner,
+//                'nombre' => auth()->user()->name
+//            ]);
+        return view('layouts.app');
+    }
+
+    public function redirectApp(){
+        return redirect()->route('home');
     }
 }
