@@ -1,14 +1,10 @@
 import {combineReducers} from 'redux';
 import { routerReducer } from 'react-router-redux';
-import NavbarSelected from './contenido';
-import Inventario from './inventario';
-import InventarioSelected from './inventario-selected';
+import SeasonMatchdays from './season-matchdays';
 
 export const reducers = {
     routing: routerReducer,
-    navbarSelected: NavbarSelected,
-    inventario: Inventario,
-    inventarioSelected: InventarioSelected
+    seasonMatchdays: SeasonMatchdays
 };
 
 export default combineReducers(reducers);

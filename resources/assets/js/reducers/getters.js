@@ -1,8 +1,7 @@
 
-//NavBar
-export const getNavbarSelectedFromStore = store => store.navbarSelected;
+//
+export const getSeasonMatchdaysFromStore = store => store.seasonMatchdays;
+export const getNextMatchdayFromStore = store => store.navbarSelected;
+export const getNextMatchdayMatchesFromStore = store => store.blah;
 
-//Inventario
-export const getInventarioFromStore = store => store.inventario;
-export const getInventarioSelectedFromStore = store => store.inventarioSelected;
 

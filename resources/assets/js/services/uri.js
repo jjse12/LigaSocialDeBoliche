@@ -7,8 +7,8 @@ export const apiBaseUrl = '/api';
 
 const uris = {
     web: {
-        login: '/login',
         home: '/home',
+        login: '/login',
 
         error: '/error',
     },
