@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Season extends Model
 {
     public function matchdays(): Collection {
-        return $this->hasMany(Matchday::class, 'season_id', 'id')->get();
+        return $this->hasMany(Matchday::class, 'season_id', 'id')->get()->sortBy('date');
     }
 
     public function nextMatchday(): ?Matchday {

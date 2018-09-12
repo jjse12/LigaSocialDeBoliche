@@ -18,10 +18,10 @@ class MatchScoreboardResource extends JsonResource
         $team1 = $this->team1();
         $team2 = $this->team2();
         return [
-            'active' => $this->active,
+            'active' => $this->active == 1,
             'date' => Carbon::createFromTimeString($this->matchday()->date)->format('d/M/Y'),
             'matchdayNumber' => $this->matchday()->number,
-            'redPinGame' => $this->matchday()->is_red_pin_game,
+            'redPin' => $this->matchday()->red_pin,
             'team1' => [
                 'name' => $team1->name(),
                 'lane_number' => $this->team1_lane,

@@ -16,8 +16,12 @@ class SeasonsResource extends JsonResource
     public function toArray($request)
     {
         $seasons = [];
-        foreach (Season::all() as $season) {
-            $seasons[$season->name] = $season->year;
+        foreach (Season::all()->sort() as $season) {
+            $seasons[$season->id] = [
+                'id' => $season->id,
+                'name' => $season->name,
+                'year' => $season->year
+            ];
         }
         return $seasons;
     }

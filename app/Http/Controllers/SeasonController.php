@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MatchdayResource;
 use App\Http\Resources\NextMatchdayMatchesResource;
 use App\Http\Resources\SeasonCategoryTeamsScoreboardResource;
 use App\Http\Resources\SeasonsResource;
@@ -14,11 +15,25 @@ class SeasonController extends Controller
 {
 
     public function index(): JsonResponse {
-        return response()->json(new SeasonsResource(Season::all()));
+        return response()->json(new SeasonsResource(null));
     }
 
-    public function nextMatchdayMatches(int $id): JsonResponse {
-        return response()->json(new NextMatchdayMatchesResource(Season::find($id)->nextMatchday()));
+    public function matchdays(int $id): JsonResponse {
+        $matchdays = [];
+        foreach (Season::find($id)->matchdays() as $matchday) {
+            $matchdays[$matchday->number] = new MatchdayResource($matchday);
+        }
+        return response()->json($matchdays);
+    }
+
+    public function nextMatchday(): JsonResponse {
+        //TODO: check if current season is still active and with matches to play
+        return response()->json(new MatchdayResource(Season::all()->last()->nextMatchday()));
+    }
+
+    public function nextMatchdayMatches(): JsonResponse {
+        //TODO: check if current season is still active and with matches to play
+        return response()->json(new NextMatchdayMatchesResource(Season::all()->last()->nextMatchday()));
     }
 
     public function categoryScoreboard(int $seasonId, int $categoryId): JsonResponse{

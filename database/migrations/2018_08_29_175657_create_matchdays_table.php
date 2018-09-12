@@ -18,7 +18,8 @@ class CreateMatchdaysTable extends Migration
             $table->dateTime('date');
             $table->unsignedTinyInteger('number');
             $table->unsignedTinyInteger('season_id');
-            $table->boolean('is_red_pin_game')->default(false);
+            $table->boolean('red_pin')->default(false);
+            $table->boolean('virtual')->default(false);
             $table->timestamps();
         });
     }

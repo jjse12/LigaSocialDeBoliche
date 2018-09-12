@@ -24,11 +24,15 @@ Route::group(['prefix' => 'season'], function(){
             Route::get('/categories', 'SeasonController@allCategoriesScoreboards');
         });
 
-        Route::get('/next-matches', 'SeasonController@nextMatchdayMatches');
+        Route::get('/matchdays', 'SeasonController@matchdays');
     });
+
+    Route::get('/next-matchday', 'SeasonController@nextMatchday');
+    Route::get('/next-matchday-matches', 'SeasonController@nextMatchdayMatches');
 
     Route::get('/index', 'SeasonController@index');
 });
+
 
 Route::group(['prefix' => 'match'], function(){
     Route::get('/{id}', 'MatchController@get');
