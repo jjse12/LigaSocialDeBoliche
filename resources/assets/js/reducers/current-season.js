@@ -5,8 +5,6 @@ export const ACTION_TYPE_CURRENT_SEASON = 'get_current_season';
 export const ACTION_TYPE_NEXT_MATCHDAY = 'get_next_matchday';
 export const ACTION_TYPE_NEXT_MATCHDAY_MATCHES = 'get_next_matchday_matches';
 
-const initialState = [];
-
 export const getCurrentSeason = () => dispatch => {
     axios.get(uri.api.currentSeason)
         .then(response => {
@@ -37,12 +35,24 @@ export const getNextMatchdayMatches = () => dispatch => {
         });
 };
 
-export default function (state = initialState, action) {
+export function currentSeasonReducer(state = {}, action) {
     switch (action.type) {
         case ACTION_TYPE_CURRENT_SEASON:
             return action.currentSeason;
+    }
+    return state;
+}
+
+export function nextMatchdayReducer(state = {}, action) {
+    switch (action.type) {
         case ACTION_TYPE_NEXT_MATCHDAY:
             return action.nextMatchday;
+    }
+    return state;
+}
+
+export function nextMatchdayMatchesReducer(state = [], action) {
+    switch (action.type) {
         case ACTION_TYPE_NEXT_MATCHDAY_MATCHES:
             return action.nextMatchdayMatches;
     }

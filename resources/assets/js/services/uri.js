@@ -18,7 +18,9 @@ const uris = {
         seasonMatchdays: id => `/season/${id}/matchdays`,
         nextMatchday: '/season/next-matchday',
         nextMatchdayMatches: '/season/next-matchday-matches',
-        match: '/match',
+        matchResults: id => `/match/${id}/results`,
+        matchScoreboards: id => `/match/${id}/scoreboards`,
+        matchTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
         score: '/score',
 
     }

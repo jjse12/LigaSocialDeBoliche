@@ -1,12 +1,18 @@
 import {combineReducers} from 'redux';
 import { routerReducer } from 'react-router-redux';
-import CurrentSeason from './current-season';
-import SeasonMatchdays from './season-matchdays';
+import { currentSeasonReducer, nextMatchdayReducer, nextMatchdayMatchesReducer} from './current-season';
+import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer } from "./match";
+import seasonMatchdays from './season-matchdays';
 
 export const reducers = {
     routing: routerReducer,
-    seasonMatchdays: SeasonMatchdays,
-    currentSeason: CurrentSeason,
+    seasonMatchdays: seasonMatchdays,
+    currentSeason: currentSeasonReducer,
+    nextMatchday: nextMatchdayReducer,
+    nextMatchdayMatches: nextMatchdayMatchesReducer,
+    matchResults: matchResultsReducer,
+    matchScoreboards: matchScoreboardsReducer,
+    matchTeamScoreboard: matchTeamScoreboardReducer
 };
 
 export default combineReducers(reducers);

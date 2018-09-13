@@ -17,9 +17,9 @@ class Season extends Model
     }
 
     public function nextMatchday(): ?Matchday {
-        $now = time();
+        $now = Carbon::now(config('CARBON_TIMEZONE', 'CST'));
         return $this->matchdays()->filter(function ($item) use ($now) {
-            return (strtotime("$item->date") - $now) > 0;
+            return (new \DateTime($item->date) > new \DateTime($now));
         })->first();
     }
 

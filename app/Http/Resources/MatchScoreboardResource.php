@@ -24,14 +24,14 @@ class MatchScoreboardResource extends JsonResource
             'redPin' => $this->matchday()->red_pin,
             'team1' => [
                 'name' => $team1->name(),
-                'lane_number' => $this->team1_lane,
+                'laneNumber' => $this->team1_lane,
                 'results' => new MatchTeamScoreboardResource($team1, $this->id),
                 'points' => $this->team1Points(),
                 'comments' => $this->team1_comments
             ],
             'team2' => [
                 'name' => $team2->name(),
-                'lane_number' => $this->team2_lane,
+                'laneNumber' => $this->team2_lane,
                 'results' => new MatchTeamScoreboardResource($team2, $this->id),
                 'points' => $this->team2Points(),
                 'comments' => $this->team2_comments

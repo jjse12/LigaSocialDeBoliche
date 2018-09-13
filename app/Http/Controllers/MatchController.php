@@ -14,8 +14,8 @@ use Illuminate\Http\Request;
 class MatchController extends Controller
 {
 
-    public function get(int $id): JsonResponse {
-        return new MatchResultsSummaryResource(Match::find($id));
+    public function results(int $id): JsonResponse {
+        return response()->json(new MatchResultsSummaryResource(Match::find($id)));
     }
 
     public function scores(Request $request): JsonResponse {

@@ -17,7 +17,7 @@ class TeamsSeeder extends Seeder
         for ($i = 1; $i <= 24; $i++){
             DB::table('teams')->insert([
                 'name' => Faker::create('es_ES')->company,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
         }
         $ch = App\Team::first();

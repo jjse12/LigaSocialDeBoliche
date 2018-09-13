@@ -84,7 +84,7 @@ class ScoresSeeder extends Seeder
                     'score' => $score,
                     'handicap' => $handicap,
                     'score_handicap' => $score + $handicap,
-                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                    'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
                 ]);
             }
         }

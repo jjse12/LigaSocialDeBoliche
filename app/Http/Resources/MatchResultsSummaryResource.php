@@ -17,12 +17,12 @@ class MatchResultsSummaryResource extends JsonResource
         return [
             'team1' => $this->team1Name(),
             'team2' => $this->team2Name(),
-            'team1_points' => $this->team1Points(),
-            'team2_points' => $this->team2Points(),
-            'team1_pins' => $this->team1PinTotal(),
-            'team2_pins' => $this->team2PinTotal(),
-            'team1_lane' => $this->team1_lane,
-            'team2_lane' => $this->team2_lane,
+            'team1Points' => $this->team1Points(),
+            'team2Points' => $this->team2Points(),
+            'team1Pins' => $this->team1PinTotal(),
+            'team2Pins' => $this->team2PinTotal(),
+            'team1Lane' => $this->team1_lane,
+            'team2Lane' => $this->team2_lane,
         ];
     }
 }

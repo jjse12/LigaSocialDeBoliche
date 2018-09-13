@@ -24,7 +24,7 @@ class PlayersSeeder extends Seeder
                 'email' => $fake->email,
                 'phone' => $fake->phoneNumber,
                 'birthday' => $fake->dateTime,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
         }
     }

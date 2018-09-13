@@ -20,7 +20,7 @@ class SeasonTeamsSeeder extends Seeder
                 'category_id' => rand(1, 3),
                 'point_score' => 0,
                 'pin_score' => 0,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
         }
 
@@ -33,7 +33,7 @@ class SeasonTeamsSeeder extends Seeder
                 'category_id' => rand(1, 3),
                 'point_score' => 0,
                 'pin_score' => 0,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
         }
         for($i = 1; $i <= 8; $i++) {
@@ -43,7 +43,7 @@ class SeasonTeamsSeeder extends Seeder
                 'category_id' => rand(1, 3),
                 'point_score' => 0,
                 'pin_score' => 0,
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
         }
         */

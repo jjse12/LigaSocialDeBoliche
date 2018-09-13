@@ -20,7 +20,7 @@ class SeasonPlayersSeeder extends Seeder
                 'player_id' => $i,
                 'season_team_id' => $team,
                 'category_id' => rand(1,4),
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
 
             if ($i % 4 == 0)
@@ -32,7 +32,7 @@ class SeasonPlayersSeeder extends Seeder
                 'player_id' => $i,
                 'season_team_id' => $team,
                 'category_id' => rand(1,4),
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
 
             if ($i % 4 == 0)
@@ -44,7 +44,7 @@ class SeasonPlayersSeeder extends Seeder
                 'player_id' => $i,
                 'season_team_id' => $team,
                 'category_id' => rand(1,4),
-                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
             ]);
 
             if ($i % 4 == 0)
