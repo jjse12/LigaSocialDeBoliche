@@ -30,6 +30,7 @@ Route::group(['prefix' => 'season'], function(){
     Route::get('/next-matchday', 'SeasonController@nextMatchday');
     Route::get('/next-matchday-matches', 'SeasonController@nextMatchdayMatches');
 
+    Route::get('/current', 'SeasonController@currentSeason');
     Route::get('/index', 'SeasonController@index');
 });
 

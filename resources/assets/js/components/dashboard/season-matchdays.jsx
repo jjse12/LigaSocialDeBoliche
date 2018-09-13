@@ -5,7 +5,6 @@ import { withStyles } from 'material-ui/styles';
 import { getSeasonMatchdaysFromStore } from "../../reducers/getters";
 import { getSeasonMatchdays } from "../../reducers/season-matchdays";
 
-// @withStyles(styles)
 @connect(
     store => ({
         matchdays: getSeasonMatchdaysFromStore(store)
@@ -14,24 +13,30 @@ import { getSeasonMatchdays } from "../../reducers/season-matchdays";
 )
 export default class SeasonMatchdays extends Component {
     static propTypes = {
-        matchdays: PropTypes.object,
+        // currentSeason: PropTypes.array.isRequired || PropTypes.object,
+        // matchdays: PropTypes.func,
     };
 
     componentDidMount() {
-        this.props.getSeasonMatchdays(1);
+        this.props.getSeasonMatchdays(this.props.currentSeason.id);
     }
 
     renderMatchdays() {
         return Object.values(this.props.matchdays).map(value =>
-            <div key={value.number} className={'btn-primary'}>{value.date}</div>
+            <div key={value.number} className={'card'} style={{ width: '18rem'}}>
+                <div className='card-body'>
+                    <h5 className='card-title text-facebook'>{value.date}</h5>
+                    <p className='card-text text-accent-dark'>Jornada #{value.number} del {this.props.currentSeason.name}.</p>
+                    <a href='#' className='btn btn-primary'>Ver Enfrentamientos</a>
+                </div>
+            </div>
         );
     };
 
     render(){
-        if (this.props.matchdays == null)
-            return;
+
         return (
-            <div className="container btn-accent-dark">
+            <div className="container">
                 {this.renderMatchdays()}
             </div>
         );

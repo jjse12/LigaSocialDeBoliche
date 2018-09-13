@@ -13,7 +13,7 @@ class SeasonTeamsSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 1; $i <= 8; $i++) {
+        for($i = 1; $i <= 24; $i++) {
             DB::table('season_teams')->insert([
                 'team_id' => $i,
                 'season_id' => 1,
@@ -23,6 +23,8 @@ class SeasonTeamsSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+
+        /*
         for($i = 1; $i <= 8; $i++) {
             DB::table('season_teams')->insert([
 
@@ -44,6 +46,7 @@ class SeasonTeamsSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+        */
         $ch = App\SeasonTeam::first();
         $ch->category_id = 1;
         $ch->point_score = 49;

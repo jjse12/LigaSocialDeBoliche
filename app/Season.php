@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Season extends Model
 {
+    public static function currentSeason(): Season {
+        return static::all()->last();
+    }
+
     public function matchdays(): Collection {
         return $this->hasMany(Matchday::class, 'season_id', 'id')->get()->sortBy('date');
     }

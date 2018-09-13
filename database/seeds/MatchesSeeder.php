@@ -13,7 +13,26 @@ class MatchesSeeder extends Seeder
      */
     public function run()
     {
+        for ($i = 1; $i <= 24; $i++){
+            for ($j = 1; $j <= 12; $j++){
+                $tid = rand(1,24);
+                DB::table('matches')->insert(
+                [
+                    'matchday_id' => $i,
+                    'team1_lane' => ($j*2-1)+4,
+                    'team2_lane' => ($j*2-1)+5,
+                    'season_team1_id' => $tid,
+                    'season_team2_id' => $tid != 24 ? $tid+1 : $tid - 1,
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+                ]);
+            }
+        }
 
+        $m = \App\Match::first();
+        $m->season_team1_id = 1;
+        $m->season_team2_id = 2;
+        $m->update();
+        /*
         DB::table('matches')->insert([
             [
                 'matchday_id' => 1,
@@ -56,5 +75,6 @@ class MatchesSeeder extends Seeder
                 'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);
+        */
     }
 }

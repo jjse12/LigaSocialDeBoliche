@@ -18,6 +18,10 @@ class SeasonController extends Controller
         return response()->json(new SeasonsResource(null));
     }
 
+    public function currentSeason(): JsonResponse {
+        return response()->json(Season::currentSeason());
+    }
+
     public function matchdays(int $id): JsonResponse {
         $matchdays = [];
         foreach (Season::find($id)->matchdays() as $matchday) {
@@ -28,12 +32,12 @@ class SeasonController extends Controller
 
     public function nextMatchday(): JsonResponse {
         //TODO: check if current season is still active and with matches to play
-        return response()->json(new MatchdayResource(Season::all()->last()->nextMatchday()));
+        return response()->json(new MatchdayResource(Season::currentSeason()->nextMatchday()));
     }
 
     public function nextMatchdayMatches(): JsonResponse {
         //TODO: check if current season is still active and with matches to play
-        return response()->json(new NextMatchdayMatchesResource(Season::all()->last()->nextMatchday()));
+        return response()->json(new NextMatchdayMatchesResource(Season::currentSeason()->nextMatchday()));
     }
 
     public function categoryScoreboard(int $seasonId, int $categoryId): JsonResponse{

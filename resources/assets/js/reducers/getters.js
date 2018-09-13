@@ -1,7 +1,9 @@
 
-//
-export const getSeasonMatchdaysFromStore = store => store.seasonMatchdays;
-export const getNextMatchdayFromStore = store => store.navbarSelected;
-export const getNextMatchdayMatchesFromStore = store => store.blah;
+
+export const getCurrentSeasonFromStore = store => store.currentSeason;
+export const getNextMatchdayFromStore = store => store.nextMatchday;
+export const getNextMatchdayMatchesFromStore = store => store.nextMatchdayMatches;
+
+// export const getSeasonMatchdaysFromStore = store => store.seasonMatchdays;
 
 

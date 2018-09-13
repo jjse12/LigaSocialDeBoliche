@@ -14,6 +14,7 @@ const uris = {
     },
     api: {
         seasons: '/season/index',
+        currentSeason: '/season/current',
         seasonMatchdays: id => `/season/${id}/matchdays`,
         nextMatchday: '/season/next-matchday',
         nextMatchdayMatches: '/season/next-matchday-matches',
