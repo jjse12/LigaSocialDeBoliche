@@ -31,34 +31,74 @@ class MatchTeamScoreboardResource extends JsonResource
         $thirdGameScores = $allScores->where('game_number', '3')->sortBy('turn_number');
         $totalOfTotals = [];
 
+        $generalPlayerPositions = [];
+        $playersId = [];
         foreach ($firstGameScores as $score) {
-            $result['game1']["spid-$score->season_player_id"] = [
+            $result['game1']["p$score->turn_number"] = [
+                'id' => $score->season_player_id,
                 'name' => $score->playerFullName(),
                 'handicap' => $score->handicap,
                 'score' => $score->score
             ];
+            $generalPlayerPositions['p'.(count($generalPlayerPositions)+1)] = [
+                'id' => $score->season_player_id,
+                'name' => $score->playerFullName(),
+                'handicap' => $score->handicap,
+                'game1' => $score->score,
+                'total' => $score->score
+            ];
+            array_push($playersId, $score->season_player_id);
         }
         $result['game1']['scoresTotal'] = $firstGameScores->sum('score');
         $result['game1']['handicapTotal'] = $firstGameScores->sum('handicap');
         $result['game1']['scoresPlusHandicapsTotal'] = $firstGameScores->sum('score_handicap');
 
         foreach ($secondGameScores as $score) {
-            $result['game2']["spid-$score->season_player_id"] = [
+            $result['game2']["p$score->turn_number"] = [
+                'id' => $score->season_player_id,
                 'name' => $score->playerFullName(),
                 'handicap' => $score->handicap,
                 'score' => $score->score
             ];
+
+            if (!in_array($score->season_player_id, $playersId)){
+                $generalPlayerPositions['p'.(count($generalPlayerPositions)+1)] = [
+                    'id' => $score->season_player_id,
+                    'name' => $score->playerFullName(),
+                    'handicap' => $score->handicap,
+                    'game2' => $score->score
+                ];
+                array_push($playersId, $score->season_player_id);
+            }
+            else {
+                $generalPlayerPositions['p'.
+                (array_search($score->season_player_id, $playersId)+1)]['game2'] = $score->score;
+            }
         }
         $result['game2']['scoresTotal'] = $secondGameScores->sum('score');
         $result['game2']['handicapTotal'] = $secondGameScores->sum('handicap');
         $result['game2']['scoresPlusHandicapsTotal'] = $secondGameScores->sum('score_handicap');
 
         foreach ($thirdGameScores as $score) {
-            $result['game3']["spid-$score->season_player_id"] = [
+            $result['game3']["p$score->turn_number"] = [
+                'id' => $score->season_player_id,
                 'name' => $score->playerFullName(),
                 'handicap' => $score->handicap,
                 'score' => $score->score
             ];
+
+            if (!in_array($score->season_player_id, $playersId)){
+                $generalPlayerPositions['p'.(count($generalPlayerPositions)+1)] = [
+                    'id' => $score->season_player_id,
+                    'name' => $score->playerFullName(),
+                    'handicap' => $score->handicap,
+                    'game3' => $score->score
+                ];
+            }
+            else {
+                $generalPlayerPositions['p'.
+                (array_search($score->season_player_id, $playersId)+1)]['game3'] = $score->score;
+            }
         }
         $result['game3']['scoresTotal'] = $thirdGameScores->sum('score');
         $result['game3']['handicapTotal'] = $thirdGameScores->sum('handicap');
@@ -71,10 +111,13 @@ class MatchTeamScoreboardResource extends JsonResource
         $playersTotal = [];
         $scoresByPlayers = $allScores->groupBy('season_player_id');
         foreach ($scoresByPlayers as $scores) {
-            $playersTotal["spid-".$scores->first()->season_player_id] = $scores->sum('score');
+            $playersTotal["".$scores->first()->season_player_id] = [
+                'id' => $scores->first()->season_player_id,
+                'total' => $scores->sum('score')
+            ];
         }
         $totalOfTotals['playerTotals'] = $playersTotal;
-
+        $result['positions'] = $generalPlayerPositions;
         $result['totals'] = $totalOfTotals;
         return $result;
     }

@@ -65,13 +65,11 @@ export default class MatchTeamScoreboard extends Component {
 
     render(){
         return (
-            <div className={'container'}>
-                <ReactDataGrid
-                    columns={this.columns}
-                    rowGetter={this.rowGetter}
-                    rowsCount={5}
-                    minHeight={500} />);
-            </div>
+            <ReactDataGrid
+                columns={this.columns}
+                rowGetter={this.rowGetter}
+                rowsCount={5}
+                minHeight={500} />
         );
     }
 }

@@ -18,6 +18,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'season'], function() {
+
+    Route::get('/current', 'SeasonController@currentSeason');
+    Route::get('/next-matchday', 'SeasonController@nextMatchday');
+    Route::get('/next-matchday-matches', 'SeasonController@nextMatchdayMatches');
+
     Route::group(['prefix' => '/{seasonId}'], function() {
         Route::group(['prefix' => '/scoreboards'], function() {
             Route::get('/category/{categoryId}/', 'SeasonController@categoryScoreboard');
@@ -27,13 +32,16 @@ Route::group(['prefix' => 'season'], function() {
         Route::get('/matchdays', 'SeasonController@matchdays');
     });
 
-    Route::get('/next-matchday', 'SeasonController@nextMatchday');
-    Route::get('/next-matchday-matches', 'SeasonController@nextMatchdayMatches');
 
-    Route::get('/current', 'SeasonController@currentSeason');
+
     Route::get('/index', 'SeasonController@index');
 });
 
+Route::group(['prefix' => 'team'], function() {
+    Route::group(['prefix' => '/{id}'], function() {
+        Route::get('/players', 'SeasonTeamController@players');
+    });
+});
 
 Route::group(['prefix' => 'match'], function() {
     Route::group(['prefix' => '/{matchId}'], function() {

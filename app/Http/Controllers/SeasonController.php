@@ -23,9 +23,9 @@ class SeasonController extends Controller
         return response()->json(Season::currentSeason());
     }
 
-    public function matchdays(int $id): JsonResponse {
+    public function matchdays(int $seasonId): JsonResponse {
         $matchdays = [];
-        foreach (Season::find($id)->matchdays() as $matchday) {
+        foreach (Season::find($seasonId)->matchdays() as $matchday) {
             $matchdays[$matchday->number] = new MatchdayResource($matchday);
         }
         return response()->json($matchdays);

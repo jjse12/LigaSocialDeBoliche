@@ -40,12 +40,16 @@ class SeasonPlayer extends Model
         return $this->hasMany(Score::class, 'season_player_id', 'id')->get();
     }
 
-    public function linesPlayed(): int {
+    public function gamesPlayed(): int {
         return $this->scores()->count();
     }
 
+    public function pinTotal(): int {
+        return $this->scores()->sum('score');
+    }
+
     public function average(): float {
-        if ($this->linesPlayed() == 0)
+        if ($this->gamesPlayed() == 0)
             return 0.0;
 
         return round($this->scores()->avg('score'),2);
@@ -54,7 +58,7 @@ class SeasonPlayer extends Model
     public function handicap(): int {
 
         // Get handicap for first matchday of season
-        if ($this->linesPlayed() == 0) {
+        if ($this->gamesPlayed() == 0) {
             $prevSeasonId = $this->team()->season()->id - 1;
             $queryResult = Season::find($prevSeasonId);
             if ($queryResult != null) {
@@ -62,7 +66,7 @@ class SeasonPlayer extends Model
                 $queryResult = $season->players()->where('player_id', "$this->player_id");
                 if ($queryResult != null){
                     $prevSeasonPlayer = $queryResult->first();
-                    if ($prevSeasonPlayer->linesPlayed() >= 3)
+                    if ($prevSeasonPlayer->gamesPlayed() >= 3)
                         return $prevSeasonPlayer->handicap();
                 }
             }
