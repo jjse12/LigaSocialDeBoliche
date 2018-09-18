@@ -24332,7 +24332,7 @@ a.text-google:focus {
 }
 
 body {
-  background: url("/img/bowling-background.jpgs") no-repeat center center fixed;
+  background: url("/img/bowling-background.jpg") no-repeat center center fixed;
   background-size: cover;
 }
 
@@ -24723,6 +24723,10 @@ main.cover {
 
 .match-scoreboard-table {
   width: 500px;
+}
+
+.loading-table {
+  margin-left: auto;
 }
 
 .navbar-laravel {

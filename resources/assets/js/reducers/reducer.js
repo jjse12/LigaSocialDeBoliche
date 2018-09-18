@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux';
 import { routerReducer } from 'react-router-redux';
+import { isFetchingReducer as isFetching } from '../utilities/action-creators';
 import { currentSeasonReducer, nextMatchdayReducer, nextMatchdayMatchesReducer} from './current-season';
 import { teamPlayersReducer } from "./teams";
 import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer } from "./matches";
@@ -14,7 +15,8 @@ export const reducers = {
     matchResults: matchResultsReducer,
     matchScoreboards: matchScoreboardsReducer,
     matchTeamScoreboard: matchTeamScoreboardReducer,
-    teamPlayers: teamPlayersReducer
+    teamPlayers: teamPlayersReducer,
+    isFetching,
 };
 
 export default combineReducers(reducers);
