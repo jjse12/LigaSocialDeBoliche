@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import connect from "react-redux/es/connect/connect";
+import { connect } from "react-redux";
 import { getCurrentSeason } from "../../reducers/current-season";
-import { getMatchResults} from "../../reducers/match";
+import { getMatchResults} from "../../reducers/matches";
 import { getCurrentSeasonFromStore} from "../../reducers/getters";
 import NextMatches from "./next-matches";
 import MatchScoreboards from "../matches/match-scoreboards";
@@ -22,7 +22,6 @@ export default class Dashboard extends Component {
 
     componentWillMount() {
         this.props.getCurrentSeason();
-        this.props.getMatchResults(1);
     }
 
     render(){
@@ -30,7 +29,7 @@ export default class Dashboard extends Component {
             <div>
                 <div className={'container'}>
                     <h4 className={'text-light'}>{this.props.currentSeason.name}</h4>
-                    <NextMatches/>
+                    {/*<NextMatches/>*/}
                     <MatchScoreboards matchId={1}/>
                 </div>
             </div>

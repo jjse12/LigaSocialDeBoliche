@@ -12,10 +12,12 @@
 @import 'theme/custom_bootstrap_variables';
 @import '~bootstrap/scss/bootstrap';
 @import '~bootstrap/dist/css/bootstrap.css';
+@import '~react-table/react-table.css';
 
 @import "layout/general";
 @import "module/nav";
 @import "landing-page/login";
+@import "components/react-table";
 
 
 .navbar-laravel {

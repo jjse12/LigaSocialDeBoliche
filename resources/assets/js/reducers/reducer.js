@@ -1,7 +1,8 @@
 import {combineReducers} from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { currentSeasonReducer, nextMatchdayReducer, nextMatchdayMatchesReducer} from './current-season';
-import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer } from "./match";
+import { teamPlayersReducer } from "./teams";
+import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer } from "./matches";
 import seasonMatchdays from './season-matchdays';
 
 export const reducers = {
@@ -12,7 +13,8 @@ export const reducers = {
     nextMatchdayMatches: nextMatchdayMatchesReducer,
     matchResults: matchResultsReducer,
     matchScoreboards: matchScoreboardsReducer,
-    matchTeamScoreboard: matchTeamScoreboardReducer
+    matchTeamScoreboard: matchTeamScoreboardReducer,
+    teamPlayers: teamPlayersReducer
 };
 
 export default combineReducers(reducers);

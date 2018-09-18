@@ -23,7 +23,7 @@ class MatchController extends Controller
     }
 
     public function teamScoreboard(int $matchId, int $seasonTeamId): JsonResponse {
-        return response()->json(new MatchTeamScoreboardResource(SeasonTeam::find($matchId), $seasonTeamId));
+        return response()->json(new MatchTeamScoreboardResource(SeasonTeam::find($seasonTeamId), $matchId));
     }
 
     public function scoreboards(int $id): JsonResponse {

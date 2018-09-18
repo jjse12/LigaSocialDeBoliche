@@ -22,7 +22,9 @@ class MatchScoreboardResource extends JsonResource
             'date' => Carbon::createFromTimeString($this->matchday()->date)->format('d/M/Y'),
             'matchdayNumber' => $this->matchday()->number,
             'redPin' => $this->matchday()->red_pin,
+            'virtual' => $this->matchday()->virtual,
             'team1' => [
+                'id' => $team1->id,
                 'name' => $team1->name(),
                 'laneNumber' => $this->team1_lane,
                 'results' => new MatchTeamScoreboardResource($team1, $this->id),
@@ -30,6 +32,7 @@ class MatchScoreboardResource extends JsonResource
                 'comments' => $this->team1_comments
             ],
             'team2' => [
+                'id' => $team2->id,
                 'name' => $team2->name(),
                 'laneNumber' => $this->team2_lane,
                 'results' => new MatchTeamScoreboardResource($team2, $this->id),

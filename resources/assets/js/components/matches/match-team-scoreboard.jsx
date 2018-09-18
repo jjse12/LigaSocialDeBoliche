@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import connect from "react-redux/es/connect/connect";
-import { getMatchTeamScoreboard} from "../../reducers/match";
+import { withStyles } from '@material-ui/core/styles';
+import {connect} from 'react-redux';
+import { getMatchTeamScoreboard} from "../../reducers/matches";
 import { getMatchTeamScoreboardFromStore } from "../../reducers/getters";
-import ReactDataGrid from 'react-data-grid';
+import ReactTable from 'react-table';
+import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
+import _ from "lodash";
 
 @connect(
     store => ({
@@ -13,63 +15,59 @@ import ReactDataGrid from 'react-data-grid';
     { getMatchTeamScoreboard }
 )
 export default class MatchTeamScoreboard extends Component {
-    constructor(){
-        super();
-        this.columns = [
-            {
-                key: 'handicap',
-                name: 'Handicap'
-            },
-            {
-                key: 'player',
-                name: 'Jugador'
-            },
-            {
-                key: 'line1',
-                name: 'Linea 1'
-            },
-            {
-                key: 'line2',
-                name: 'Linea 2'
-            },
-            {
-                key: 'line3',
-                name: 'Linea 3'
-            },
-            {
-                key: 'totals',
-                name: 'Totales'
-            },
-        ];
-    }
+
     static propTypes = {
-        matchId: PropTypes.number.isRequired,
-        seasonTeamId: PropTypes.number.isRequired,
-        matchTeamScoreboard: PropTypes.object.isRequired,
+        match: PropTypes.object,
+        matchId: PropTypes.number,
+        seasonTeamId: PropTypes.number,
+        matchTeamScoreboard: PropTypes.object,
         getMatchTeamScoreboard: PropTypes.func.isRequired
     };
 
-
     componentWillMount() {
-        this.props.getMatchTeamScoreboard(this.props.matchId, this.props.seasonTeamId);
+        if (_.isEmpty(this.props.matchTeamScoreboard)){
+            let matchId, seasonTeamId;
+            if (this.props.match && this.props.match.params){
+                matchId = this.props.match.params.matchId;
+                seasonTeamId = this.props.match.params.seasonTeamId;
+            }
+            else {
+                matchId = this.props.matchId;
+                seasonTeamId = this.props.seasonTeamId;
+            }
+            if (matchId && seasonTeamId)
+                this.props.getMatchTeamScoreboard(matchId, seasonTeamId);
+            else {
+                //TODO: Show alert error: no matchId &/or seasonTeamId
+            }
+        }
     }
 
-
-    rowGetter = (i) => {
-        return {
-            handicap: i,
-            player: 'Jenner',
-            score: 221
-        };
-    };
-
     render(){
-        return (
-            <ReactDataGrid
-                columns={this.columns}
-                rowGetter={this.rowGetter}
-                rowsCount={5}
-                minHeight={500} />
-        );
+        if (_.isEmpty(this.props.matchTeamScoreboard)){
+            return null;
+        }
+        const playersScores = this.props.matchTeamScoreboard.playersScores;
+        const gamesTotals = this.props.matchTeamScoreboard.gamesTotals;
+        return <div>
+            <ReactTable
+            className={`${this.props.classes.scoreboardTable} -striped -highlight `}
+            data={playersScores}
+            columns={matchScoreboardScoresColumns(this)}
+            showPagination={false}
+            showPageSizeOptions={false}
+            minRows={0}
+            pageSize={playersScores.length}
+            />
+            <ReactTable
+                className={'match-scoreboard-table -striped -highlight'}
+                data={gamesTotals}
+                columns={matchScoreboardTotalsColumns(this)}
+                showPagination={false}
+                showPageSizeOptions={false}
+                minRows={0}
+                pageSize={3}
+            />
+        </div>;
     }
 }
