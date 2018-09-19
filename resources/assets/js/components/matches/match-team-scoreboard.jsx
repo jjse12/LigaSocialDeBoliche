@@ -49,17 +49,19 @@ export default class MatchTeamScoreboard extends Component {
     render(){
         if (_.isEmpty(this.props.matchTeamScoreboard)){
             if (this.props.fetchingMatchTeamScoreboard)
-                return <div className={'container flex flex-wrap content-center justify-center'}>
-                    <ReactLoading type={'spin'} color={'#488aaa'} height={'20%'} width={'20%'}/>
+                return <div className={'match-scoreboard-table-container'}>
+                    <div className={'loading-table'}>
+                        <ReactLoading type={'spin'} color={'#488aaa'} width={'100%'} height={'100%'}/>
+                    </div>
                 </div>;
             return null;
         }
 
         const playersScores = this.props.matchTeamScoreboard.playersScores;
         const gamesTotals = this.props.matchTeamScoreboard.gamesTotals;
-        return <div>
+        return <div className={'match-scoreboard-table-container'}>
             <ReactTable
-            className={'match-scoreboard-table -striped -highlight'}
+            className={'-striped -highlight'}
             data={playersScores}
             columns={matchScoreboardScoresColumns(this)}
             showPagination={false}
@@ -68,7 +70,7 @@ export default class MatchTeamScoreboard extends Component {
             pageSize={playersScores.length}
             />
             <ReactTable
-                className={'match-scoreboard-table -striped -highlight'}
+                className={'-striped -highlight'}
                 data={gamesTotals}
                 columns={matchScoreboardTotalsColumns(this)}
                 showPagination={false}

@@ -24721,12 +24721,58 @@ main.cover {
   background: url("/videossv.mp4");
 }
 
+div.match-scoreboard-table-container {
+  width: 504px;
+  height: 362px;
+  border-radius: 15px;
+  border: 3px solid whitesmoke;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(72, 138, 170, 0.65)), to(rgba(165, 36, 34, 0.65)));
+  background: linear-gradient(rgba(72, 138, 170, 0.65), rgba(165, 36, 34, 0.65));
+}
+
+div.match-scoreboards-container {
+  /*
+    background: linear-gradient(
+            rgba($c-app-accent-light, 0.65),
+            rgba($c-app-primary, 0.65)
+    )
+    */
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+}
+
+@media (max-width: 991.98px) {
+  div.match-scoreboards-container {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-flow: column nowrap;
+            flex-flow: column nowrap;
+  }
+}
+
 .match-scoreboard-table {
   width: 500px;
 }
 
-.loading-table {
-  margin-left: auto;
+div.loading-table {
+  margin-left: 40%;
+  padding-top: 25%;
+  width: 20%;
+  height: 20%;
+}
+
+@media (max-width: 991.98px) {
+  div.loading-table {
+    margin-left: 25%;
+  }
 }
 
 .navbar-laravel {

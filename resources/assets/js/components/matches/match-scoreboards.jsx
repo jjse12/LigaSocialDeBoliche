@@ -44,9 +44,8 @@ export default class MatchScoreboards extends Component {
         const team1Scoreboard = matchScoreboards.team1.results;
         const team2Scoreboard = matchScoreboards.team2.results;
         return (
-            <div>
-                <h5 className={'text-light'}>Marcadores</h5>
-                <div className={'match-scoreboard-table'}>
+            <div className={'match-scoreboards-container'}>
+                <div className={'match-scoreboard-table-container'}>
                     <ReactTable
                         className={'-striped -highlight'}
                         data={team1Scoreboard.playersScores}
@@ -66,7 +65,8 @@ export default class MatchScoreboards extends Component {
                         pageSize={3}
                     />
                 </div>
-                <div className={'match-scoreboard-table'}>
+                <h5 className={'text-light'}>Marcadores</h5>
+                <div className={'match-scoreboard-table-container'}>
                     <ReactTable
                         className={'-striped -highlight'}
                         data={team2Scoreboard.playersScores}
