@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreStoreRequest;
+use App\Http\Requests\ScoreUpdateRequest;
 use App\Http\Resources\ScoreResource;
 use App\Score;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psy\Util\Json;
 
 class ScoreController extends Controller
 {
 
-    public function get(int $id){
+    public function show(int $id){
         return new ScoreResource(Score::find($id));
     }
 
@@ -21,8 +23,15 @@ class ScoreController extends Controller
      * @param  Request  $score
      * @return JsonResponse
      */
-    public function store(ScoreStoreRequest $score){
+    public function store(ScoreStoreRequest $score): JsonResponse {
         $newScore = Score::create($score->all());
         return response()->json($newScore, 201);
+    }
+
+    public function update(ScoreUpdateRequest $scoreRequest): JsonResponse {
+        $score = Score::find($scoreRequest->id);
+        $score->update($scoreRequest->all());
+        $score->save();
+        return response()->json($score);
     }
 }

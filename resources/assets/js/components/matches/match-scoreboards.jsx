@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { connect } from "react-redux";
 import { getMatchScoreboards} from "../../reducers/matches";
-import {getMatchScoreboardsFetchingFromStore, getMatchScoreboardsFromStore} from "../../reducers/getters";
+import { createScore, updateScore, deleteScore } from "../../reducers/scores";
+import {
+    createScoreFetchingFromStore, deleteScoreFetchingFromStore,
+    getMatchScoreboardsFetchingFromStore,
+    getMatchScoreboardsFromStore, updateScoreFetchingFromStore
+} from "../../reducers/getters";
 import _ from 'lodash';
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
@@ -13,8 +18,11 @@ import ReactLoading from "react-loading";
     store => ({
         matchScoreboards: getMatchScoreboardsFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
+        fetchingCreateScore: createScoreFetchingFromStore(store),
+        fetchingUpdateScore: updateScoreFetchingFromStore(store),
+        fetchingDeleteScore: deleteScoreFetchingFromStore(store),
     }),
-    { getMatchScoreboards }
+    { getMatchScoreboards, createScore, updateScore, deleteScore }
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
@@ -24,12 +32,41 @@ export default class MatchScoreboards extends Component {
         getMatchScoreboards: PropTypes.func.isRequired
     };
 
+    constructor() {
+        super();
+        this.renderEditableCell = this.renderEditableCell.bind(this);
+    }
+
     componentWillMount() {
         const { matchId } = this.props.match.params;
         this.props.getMatchScoreboards(matchId);
     }
 
-
+    renderEditableCell(cellInfo, column) {
+        /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
+          TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
+        return (
+            <div
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={e => {
+                    console.log(e);
+                    console.log(cellInfo);
+                    console.log(e.target.innerHTML);
+                    this.props.updateScore(2,null,300)
+                        .then(() => {
+                            this.props.getMatchScoreboards(this.props.match.params.matchId);
+                        });
+                    // const data = [...this.state.data];
+                    // data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+                    // this.setState({ data });
+                }}
+                // dangerouslySetInnerHTML={{
+                //     __html: cellInfo.value
+                // }}
+            >{cellInfo.value}</div>
+        );
+    }
 
     render(){
         if (_.isEmpty(this.props.matchScoreboards)){
@@ -41,51 +78,72 @@ export default class MatchScoreboards extends Component {
         }
 
         const { matchScoreboards } = this.props;
-        const team1Scoreboard = matchScoreboards.team1.results;
-        const team2Scoreboard = matchScoreboards.team2.results;
+        const team1Data = matchScoreboards.team1;
+        const team2Data = matchScoreboards.team2;
+        const team1Scoreboard = team1Data.results;
+        const team2Scoreboard = team2Data.results;
         return (
+            <div className={'container mt-3 mb-3'}>
             <div className={'match-scoreboards-container'}>
-                <div className={'match-scoreboard-table-container'}>
-                    <ReactTable
-                        className={'-striped -highlight'}
-                        data={team1Scoreboard.playersScores}
-                        columns={matchScoreboardScoresColumns(this)}
-                        showPagination={false}
-                        showPageSizeOptions={false}
-                        minRows={0}
-                        pageSize={team1Scoreboard.playersScores.length}
-                    />
-                    <ReactTable
-                        className={'-striped -highlight'}
-                        data={team1Scoreboard.gamesTotals}
-                        columns={matchScoreboardTotalsColumns(this)}
-                        showPagination={false}
-                        showPageSizeOptions={false}
-                        minRows={0}
-                        pageSize={3}
-                    />
+                <div className={'mr-3'}>
+                    <div className={'bg-semi-transparent-gradient-primary'}>
+                        <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
+                        <h5 className={'text-light'}>{team1Data.name}</h5>
+                    </div>
+                    <div className={'match-scoreboard-table-container'}>
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team1Scoreboard.playersScores}
+                            columns={matchScoreboardScoresColumns(this)}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={team1Scoreboard.playersScores.length}
+                        />
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team1Scoreboard.gamesTotals}
+                            columns={matchScoreboardTotalsColumns()}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            getTheadThProps={() => {return {style:{display: 'none'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={3}
+                        />
+                    </div>
                 </div>
-                <h5 className={'text-light'}>Marcadores</h5>
-                <div className={'match-scoreboard-table-container'}>
-                    <ReactTable
-                        className={'-striped -highlight'}
-                        data={team2Scoreboard.playersScores}
-                        columns={matchScoreboardScoresColumns(this)}
-                        showPagination={false}
-                        showPageSizeOptions={false}
-                        minRows={0}
-                        pageSize={team2Scoreboard.playersScores.length}
-                    />
-                    <ReactTable
-                        className={'-striped -highlight'}
-                        data={team2Scoreboard.gamesTotals}
-                        columns={matchScoreboardTotalsColumns(this)}
-                        showPagination={false}
-                        showPageSizeOptions={false}
-                        minRows={0}
-                        pageSize={3}
-                    />
+                <div className={'ml-3'}>
+                    <div className={'bg-semi-transparent-gradient-primary'}>
+                        <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
+                        <h5 className={'text-light'}>{team2Data.name}</h5>
+                    </div>
+                    <div className={'match-scoreboard-table-container'}>
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team2Scoreboard.playersScores}
+                            columns={matchScoreboardScoresColumns(this)}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={team2Scoreboard.playersScores.length}
+                        />
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team2Scoreboard.gamesTotals}
+                            columns={matchScoreboardTotalsColumns()}
+                            getTheadThProps={() => {return {style:{display: 'none'}}}}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={3}
+                        />
+                    </div>
                 </div>
+            </div>
             </div>
         );
     }

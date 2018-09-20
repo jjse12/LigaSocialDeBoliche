@@ -799,6 +799,7 @@ exports.ajaxAction = ajaxAction;
 exports.ajaxGet = ajaxGet;
 exports.ajaxPost = ajaxPost;
 exports.ajaxPut = ajaxPut;
+exports.ajaxPatch = ajaxPatch;
 exports.ajaxDelete = ajaxDelete;
 exports.isFetchingReducer = isFetchingReducer;
 
@@ -895,6 +896,15 @@ function ajaxPut(action, url, data) {
 
     return ajaxAction(action, function () {
         return _axios2.default.put(url, data);
+    }, showLoading, showAlert);
+}
+
+function ajaxPatch(action, url, data) {
+    var showLoading = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var showAlert = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
+
+    return ajaxAction(action, function () {
+        return _axios2.default.patch(url, data);
     }, showLoading, showAlert);
 }
 
@@ -1628,8 +1638,8 @@ var uris = {
         matchTeamScoreboard: function matchTeamScoreboard(matchId, seasonTeamId) {
             return '/match/' + matchId + '/scoreboard/team/' + seasonTeamId;
         },
+        // Scores
         score: '/score'
-
     }
 };
 
@@ -2637,11 +2647,13 @@ exports.f = {}.propertyIsEnumerable;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getMatchTeamScoreboardFetchingFromStore = exports.getMatchTeamScoreboardFromStore = exports.getMatchScoreboardsFetchingFromStore = exports.getMatchScoreboardsFromStore = exports.getMatchResultsFromStore = exports.getTeamPlayersFromStore = exports.getNextMatchdayMatchesFromStore = exports.getNextMatchdayFromStore = exports.getCurrentSeasonFromStore = undefined;
+exports.deleteScoreFetchingFromStore = exports.updateScoreFetchingFromStore = exports.createScoreFetchingFromStore = exports.getMatchTeamScoreboardFetchingFromStore = exports.getMatchTeamScoreboardFromStore = exports.getMatchScoreboardsFetchingFromStore = exports.getMatchScoreboardsFromStore = exports.getMatchResultsFromStore = exports.getTeamPlayersFromStore = exports.getNextMatchdayMatchesFromStore = exports.getNextMatchdayFromStore = exports.getCurrentSeasonFromStore = undefined;
 
 var _actionCreators = __webpack_require__(16);
 
 var _matches = __webpack_require__(30);
+
+var _scores = __webpack_require__(567);
 
 // Season
 var getCurrentSeasonFromStore = exports.getCurrentSeasonFromStore = function getCurrentSeasonFromStore(store) {
@@ -2674,6 +2686,17 @@ var getMatchTeamScoreboardFromStore = exports.getMatchTeamScoreboardFromStore = 
 };
 var getMatchTeamScoreboardFetchingFromStore = exports.getMatchTeamScoreboardFetchingFromStore = function getMatchTeamScoreboardFetchingFromStore(store) {
   return (0, _actionCreators.isFetchingFromStore)(store, _matches.MATCH_TEAM_SCOREBOARD);
+};
+
+// Scores
+var createScoreFetchingFromStore = exports.createScoreFetchingFromStore = function createScoreFetchingFromStore(store) {
+  return (0, _actionCreators.isFetchingFromStore)(store, _scores.SCORE_CREATE);
+};
+var updateScoreFetchingFromStore = exports.updateScoreFetchingFromStore = function updateScoreFetchingFromStore(store) {
+  return (0, _actionCreators.isFetchingFromStore)(store, _scores.SCORE_UPDATE);
+};
+var deleteScoreFetchingFromStore = exports.deleteScoreFetchingFromStore = function deleteScoreFetchingFromStore(store) {
+  return (0, _actionCreators.isFetchingFromStore)(store, _scores.SCORE_DELETE);
 };
 
 /***/ }),
@@ -9399,6 +9422,8 @@ var _reactRedux = __webpack_require__(28);
 
 var _matches = __webpack_require__(30);
 
+var _scores = __webpack_require__(567);
+
 var _getters = __webpack_require__(44);
 
 var _lodash = __webpack_require__(151);
@@ -9426,15 +9451,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
     return {
         matchScoreboards: (0, _getters.getMatchScoreboardsFromStore)(store),
-        fetchingMatchScoreboards: (0, _getters.getMatchScoreboardsFetchingFromStore)(store)
+        fetchingMatchScoreboards: (0, _getters.getMatchScoreboardsFetchingFromStore)(store),
+        fetchingCreateScore: (0, _getters.createScoreFetchingFromStore)(store),
+        fetchingUpdateScore: (0, _getters.updateScoreFetchingFromStore)(store),
+        fetchingDeleteScore: (0, _getters.deleteScoreFetchingFromStore)(store)
     };
-}, { getMatchScoreboards: _matches.getMatchScoreboards }), _dec(_class = (_temp = _class2 = function (_Component) {
+}, { getMatchScoreboards: _matches.getMatchScoreboards, createScore: _scores.createScore, updateScore: _scores.updateScore, deleteScore: _scores.deleteScore }), _dec(_class = (_temp = _class2 = function (_Component) {
     _inherits(MatchScoreboards, _Component);
 
     function MatchScoreboards() {
         _classCallCheck(this, MatchScoreboards);
 
-        return _possibleConstructorReturn(this, (MatchScoreboards.__proto__ || Object.getPrototypeOf(MatchScoreboards)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (MatchScoreboards.__proto__ || Object.getPrototypeOf(MatchScoreboards)).call(this));
+
+        _this.renderEditableCell = _this.renderEditableCell.bind(_this);
+        return _this;
     }
 
     _createClass(MatchScoreboards, [{
@@ -9443,6 +9474,36 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
             var matchId = this.props.match.params.matchId;
 
             this.props.getMatchScoreboards(matchId);
+        }
+    }, {
+        key: 'renderEditableCell',
+        value: function renderEditableCell(cellInfo, column) {
+            var _this2 = this;
+
+            /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
+              TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
+            return _react2.default.createElement(
+                'div',
+                {
+                    contentEditable: true,
+                    suppressContentEditableWarning: true,
+                    onBlur: function onBlur(e) {
+                        console.log(e);
+                        console.log(cellInfo);
+                        console.log(e.target.innerHTML);
+                        _this2.props.updateScore(2, null, 300).then(function () {
+                            _this2.props.getMatchScoreboards(_this2.props.match.params.matchId);
+                        });
+                        // const data = [...this.state.data];
+                        // data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+                        // this.setState({ data });
+                    }
+                    // dangerouslySetInnerHTML={{
+                    //     __html: cellInfo.value
+                    // }}
+                },
+                cellInfo.value
+            );
         }
     }, {
         key: 'render',
@@ -9458,59 +9519,116 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
 
             var matchScoreboards = this.props.matchScoreboards;
 
-            var team1Scoreboard = matchScoreboards.team1.results;
-            var team2Scoreboard = matchScoreboards.team2.results;
+            var team1Data = matchScoreboards.team1;
+            var team2Data = matchScoreboards.team2;
+            var team1Scoreboard = team1Data.results;
+            var team2Scoreboard = team2Data.results;
             return _react2.default.createElement(
                 'div',
-                { className: 'match-scoreboards-container' },
+                { className: 'container mt-3 mb-3' },
                 _react2.default.createElement(
                     'div',
-                    { className: 'match-scoreboard-table-container' },
-                    _react2.default.createElement(_reactTable2.default, {
-                        className: '-striped -highlight',
-                        data: team1Scoreboard.playersScores,
-                        columns: (0, _tableColumns.matchScoreboardScoresColumns)(this),
-                        showPagination: false,
-                        showPageSizeOptions: false,
-                        minRows: 0,
-                        pageSize: team1Scoreboard.playersScores.length
-                    }),
-                    _react2.default.createElement(_reactTable2.default, {
-                        className: '-striped -highlight',
-                        data: team1Scoreboard.gamesTotals,
-                        columns: (0, _tableColumns.matchScoreboardTotalsColumns)(this),
-                        showPagination: false,
-                        showPageSizeOptions: false,
-                        minRows: 0,
-                        pageSize: 3
-                    })
-                ),
-                _react2.default.createElement(
-                    'h5',
-                    { className: 'text-light' },
-                    'Marcadores'
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'match-scoreboard-table-container' },
-                    _react2.default.createElement(_reactTable2.default, {
-                        className: '-striped -highlight',
-                        data: team2Scoreboard.playersScores,
-                        columns: (0, _tableColumns.matchScoreboardScoresColumns)(this),
-                        showPagination: false,
-                        showPageSizeOptions: false,
-                        minRows: 0,
-                        pageSize: team2Scoreboard.playersScores.length
-                    }),
-                    _react2.default.createElement(_reactTable2.default, {
-                        className: '-striped -highlight',
-                        data: team2Scoreboard.gamesTotals,
-                        columns: (0, _tableColumns.matchScoreboardTotalsColumns)(this),
-                        showPagination: false,
-                        showPageSizeOptions: false,
-                        minRows: 0,
-                        pageSize: 3
-                    })
+                    { className: 'match-scoreboards-container' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'mr-3' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'bg-semi-transparent-gradient-primary' },
+                            _react2.default.createElement(
+                                'h5',
+                                { className: 'text-light' },
+                                'Pista: #',
+                                team1Data.laneNumber
+                            ),
+                            _react2.default.createElement(
+                                'h5',
+                                { className: 'text-light' },
+                                team1Data.name
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'match-scoreboard-table-container' },
+                            _react2.default.createElement(_reactTable2.default, {
+                                className: 'match-scoreboard-table -striped -highlight',
+                                data: team1Scoreboard.playersScores,
+                                columns: (0, _tableColumns.matchScoreboardScoresColumns)(this),
+                                getProps: function getProps() {
+                                    return { style: { color: 'white' } };
+                                },
+                                showPagination: false,
+                                showPageSizeOptions: false,
+                                minRows: 0,
+                                pageSize: team1Scoreboard.playersScores.length
+                            }),
+                            _react2.default.createElement(_reactTable2.default, {
+                                className: 'match-scoreboard-table -striped -highlight',
+                                data: team1Scoreboard.gamesTotals,
+                                columns: (0, _tableColumns.matchScoreboardTotalsColumns)(),
+                                getProps: function getProps() {
+                                    return { style: { color: 'white' } };
+                                },
+                                getTheadThProps: function getTheadThProps() {
+                                    return { style: { display: 'none' } };
+                                },
+                                showPagination: false,
+                                showPageSizeOptions: false,
+                                minRows: 0,
+                                pageSize: 3
+                            })
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'ml-3' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'bg-semi-transparent-gradient-primary' },
+                            _react2.default.createElement(
+                                'h5',
+                                { className: 'text-light' },
+                                'Pista: #',
+                                team2Data.laneNumber
+                            ),
+                            _react2.default.createElement(
+                                'h5',
+                                { className: 'text-light' },
+                                team2Data.name
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'match-scoreboard-table-container' },
+                            _react2.default.createElement(_reactTable2.default, {
+                                className: 'match-scoreboard-table -striped -highlight',
+                                data: team2Scoreboard.playersScores,
+                                columns: (0, _tableColumns.matchScoreboardScoresColumns)(this),
+                                getProps: function getProps() {
+                                    return { style: { color: 'white' } };
+                                },
+                                showPagination: false,
+                                showPageSizeOptions: false,
+                                minRows: 0,
+                                pageSize: team2Scoreboard.playersScores.length
+                            }),
+                            _react2.default.createElement(_reactTable2.default, {
+                                className: 'match-scoreboard-table -striped -highlight',
+                                data: team2Scoreboard.gamesTotals,
+                                columns: (0, _tableColumns.matchScoreboardTotalsColumns)(),
+                                getTheadThProps: function getTheadThProps() {
+                                    return { style: { display: 'none' } };
+                                },
+                                getProps: function getProps() {
+                                    return { style: { color: 'white' } };
+                                },
+                                showPagination: false,
+                                showPageSizeOptions: false,
+                                minRows: 0,
+                                pageSize: 3
+                            })
+                        )
+                    )
                 )
             );
         }
@@ -27473,7 +27591,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = function matchScoreboardScoresColumns() {
+var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = function matchScoreboardScoresColumns(inst) {
     return [{
         Header: 'HDCP',
         accessor: 'handicap',
@@ -27491,19 +27609,28 @@ var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = functi
         accessor: 'firstGame',
         className: 'text-center',
         sortable: false,
-        width: 65
+        width: 65,
+        Cell: function Cell(row) {
+            return inst.renderEditableCell(row, 'firstGame');
+        }
     }, {
         Header: 'Linea 2',
         accessor: 'secondGame',
         className: 'text-center',
         sortable: false,
-        width: 65
+        width: 65,
+        Cell: function Cell(row) {
+            return inst.renderEditableCell(row, 'secondGame');
+        }
     }, {
         Header: 'Linea 3',
         accessor: 'thirdGame',
         className: 'text-center',
         sortable: false,
-        width: 65
+        width: 65,
+        Cell: function Cell(row) {
+            return inst.renderEditableCell(row, 'thirdGame');
+        }
     }, {
         Header: 'Total',
         accessor: 'total',
@@ -27517,30 +27644,37 @@ var matchScoreboardTotalsColumns = exports.matchScoreboardTotalsColumns = functi
     return [{
         Header: 'Totales',
         columns: [{
+            Header: null,
             accessor: 'title',
             sortable: false,
             className: 'text-center',
             width: 230
         }, {
-            Header: 'Linea 1',
+            Header: null,
             accessor: 'firstGame',
             className: 'text-center',
             sortable: false,
             width: 65
         }, {
-            Header: 'Linea 2',
+            Header: null,
             accessor: 'secondGame',
             className: 'text-center',
             sortable: false,
             width: 65
         }, {
-            Header: 'Linea 3',
+            Header: null,
             accessor: 'thirdGame',
             className: 'text-center',
             sortable: false,
             width: 65
         }, {
-            Header: 'Total',
+            // getProps:
+            //                     (state, rowInfo) => ({
+            //         style: {
+            //             color: 'white'
+            //         }
+            //     }),
+            Header: null,
             accessor: 'total',
             className: 'text-center',
             sortable: true,
@@ -52148,6 +52282,8 @@ var _teams = __webpack_require__(234);
 
 var _matches = __webpack_require__(30);
 
+var _scores = __webpack_require__(567);
+
 var _seasonMatchdays = __webpack_require__(235);
 
 var _seasonMatchdays2 = _interopRequireDefault(_seasonMatchdays);
@@ -52163,6 +52299,10 @@ var reducers = exports.reducers = {
     matchResults: _matches.matchResultsReducer,
     matchScoreboards: _matches.matchScoreboardsReducer,
     matchTeamScoreboard: _matches.matchTeamScoreboardReducer,
+    createScore: _scores.scoreCreateReducer,
+    updateScore: _scores.scoreUpdateReducer,
+    deleteScore: _scores.scoreDeleteReducer,
+
     teamPlayers: _teams.teamPlayersReducer,
     isFetching: _actionCreators.isFetchingReducer
 };
@@ -65264,7 +65404,7 @@ var MatchTeamScoreboard = (_dec = (0, _reactRedux.connect)(function (store) {
             if (_lodash2.default.isEmpty(this.props.matchTeamScoreboard)) {
                 if (this.props.fetchingMatchTeamScoreboard) return _react2.default.createElement(
                     'div',
-                    { className: 'match-scoreboard-table-container' },
+                    { className: 'match-scoreboard-table' },
                     _react2.default.createElement(
                         'div',
                         { className: 'loading-table' },
@@ -65280,18 +65420,27 @@ var MatchTeamScoreboard = (_dec = (0, _reactRedux.connect)(function (store) {
                 'div',
                 { className: 'match-scoreboard-table-container' },
                 _react2.default.createElement(_reactTable2.default, {
-                    className: '-striped -highlight',
+                    className: 'match-scoreboard-table -striped -highlight',
                     data: playersScores,
                     columns: (0, _tableColumns.matchScoreboardScoresColumns)(this),
+                    getProps: function getProps() {
+                        return { style: { color: 'white' } };
+                    },
                     showPagination: false,
                     showPageSizeOptions: false,
                     minRows: 0,
                     pageSize: playersScores.length
                 }),
                 _react2.default.createElement(_reactTable2.default, {
-                    className: '-striped -highlight',
+                    className: 'match-scoreboard-table -striped -highlight',
                     data: gamesTotals,
                     columns: (0, _tableColumns.matchScoreboardTotalsColumns)(this),
+                    getProps: function getProps() {
+                        return { style: { color: 'white' } };
+                    },
+                    getTheadThProps: function getTheadThProps() {
+                        return { style: { display: 'none' } };
+                    },
                     showPagination: false,
                     showPageSizeOptions: false,
                     minRows: 0,
@@ -70289,6 +70438,238 @@ exports.default = _default;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 428 */,
+/* 429 */,
+/* 430 */,
+/* 431 */,
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */,
+/* 442 */,
+/* 443 */,
+/* 444 */,
+/* 445 */,
+/* 446 */,
+/* 447 */,
+/* 448 */,
+/* 449 */,
+/* 450 */,
+/* 451 */,
+/* 452 */,
+/* 453 */,
+/* 454 */,
+/* 455 */,
+/* 456 */,
+/* 457 */,
+/* 458 */,
+/* 459 */,
+/* 460 */,
+/* 461 */,
+/* 462 */,
+/* 463 */,
+/* 464 */,
+/* 465 */,
+/* 466 */,
+/* 467 */,
+/* 468 */,
+/* 469 */,
+/* 470 */,
+/* 471 */,
+/* 472 */,
+/* 473 */,
+/* 474 */,
+/* 475 */,
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
+/* 481 */,
+/* 482 */,
+/* 483 */,
+/* 484 */,
+/* 485 */,
+/* 486 */,
+/* 487 */,
+/* 488 */,
+/* 489 */,
+/* 490 */,
+/* 491 */,
+/* 492 */,
+/* 493 */,
+/* 494 */,
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */,
+/* 499 */,
+/* 500 */,
+/* 501 */,
+/* 502 */,
+/* 503 */,
+/* 504 */,
+/* 505 */,
+/* 506 */,
+/* 507 */,
+/* 508 */,
+/* 509 */,
+/* 510 */,
+/* 511 */,
+/* 512 */,
+/* 513 */,
+/* 514 */,
+/* 515 */,
+/* 516 */,
+/* 517 */,
+/* 518 */,
+/* 519 */,
+/* 520 */,
+/* 521 */,
+/* 522 */,
+/* 523 */,
+/* 524 */,
+/* 525 */,
+/* 526 */,
+/* 527 */,
+/* 528 */,
+/* 529 */,
+/* 530 */,
+/* 531 */,
+/* 532 */,
+/* 533 */,
+/* 534 */,
+/* 535 */,
+/* 536 */,
+/* 537 */,
+/* 538 */,
+/* 539 */,
+/* 540 */,
+/* 541 */,
+/* 542 */,
+/* 543 */,
+/* 544 */,
+/* 545 */,
+/* 546 */,
+/* 547 */,
+/* 548 */,
+/* 549 */,
+/* 550 */,
+/* 551 */,
+/* 552 */,
+/* 553 */,
+/* 554 */,
+/* 555 */,
+/* 556 */,
+/* 557 */,
+/* 558 */,
+/* 559 */,
+/* 560 */,
+/* 561 */,
+/* 562 */,
+/* 563 */,
+/* 564 */,
+/* 565 */,
+/* 566 */,
+/* 567 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.deleteScore = exports.updateScore = exports.createScore = exports.SCORE_DELETE = exports.SCORE_UPDATE = exports.SCORE_CREATE = undefined;
+exports.scoreCreateReducer = scoreCreateReducer;
+exports.scoreUpdateReducer = scoreUpdateReducer;
+exports.scoreDeleteReducer = scoreDeleteReducer;
+
+var _actionCreators = __webpack_require__(16);
+
+var _uri = __webpack_require__(29);
+
+var _uri2 = _interopRequireDefault(_uri);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var SCORE_CREATE = exports.SCORE_CREATE = 'score_create';
+var SCORE_UPDATE = exports.SCORE_UPDATE = 'score_update';
+var SCORE_DELETE = exports.SCORE_DELETE = 'score_delete';
+
+var createScore = exports.createScore = function createScore(seasonPlayerId, matchId, score, handicap) {
+    return function (dispatch) {
+        var data = {
+            season_player_id: seasonPlayerId,
+            match_id: matchId,
+            score: score,
+            handicap: handicap,
+            score_handicap: score + handicap
+        };
+        dispatch((0, _actionCreators.ajaxPost)(SCORE_CREATE, _uri2.default.api.score, data));
+    };
+};
+
+var updateScore = exports.updateScore = function updateScore(scoreId) {
+    var seasonPlayerId = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    var score = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var handicap = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    return function (dispatch) {
+        var data = { id: scoreId };
+        if (seasonPlayerId != null) data.season_player_id = seasonPlayerId;
+        if (score != null) data.score = score;
+        if (handicap != null) data.handicap = handicap;
+
+        return dispatch((0, _actionCreators.ajaxPatch)(SCORE_UPDATE, _uri2.default.api.score, data));
+    };
+};
+
+var deleteScore = exports.deleteScore = function deleteScore(matchId, seasonTeamId) {
+    return function (dispatch) {
+        return dispatch((0, _actionCreators.ajaxDelete)(MATCH_TEAM_SCOREBOARD, _uri2.default.api.matchTeamScoreboard(matchId, seasonTeamId)));
+    };
+};
+
+function scoreCreateReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case SCORE_CREATE:
+            return action.data;
+    }
+    return state;
+}
+
+function scoreUpdateReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case SCORE_UPDATE:
+            return action.data;
+    }
+    return state;
+}
+
+function scoreDeleteReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case SCORE_DELETE:
+            return action.data;
+    }
+    return state;
+}
 
 /***/ })
 /******/ ]);

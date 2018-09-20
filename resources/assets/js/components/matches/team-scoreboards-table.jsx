@@ -16,7 +16,7 @@ import _ from "lodash";
     }),
     { getMatchTeamScoreboard }
 )
-export default class MatchTeamScoreboard extends Component {
+export default class TeamScoreboardsTable extends Component {
 
     static propTypes = {
         match: PropTypes.object,
@@ -49,7 +49,7 @@ export default class MatchTeamScoreboard extends Component {
     render(){
         if (_.isEmpty(this.props.matchTeamScoreboard)){
             if (this.props.fetchingMatchTeamScoreboard)
-                return <div className={'match-scoreboard-table'}>
+                return <div className={'match-scoreboard-table-container'}>
                     <div className={'loading-table'}>
                         <ReactLoading type={'spin'} color={'#488aaa'} width={'100%'} height={'100%'}/>
                     </div>
@@ -61,21 +61,18 @@ export default class MatchTeamScoreboard extends Component {
         const gamesTotals = this.props.matchTeamScoreboard.gamesTotals;
         return <div className={'match-scoreboard-table-container'}>
             <ReactTable
-            className={'match-scoreboard-table -striped -highlight'}
+            className={'-striped -highlight'}
             data={playersScores}
             columns={matchScoreboardScoresColumns(this)}
-            getProps={() => {return {style: {color: 'white'}}}}
             showPagination={false}
             showPageSizeOptions={false}
             minRows={0}
             pageSize={playersScores.length}
             />
             <ReactTable
-                className={'match-scoreboard-table -striped -highlight'}
+                className={'-striped -highlight'}
                 data={gamesTotals}
                 columns={matchScoreboardTotalsColumns(this)}
-                getProps={() => {return {style: {color: 'white'}}}}
-                getTheadThProps={() => {return {style:{display: 'none'}}}}
                 showPagination={false}
                 showPageSizeOptions={false}
                 minRows={0}

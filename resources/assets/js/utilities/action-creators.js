@@ -63,6 +63,10 @@ export function ajaxPut(action, url, data, showLoading = true, showAlert = true)
     return ajaxAction(action, () => Axios.put(url, data), showLoading, showAlert);
 }
 
+export function ajaxPatch(action, url, data, showLoading = true, showAlert = true) {
+    return ajaxAction(action, () => Axios.patch(url, data), showLoading, showAlert);
+}
+
 export function ajaxDelete(action, url, showLoading = true, showAlert = true) {
     return ajaxAction(action, () => Axios.delete(url), showLoading, showAlert);
 }

@@ -26,8 +26,8 @@ const uris = {
         matchResults: id => `/match/${id}/results`,
         matchScoreboards: id => `/match/${id}/scoreboards`,
         matchTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
+        // Scores
         score: '/score',
-
     }
 };
 

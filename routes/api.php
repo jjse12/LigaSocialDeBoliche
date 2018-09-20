@@ -54,6 +54,8 @@ Route::group(['prefix' => 'match'], function() {
 
 
 Route::group(['prefix' => 'score'], function () {
-    Route::get('/{id}', 'ScoreController@get');
+    Route::get('/{id}', 'ScoreController@show');
     Route::post('/', 'ScoreController@store');
+    Route::patch('/', 'ScoreController@update');
+    Route::delete('/{id}', 'ScoreController@delete');
 });
