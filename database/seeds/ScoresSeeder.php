@@ -85,7 +85,6 @@ class ScoresSeeder extends Seeder
                     'turn_number' => $j++,
                     'score' => $score,
                     'handicap' => $handicap,
-                    'score_handicap' => $score + $handicap,
                     'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
                 ]);
             }
@@ -145,7 +144,6 @@ class ScoresSeeder extends Seeder
                     'turn_number' => $j++,
                     'score' => $score,
                     'handicap' => $handicap,
-                    'score_handicap' => $score + $handicap,
                     'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
                 ]);
             }

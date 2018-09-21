@@ -15,6 +15,7 @@ class PlayersSeeder extends Seeder
     public function run()
     {
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'M',
             'first_name' => 'Jenner',
             'last_name' => 'Sánchez',
@@ -24,6 +25,7 @@ class PlayersSeeder extends Seeder
             'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'M',
             'first_name' => 'Kevin',
             'last_name' => 'Sánchez',
@@ -33,6 +35,7 @@ class PlayersSeeder extends Seeder
             'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'F',
             'first_name' => 'Sofia',
             'last_name' => 'Sánchez',
@@ -42,6 +45,7 @@ class PlayersSeeder extends Seeder
             'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'M',
             'first_name' => 'Orlando',
             'last_name' => 'Sánchez',
@@ -51,15 +55,17 @@ class PlayersSeeder extends Seeder
             'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'M',
             'first_name' => 'Julio',
-            'last_name' => 'Sánchez',
+            'last_name' => 'Roa',
             'email' => 'julioroa@hotmail.com',
             'phone' => '55551530',
             'birthday' => '1954-01-19',
             'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'F',
             'first_name' => 'Perla',
             'last_name' => 'Quinto',
@@ -73,6 +79,7 @@ class PlayersSeeder extends Seeder
             $fake = Faker::create('es_ES');
             $gender = $fake->randomElement(['M', 'F', 'M']);
             DB::table('players')->insert([
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
                 'gender' => $gender,
                 'first_name' => $gender == 'M' ? $fake->firstNameMale : $fake->firstNameFemale,
                 'last_name' => $fake->lastName,

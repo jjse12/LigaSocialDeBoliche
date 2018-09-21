@@ -25,11 +25,9 @@ class ScoreUpdateRequest extends FormRequest
     {
         return [
             'id' => 'required',
-            'season_player_id' => 'numeric',
-            'match_id' => 'numeric',
             'score' => 'numeric',
-            'handicap' => 'numeric',
-            'score_handicap' => 'numeric'
+            'season_player_id' => 'numeric',
+            'handicap' => 'numeric'
         ];
     }
 }

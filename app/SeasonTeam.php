@@ -40,9 +40,11 @@ class SeasonTeam extends Model
     }
 
     public function matchGameTeamScore(int $match_id, int $game_number, bool $withHandicap = true): int{
-        if ($game_number == 0)
-            return $this->playersMatchScores($match_id)->sum($withHandicap ? 'score_handicap' : 'score');
-        return $this->playersMatchScores($match_id)->where('game_number', "$game_number")->sum($withHandicap ? 'score_handicap' : 'score');
+        $scoreCollection = $game_number == 0 ?
+            $this->playersMatchScores($match_id) :
+            $this->playersMatchScores($match_id)->where('game_number', "$game_number");
+
+        return $scoreCollection->sum('score') + ($withHandicap ? $scoreCollection->sum('handicap') : 0);
     }
 
     public function matches(): Collection {

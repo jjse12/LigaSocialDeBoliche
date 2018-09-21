@@ -53,9 +53,16 @@ export default class MatchScoreboards extends Component {
                     console.log(e);
                     console.log(cellInfo);
                     console.log(e.target.innerHTML);
-                    this.props.updateScore(2,null,300)
+                    this.props.updateScore(2, 300)
                         .then(() => {
                             this.props.getMatchScoreboards(this.props.match.params.matchId);
+                        })
+                        .catch(jqXHR => {
+                            console.log(jqXHR);
+                        })
+                        .then(() => {
+                            // this.props.getMatchScoreboards(this.props.match.params.matchId);
+                            this.render();
                         });
                     // const data = [...this.state.data];
                     // data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
@@ -84,6 +91,10 @@ export default class MatchScoreboards extends Component {
         const team2Scoreboard = team2Data.results;
         return (
             <div className={'container mt-3 mb-3'}>
+                {/*<button onClick={() => {
+                    this.props.matchScoreboards.team1.laneNumber = 10;
+                    this.render
+                }}>refrescar</button>*/}
             <div className={'match-scoreboards-container'}>
                 <div className={'mr-3'}>
                     <div className={'bg-semi-transparent-gradient-primary'}>

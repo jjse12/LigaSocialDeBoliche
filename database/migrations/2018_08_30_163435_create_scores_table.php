@@ -21,7 +21,6 @@ class CreateScoresTable extends Migration
             $table->unsignedTinyInteger('turn_number');
             $table->unsignedSmallInteger('score');
             $table->unsignedTinyInteger('handicap');
-            $table->unsignedSmallInteger('score_handicap');
             $table->timestamps();
         });
     }

@@ -51,7 +51,7 @@ class MatchTeamScoreboardResource extends JsonResource
         }
         $result['firstGame']['scoresTotal'] = $firstGameScores->sum('score');
         $result['firstGame']['handicapTotal'] = $firstGameScores->sum('handicap');
-        $result['firstGame']['scoresPlusHandicapsTotal'] = $firstGameScores->sum('score_handicap');
+        $result['firstGame']['scoresPlusHandicapsTotal'] = $firstGameScores->sum('score') + $firstGameScores->sum('handicap');
 
         foreach ($secondGameScores as $score) {
             $result['secondGame']["p$score->turn_number"] = [
@@ -79,7 +79,7 @@ class MatchTeamScoreboardResource extends JsonResource
         }
         $result['secondGame']['scoresTotal'] = $secondGameScores->sum('score');
         $result['secondGame']['handicapTotal'] = $secondGameScores->sum('handicap');
-        $result['secondGame']['scoresPlusHandicapsTotal'] = $secondGameScores->sum('score_handicap');
+        $result['secondGame']['scoresPlusHandicapsTotal'] = $secondGameScores->sum('score') + $secondGameScores->sum('handicap');
 
         foreach ($thirdGameScores as $score) {
             $result['thirdGame']["p$score->turn_number"] = [
@@ -106,21 +106,8 @@ class MatchTeamScoreboardResource extends JsonResource
         }
         $result['thirdGame']['scoresTotal'] = $thirdGameScores->sum('score');
         $result['thirdGame']['handicapTotal'] = $thirdGameScores->sum('handicap');
-        $result['thirdGame']['scoresPlusHandicapsTotal'] = $thirdGameScores->sum('score_handicap');
-/*
-        $playersScores['scoresTotal']['firstGame'] = $firstGameScores->sum('score');
-        $playersScores['scoresTotal']['secondGame'] = $secondGameScores->sum('score');
-        $playersScores['scoresTotal']['thirdGame'] = $thirdGameScores->sum('score');
-        $playersScores['scoresTotal']['total'] = $allScores->sum('score');
-        $playersScores['handicapsTotal']['firstGame'] = $firstGameScores->sum('handicap');
-        $playersScores['handicapsTotal']['secondGame'] = $secondGameScores->sum('handicap');
-        $playersScores['handicapsTotal']['thirdGame'] = $thirdGameScores->sum('handicap');
-        $playersScores['handicapsTotal']['total'] = $allScores->sum('handicap');
-        $playersScores['scoresPlusHandicapsTotal']['firstGame'] = $firstGameScores->sum('score_handicap');
-        $playersScores['scoresPlusHandicapsTotal']['secondGame'] = $secondGameScores->sum('score_handicap');
-        $playersScores['scoresPlusHandicapsTotal']['thirdGame'] = $thirdGameScores->sum('score_handicap');
-        $playersScores['scoresPlusHandicapsTotal']['total'] = $allScores->sum('score_handicap');
-*/
+        $result['thirdGame']['scoresPlusHandicapsTotal'] = $thirdGameScores->sum('score') + $thirdGameScores->sum('handicap');
+
         $gamesTotals = [];
         $gamesTotals[0]['title'] = 'Pin neto';
         $gamesTotals[0]['firstGame'] = $firstGameScores->sum('score');
@@ -133,10 +120,10 @@ class MatchTeamScoreboardResource extends JsonResource
         $gamesTotals[1]['thirdGame'] = $thirdGameScores->sum('handicap');
         $gamesTotals[1]['total'] = $allScores->sum('handicap');
         $gamesTotals[2]['title'] = 'Total';
-        $gamesTotals[2]['firstGame'] = $firstGameScores->sum('score_handicap');
-        $gamesTotals[2]['secondGame'] = $secondGameScores->sum('score_handicap');
-        $gamesTotals[2]['thirdGame'] = $thirdGameScores->sum('score_handicap');
-        $gamesTotals[2]['total'] = $allScores->sum('score_handicap');
+        $gamesTotals[2]['firstGame'] = $firstGameScores->sum('score') + $firstGameScores->sum('handicap');
+        $gamesTotals[2]['secondGame'] = $secondGameScores->sum('score') + $secondGameScores->sum('handicap');
+        $gamesTotals[2]['thirdGame'] = $thirdGameScores->sum('score') + $thirdGameScores->sum('handicap');
+        $gamesTotals[2]['total'] = $allScores->sum('score') + $allScores->sum('handicap');
 
         $result['playersScores'] = $playersScores;
         $result['gamesTotals'] = $gamesTotals;

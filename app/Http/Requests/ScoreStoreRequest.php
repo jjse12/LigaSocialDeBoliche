@@ -27,8 +27,7 @@ class ScoreStoreRequest extends FormRequest
             'season_player_id' => 'required',
             'match_id' => 'required',
             'score' => 'required',
-            'handicap' => 'required',
-            'score_handicap' => 'required'
+            'handicap' => 'required'
         ];
     }
 }

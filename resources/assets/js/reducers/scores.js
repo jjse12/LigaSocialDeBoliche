@@ -10,13 +10,12 @@ export const createScore = (seasonPlayerId, matchId, score, handicap) => dispatc
         season_player_id: seasonPlayerId,
         match_id: matchId,
         score: score,
-        handicap: handicap,
-        score_handicap: score + handicap
+        handicap: handicap
     };
     dispatch(ajaxPost(SCORE_CREATE, uri.api.score, data));
 }
 
-export const updateScore = (scoreId, seasonPlayerId = null, score = null, handicap = null ) => dispatch => {
+export const updateScore = (scoreId, score = null, seasonPlayerId = null, handicap = null) => dispatch => {
     let data = { id: scoreId };
     if (seasonPlayerId != null)
         data.season_player_id = seasonPlayerId;
