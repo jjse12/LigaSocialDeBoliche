@@ -23,9 +23,9 @@ class SeasonController extends Controller
         return response()->json(Season::currentSeason());
     }
 
-    public function matchdays(int $seasonId): JsonResponse {
+    public function matchdays(Season $season): JsonResponse {
         $matchdays = [];
-        foreach (Season::find($seasonId)->matchdays() as $matchday) {
+        foreach ($season->matchdays() as $matchday) {
             $matchdays[$matchday->number] = new MatchdayResource($matchday);
         }
         return response()->json($matchdays);
@@ -41,15 +41,15 @@ class SeasonController extends Controller
         return response()->json(new NextMatchdayMatchesResource(Season::currentSeason()->nextMatchday()));
     }
 
-    public function categoryScoreboard(int $seasonId, int $categoryId): JsonResponse{
-        return response()->json(new SeasonCategoryTeamsScoreboardResource(Season::find($seasonId), $categoryId));
+    public function categoryScoreboard(Season $season, int $categoryId): JsonResponse{
+        return response()->json(new SeasonCategoryTeamsScoreboardResource($season, $categoryId));
     }
 
-    public function allCategoriesScoreboards(int $seasonId): JsonResponse {
+    public function allCategoriesScoreboards(Season $season): JsonResponse {
 
         $results = [];
         foreach (TeamCategory::all() as $category){
-            $results[$category->name] = new SeasonCategoryTeamsScoreboardResource(Season::find($seasonId), $category->id);
+            $results[$category->name] = new SeasonCategoryTeamsScoreboardResource($season, $category->id);
         }
 
         return response()->json($results);

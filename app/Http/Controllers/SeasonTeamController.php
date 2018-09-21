@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class SeasonTeamController extends Controller
 {
-    public function players(int $seasonTeamId): JsonResponse {
-        return response()->json(new TeamPlayersResource(SeasonTeam::find($seasonTeamId)));
+    public function players(SeasonTeam $seasonTeam): JsonResponse {
+        return response()->json(new TeamPlayersResource($seasonTeam));
     }
 }

@@ -13,8 +13,8 @@ use Psy\Util\Json;
 class ScoreController extends Controller
 {
 
-    public function show(int $id){
-        return new ScoreResource(Score::find($id));
+    public function show(Score $score): JsonResponse {
+        return response()->json(new ScoreResource($score));
     }
 
     /**
@@ -33,5 +33,10 @@ class ScoreController extends Controller
         $score->update($scoreRequest->all());
         $score->save();
         return response()->json($score);
+    }
+
+    public function delete(Score $score): JsonResponse {
+        $score->delete();
+        return response()->json();
     }
 }

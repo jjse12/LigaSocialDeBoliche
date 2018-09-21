@@ -14,19 +14,19 @@ use Illuminate\Http\Request;
 class MatchController extends Controller
 {
 
-    public function results(int $id): JsonResponse {
-        return response()->json(new MatchResultsSummaryResource(Match::find($id)));
+    public function results(Match $match): JsonResponse {
+        return response()->json(new MatchResultsSummaryResource($match));
     }
 
-    public function scores(Request $request): JsonResponse {
-        return response()->json(Match::find($request->id)->scores());
+    public function scores(Match $match): JsonResponse {
+        return response()->json($match->scores());
     }
 
-    public function teamScoreboard(int $matchId, int $seasonTeamId): JsonResponse {
-        return response()->json(new MatchTeamScoreboardResource(SeasonTeam::find($seasonTeamId), $matchId));
+    public function teamScoreboard(Match $match, SeasonTeam $seasonTeam): JsonResponse {
+        return response()->json(new MatchTeamScoreboardResource($seasonTeam, $match->id));
     }
 
-    public function scoreboards(int $id): JsonResponse {
-        return response()->json(new MatchScoreboardResource(Match::find($id)));
+    public function scoreboards(Match $match): JsonResponse {
+        return response()->json(new MatchScoreboardResource($match));
     }
 }

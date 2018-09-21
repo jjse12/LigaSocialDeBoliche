@@ -14,7 +14,7 @@ class Player extends User
     protected $primaryKey = 'email';
 
     protected $guarded = ['id'];
-    protected $hidden = array('password', 'remember_token');
+    protected $hidden = array('password', 'remember_token', 'api_token');
 
     public function getAuthIdentifier()
     {
