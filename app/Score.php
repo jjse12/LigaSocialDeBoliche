@@ -8,16 +8,16 @@ class Score extends Model
 {
     protected $guarded = ['id'];
 
-    public function player(): SeasonPlayer {
+    public function seasonPlayer(): SeasonPlayer {
         return $this->belongsTo(SeasonPlayer::class, 'season_player_id','id')->first();
     }
 
     public function playerFullName(): string {
-        return $this->player()->fullName();
+        return $this->seasonPlayer()->fullName();
     }
 
     public function playerGender() {
-        return $this->player()->gender();
+        return $this->seasonPlayer()->gender();
     }
 
     public function match(): Match {

@@ -15,7 +15,7 @@ class SeasonTeam extends Model
         return $this->team()->name;
     }
 
-    public function players(): Collection {
+    public function seasonPlayers(): Collection {
         return $this->hasMany(SeasonPlayer::class, 'season_team_id', 'id')->get();
     }
 
@@ -31,9 +31,9 @@ class SeasonTeam extends Model
         return $this->belongsTo(Season::class, 'season_id', 'id')->first();
     }
 
-    public function playersMatchScores(int $match_id): Collection {
+    public function seasonPlayersMatchScores(int $match_id): Collection {
         $scores = new Collection();
-        foreach ($this->players() as $player) {
+        foreach ($this->seasonPlayers() as $player) {
             $scores = $scores->merge($player->matchScores($match_id));
         }
         return $scores;
@@ -41,8 +41,8 @@ class SeasonTeam extends Model
 
     public function matchGameTeamScore(int $match_id, int $game_number, bool $withHandicap = true): int{
         $scoreCollection = $game_number == 0 ?
-            $this->playersMatchScores($match_id) :
-            $this->playersMatchScores($match_id)->where('game_number', "$game_number");
+            $this->seasonPlayersMatchScores($match_id) :
+            $this->seasonPlayersMatchScores($match_id)->where('game_number', "$game_number");
 
         return $scoreCollection->sum('score') + ($withHandicap ? $scoreCollection->sum('handicap') : 0);
     }
@@ -55,5 +55,13 @@ class SeasonTeam extends Model
 
     public function match(int $matchId): ?Match {
         return $this->matches()->where('id', "$matchId")->first();
+    }
+
+    public function hasPlayer(int $player_id): bool {
+        foreach ($this->seasonPlayers() as $player) {
+            if ($player->player()->id == $player_id)
+                return true;
+        }
+        return false;
     }
 }

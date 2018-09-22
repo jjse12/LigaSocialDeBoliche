@@ -25,7 +25,7 @@ class MatchTeamScoreboardResource extends JsonResource
     {
         $result = [];
 
-        $allScores = $this->playersMatchScores($this->matchId);
+        $allScores = $this->seasonPlayersMatchScores($this->matchId);
         $firstGameScores = $allScores->where('game_number', '1')->sortBy('turn_number');
         $secondGameScores = $allScores->where('game_number', '2')->sortBy('turn_number');
         $thirdGameScores = $allScores->where('game_number', '3')->sortBy('turn_number');

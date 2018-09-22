@@ -23,18 +23,18 @@ class Season extends Model
         })->first();
     }
 
-    public function teams(): Collection {
+    public function seasonTeams(): Collection {
         return $this->hasMany(SeasonTeam::class, 'season_id', 'id')->get();
     }
 
-    public function categoryTeams(int $category_id): Collection {
-        return $this->teams()->where('category_id', "$category_id");
+    public function categorySeasonTeams(int $category_id): Collection {
+        return $this->seasonTeams()->where('category_id', "$category_id");
     }
 
-    public function players(): Collection {
+    public function seasonPlayers(): Collection {
         $players = new Collection();
-        foreach ($this->teams() as $team) {
-            $players = $players->merge($team->players());
+        foreach ($this->seasonTeams() as $team) {
+            $players = $players->merge($team->seasonPlayers());
         }
         return $players;
     }

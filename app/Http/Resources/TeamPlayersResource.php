@@ -15,7 +15,7 @@ class TeamPlayersResource extends JsonResource
     public function toArray($request)
     {
         $result = [];
-        foreach ($this->players() as $player) {
+        foreach ($this->seasonPlayers() as $player) {
             array_push($result, [
                 'id' => $player->id,
                 'fullName' => $player->fullName(),

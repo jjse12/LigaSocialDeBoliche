@@ -20,12 +20,12 @@ class SeasonPlayer extends Model
         return $this->player()->gender;
     }
 
-    public function team(): SeasonTeam {
+    public function seasonTeam(): SeasonTeam {
         return $this->belongsTo(SeasonTeam::class, 'season_team_id', 'id')->first();
     }
 
     public function teamName(): string {
-        return $this->team()->name();
+        return $this->seasonTeam()->name();
     }
 
     public function category(): PlayerCategory {
@@ -59,7 +59,7 @@ class SeasonPlayer extends Model
 
         // Get handicap for first matchday of season
         if ($this->gamesPlayed() == 0) {
-            $prevSeasonId = $this->team()->season()->id - 1;
+            $prevSeasonId = $this->seasonTeam()->season_id - 1;
             $queryResult = Season::find($prevSeasonId);
             if ($queryResult != null) {
                 $season = $queryResult->first();

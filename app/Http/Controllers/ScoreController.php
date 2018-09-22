@@ -8,6 +8,7 @@ use App\Http\Resources\ScoreResource;
 use App\Score;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Psy\Util\Json;
 
 class ScoreController extends Controller
@@ -33,6 +34,11 @@ class ScoreController extends Controller
     }
 
     public function update(ScoreUpdateRequest $scoreRequest): JsonResponse {
+//        dd($scoreRequest->bearerToken());
+//
+//        $user = Auth::user();
+//        $match = $scoreRequest->
+//        $user->
         $score = Score::find($scoreRequest->id);
         $score->update($scoreRequest->all());
         $score->save();

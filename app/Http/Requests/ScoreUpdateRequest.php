@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Score;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ScoreUpdateRequest extends FormRequest
 {
@@ -13,7 +15,9 @@ class ScoreUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $score = Score::find($this->request->get('id'));
+        dd(Auth::user()->id, $score->player()->player()->id);
+        return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::user()->id);
     }
 
     /**

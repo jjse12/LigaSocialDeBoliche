@@ -27,11 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
-        Passport::tokensExpireIn(now()->addDays(15));
-        Passport::refreshTokensExpireIn(now()->addDays(30));
-        Passport::tokensCan([
-            'manage-scores' => 'Add/Edit/Delete scores',
-            'admin' => 'Check order status',
-        ]);
+        Passport::tokensExpireIn(now()->addHours(6));
+        Passport::refreshTokensExpireIn(now()->addHours(6));
     }
 }
