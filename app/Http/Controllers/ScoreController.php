@@ -12,6 +12,10 @@ use Psy\Util\Json;
 
 class ScoreController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api')->except('show');
+    }
 
     public function show(Score $score): JsonResponse {
         return response()->json(new ScoreResource($score));

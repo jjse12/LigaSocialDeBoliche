@@ -22,7 +22,7 @@ class CreatePlayersTable extends Migration
             $table->string('phone');
             $table->date('birthday');
             $table->string('password');
-            $table->string('api_token', 60)->unique()->nullable()->default(null);
+//            $table->string('api_token', 60)->unique()->nullable()->default(null);
             $table->rememberToken();
             $table->timestamps();
         });

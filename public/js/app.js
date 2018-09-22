@@ -773,6 +773,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 _axios2.default.defaults.headers.common['Accept'] = 'application/json';
+_axios2.default.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+_axios2.default.defaults.headers.common['X-CSRF-TOKEN'] = document.head.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 var initialState = {};
 var IS_FETCHING = 'ajax_is_fetching';
@@ -803,7 +805,8 @@ function checkResponse(response) {
 
 function checkUnauthorized(error) {
     if (error.response && error.response.status === 401) {
-        window.location = '/';
+        // window.location = '/';
+        alert("¡No tienes permisos para realizar esta acción!");
     }
 }
 

@@ -2,6 +2,10 @@ import Axios from 'axios';
 import Promise from 'promise';
 import update from 'immutability-helper';
 Axios.defaults.headers.common['Accept'] = 'application/json';
+Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+Axios.defaults.headers.common['X-CSRF-TOKEN'] =
+    document.head.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 
 const initialState = {};
 const IS_FETCHING = 'ajax_is_fetching';
@@ -26,7 +30,8 @@ export function checkResponse(response) {
 
 function checkUnauthorized(error) {
     if (error.response && error.response.status === 401) {
-        window.location = '/';
+        // window.location = '/';
+        alert("¡No tienes permisos para realizar esta acción!");
     }
 }
 

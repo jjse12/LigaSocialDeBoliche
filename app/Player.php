@@ -3,18 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Passport\HasApiTokens;
 
-class Player extends User
+class Player extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'players';
     protected $primaryKey = 'email';
 
     protected $guarded = ['id'];
-    protected $hidden = array('password', 'remember_token', 'api_token');
+    protected $hidden = ['password', 'remember_token'];
 
     public function getAuthIdentifier()
     {
