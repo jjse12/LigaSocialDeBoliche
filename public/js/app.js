@@ -803,10 +803,11 @@ function checkResponse(response) {
     }
 }
 
-function checkUnauthorized(error) {
-    if (error.response && error.response.status === 401) {
-        // window.location = '/';
-        alert("¡No tienes permisos para realizar esta acción!");
+function checkErrorResponse(error) {
+    if (error.response && error.response.data && error.response.data.message && (error.response.status === 401 || error.response.status === 403 || error.response.status === 404)) {
+
+        //TODO: Use pretty alert dialog to show error
+        alert(error.response.data.message);
     }
 }
 
@@ -822,7 +823,7 @@ function ajaxAction(action, ajaxAction, showLoading, showAlertBool) {
             return response;
         }).catch(function (error) {
             dispatch(isFetching(action, false));
-            checkUnauthorized(error);
+            checkErrorResponse(error);
             return _promise2.default.reject(error);
         });
     };
@@ -9586,7 +9587,7 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
                         console.log(e);
                         console.log(cellInfo);
                         console.log(e.target.innerHTML);
-                        _this2.props.updateScore(2, 300).then(function () {
+                        _this2.props.updateScore(7, 300).then(function () {
                             _this2.props.getMatchScoreboards(_this2.props.match.params.matchId);
                         }).catch(function (jqXHR) {
                             console.log(jqXHR);

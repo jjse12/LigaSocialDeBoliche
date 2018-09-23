@@ -46,6 +46,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if($exception instanceof \Illuminate\Auth\AuthenticationException ){
+
+            return response(['message' => 'Esta acción requiere autenticación de jugador.'], 401);
+        }
+
         return parent::render($request, $exception);
     }
 }

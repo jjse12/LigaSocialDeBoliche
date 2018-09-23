@@ -28,10 +28,16 @@ export function checkResponse(response) {
     }
 }
 
-function checkUnauthorized(error) {
-    if (error.response && error.response.status === 401) {
-        // window.location = '/';
-        alert("¡No tienes permisos para realizar esta acción!");
+function checkErrorResponse(error) {
+    if (error.response &&
+        error.response.data &&
+        error.response.data.message &&
+       (error.response.status === 401 ||
+        error.response.status === 403 ||
+        error.response.status === 404 )) {
+
+        //TODO: Use pretty alert dialog to show error
+        alert(error.response.data.message);
     }
 }
 
@@ -50,7 +56,7 @@ export function ajaxAction(action, ajaxAction, showLoading, showAlertBool) {
             })
             .catch(error => {
                 dispatch(isFetching(action, false));
-                checkUnauthorized(error);
+                checkErrorResponse(error);
                 return Promise.reject(error);
             });
     };
