@@ -1,5 +1,6 @@
 <?php
 
+use App\Player;
 use Illuminate\Http\Request;
 
 /*
@@ -13,10 +14,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
+Route::group(['prefix' => 'player'], function() {
+    Route::get('/auth-player', 'PlayerController@authenticatedPlayer');
+    Route::get('/{player}', 'PlayerController@show');
+});
 Route::group(['prefix' => 'season'], function() {
 
     Route::get('/current', 'SeasonController@currentSeason');

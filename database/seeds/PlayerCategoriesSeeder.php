@@ -21,7 +21,7 @@ class PlayerCategoriesSeeder extends Seeder
                 'males_max' => 255,
                 'females_min' => 165,
                 'females_max' => 255,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'name' => 'A',
@@ -29,7 +29,7 @@ class PlayerCategoriesSeeder extends Seeder
                 'males_max' => 185,
                 'females_min' => 135,
                 'females_max' => 165,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'name' => 'B',
@@ -37,7 +37,7 @@ class PlayerCategoriesSeeder extends Seeder
                 'males_max' => 155,
                 'females_min' => 125,
                 'females_max' => 135,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'name' => 'C',
@@ -45,7 +45,7 @@ class PlayerCategoriesSeeder extends Seeder
                 'males_max' => 135,
                 'females_min' => 0,
                 'females_max' => 125,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);
     }

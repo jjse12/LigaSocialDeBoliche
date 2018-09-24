@@ -22,8 +22,8 @@ class ScoresSeeder extends Seeder
 //        $t4 = App\Match::find(5)->team2();
 
 
-        $p1 = $t1->players();
-        $p2 = $t2->players();
+        $p1 = $t1->seasonPlayers();
+        $p2 = $t2->seasonPlayers();
 //        $p3 = $t3->players();
 //        $p4 = $t4->players();
 
@@ -85,7 +85,7 @@ class ScoresSeeder extends Seeder
                     'turn_number' => $j++,
                     'score' => $score,
                     'handicap' => $handicap,
-                    'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
             }
 
@@ -144,7 +144,7 @@ class ScoresSeeder extends Seeder
                     'turn_number' => $j++,
                     'score' => $score,
                     'handicap' => $handicap,
-                    'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
             }
         }

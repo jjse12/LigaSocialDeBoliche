@@ -14,6 +14,8 @@ const uris = {
         error: '/error',
     },
     api: {
+        // Current logged in player
+        loggedInPlayer: '/player/auth-player',
         // Seasons data:
         seasons: '/season/index',
         currentSeason: '/season/current',

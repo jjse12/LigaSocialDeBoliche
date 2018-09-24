@@ -12,20 +12,8 @@ class Player extends Authenticatable
     use HasApiTokens, Notifiable;
 
     protected $table = 'players';
-    protected $primaryKey = 'email';
-
     protected $guarded = ['id'];
     protected $hidden = ['password', 'remember_token'];
-
-    public function getAuthIdentifier()
-    {
-        return $this->email;
-    }
-
-    public function getAuthIdentifierName()
-    {
-        return "email";
-    }
 
     public function fullName(): string {
         return "$this->first_name $this->last_name";
@@ -55,7 +43,7 @@ class Player extends Authenticatable
     }
     public function scores(): Collection{
         $scores = new Collection();
-        foreach ($this->seasonsPlayer() as $player) {
+        foreach ($this->allSeasonPlayers() as $player) {
             $scores = $scores->merge($player->scores());
         }
 

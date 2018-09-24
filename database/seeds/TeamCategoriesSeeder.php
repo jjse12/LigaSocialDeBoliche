@@ -17,15 +17,15 @@ class TeamCategoriesSeeder extends Seeder
         DB::table('team_categories')->insert([
             [
                 'name' => 'AA',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'name' => 'A',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'name' => 'B',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);
     }

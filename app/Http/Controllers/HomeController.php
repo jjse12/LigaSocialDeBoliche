@@ -14,13 +14,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-//        if (auth()->check())
-//            //dd(auth()->user()->name);
-//            return view('layouts.app')->with([
-//                'admin' => auth()->user()->owner,
-//                'nombre' => auth()->user()->name
-//            ]);
-        return view('layouts.app');
+        return view('layouts.app')->with([
+            'auth' => auth()->check()
+        ]);
     }
 
     public function redirectApp(){

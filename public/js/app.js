@@ -1189,6 +1189,8 @@ var uris = {
         error: '/error'
     },
     api: {
+        // Current logged in player
+        loggedInPlayer: '/player/auth-player',
         // Seasons data:
         seasons: '/season/index',
         currentSeason: '/season/current',
@@ -2651,13 +2653,18 @@ exports.f = {}.propertyIsEnumerable;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.deleteScoreFetchingFromStore = exports.updateScoreFetchingFromStore = exports.createScoreFetchingFromStore = exports.getMatchTeamScoreboardFetchingFromStore = exports.getMatchTeamScoreboardFromStore = exports.getMatchScoreboardsFetchingFromStore = exports.getMatchScoreboardsFromStore = exports.getMatchResultsFromStore = exports.getTeamPlayersFromStore = exports.getNextMatchdayMatchesFromStore = exports.getNextMatchdayFromStore = exports.getCurrentSeasonFromStore = undefined;
+exports.deleteScoreFetchingFromStore = exports.updateScoreFetchingFromStore = exports.createScoreFetchingFromStore = exports.getMatchTeamScoreboardFetchingFromStore = exports.getMatchTeamScoreboardFromStore = exports.getMatchScoreboardsFetchingFromStore = exports.getMatchScoreboardsFromStore = exports.getMatchResultsFromStore = exports.getTeamPlayersFromStore = exports.getNextMatchdayMatchesFromStore = exports.getNextMatchdayFromStore = exports.getCurrentSeasonFromStore = exports.getLoggedInPlayerFromStore = undefined;
 
 var _actionCreators = __webpack_require__(13);
 
 var _matches = __webpack_require__(30);
 
 var _scores = __webpack_require__(58);
+
+// Logged in player
+var getLoggedInPlayerFromStore = exports.getLoggedInPlayerFromStore = function getLoggedInPlayerFromStore(store) {
+  return store.loggedInPlayer;
+};
 
 // Season
 var getCurrentSeasonFromStore = exports.getCurrentSeasonFromStore = function getCurrentSeasonFromStore(store) {
@@ -9587,7 +9594,7 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
                         console.log(e);
                         console.log(cellInfo);
                         console.log(e.target.innerHTML);
-                        _this2.props.updateScore(7, 300).then(function () {
+                        _this2.props.updateScore(2, 300).then(function () {
                             _this2.props.getMatchScoreboards(_this2.props.match.params.matchId);
                         }).catch(function (jqXHR) {
                             console.log(jqXHR);
@@ -31431,62 +31438,26 @@ var _store2 = _interopRequireDefault(_store);
 
 var _reactRouterDom = __webpack_require__(242);
 
-var _uri = __webpack_require__(18);
+var _mainContainer = __webpack_require__(442);
 
-var _uri2 = _interopRequireDefault(_uri);
-
-var _dashboard = __webpack_require__(264);
-
-var _dashboard2 = _interopRequireDefault(_dashboard);
-
-var _matchScoreboards = __webpack_require__(151);
-
-var _matchScoreboards2 = _interopRequireDefault(_matchScoreboards);
-
-var _notFound = __webpack_require__(365);
-
-var _notFound2 = _interopRequireDefault(_notFound);
-
-var _matchTeamScoreboard = __webpack_require__(366);
-
-var _matchTeamScoreboard2 = _interopRequireDefault(_matchTeamScoreboard);
+var _mainContainer2 = _interopRequireDefault(_mainContainer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/*
-
-let admin = document.head.querySelector('meta[name="permisos"]').getAttribute('content');
-let nombre = document.head.querySelector('meta[name="nombre"]').getAttribute('content');
-*/
-
-// import { ReactTableDefaults } from "react-table";
 /**
  * Created by Jenner Sánchez on 09/11/18.
  */
 
-var routes = _react2.default.createElement(
-    _reactRouterDom.Switch,
-    null,
-    _react2.default.createElement(_reactRouterDom.Redirect, { from: _uri.webBaseUrl, to: _uri2.default.web.home, exact: true }),
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.home, component: _dashboard2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.matchScoreboards(':matchId'), component: _matchScoreboards2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.matchTeamScoreboard(':matchId', ':seasonTeamId'), component: _matchTeamScoreboard2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { component: _notFound2.default })
-);
-
+var appComponent = document.getElementById('react-app');
 _reactDom2.default.render(_react2.default.createElement(
     _reactRedux.Provider,
     { store: _store2.default },
     _react2.default.createElement(
         _reactRouterDom.Router,
         { history: _store.browserHistory },
-        _react2.default.createElement(
-            'div',
-            null,
-            routes
-        )
+        _react2.default.createElement(_mainContainer2.default, { auth: appComponent.getAttribute('data-auth') !== '' })
     )
-), document.getElementById('react-app'));
+), appComponent);
 
 /***/ }),
 /* 170 */
@@ -52377,6 +52348,8 @@ var _reactRouterRedux = __webpack_require__(105);
 
 var _actionCreators = __webpack_require__(13);
 
+var _players = __webpack_require__(441);
+
 var _currentSeason = __webpack_require__(57);
 
 var _teams = __webpack_require__(235);
@@ -52393,6 +52366,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var reducers = exports.reducers = {
     routing: _reactRouterRedux.routerReducer,
+    loggedInPlayer: _players.loggedInPlayerReducer,
     seasonMatchdays: _seasonMatchdays2.default,
     currentSeason: _currentSeason.currentSeasonReducer,
     nextMatchday: _currentSeason.nextMatchdayReducer,
@@ -56955,8 +56929,7 @@ var Dashboard = (_dec = (0, _reactRedux.connect)(function (store) {
                         'h4',
                         { className: 'text-light' },
                         this.props.currentSeason.name
-                    ),
-                    _react2.default.createElement(_matchScoreboards2.default, { matchId: 1 })
+                    )
                 )
             );
         }
@@ -70539,6 +70512,200 @@ exports.default = _default;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 429 */,
+/* 430 */,
+/* 431 */,
+/* 432 */,
+/* 433 */,
+/* 434 */,
+/* 435 */,
+/* 436 */,
+/* 437 */,
+/* 438 */,
+/* 439 */,
+/* 440 */,
+/* 441 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getLoggedInPlayer = exports.LOGGED_IN_PLAYER = undefined;
+exports.loggedInPlayerReducer = loggedInPlayerReducer;
+
+var _axios = __webpack_require__(108);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _uri = __webpack_require__(18);
+
+var _uri2 = _interopRequireDefault(_uri);
+
+var _actionCreators = __webpack_require__(13);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var LOGGED_IN_PLAYER = exports.LOGGED_IN_PLAYER = "get_logged_in_player";
+
+var initialState = {};
+
+var getLoggedInPlayer = exports.getLoggedInPlayer = function getLoggedInPlayer() {
+    return function (dispatch) {
+        return dispatch((0, _actionCreators.ajaxGet)(LOGGED_IN_PLAYER, _uri2.default.api.loggedInPlayer));
+    };
+};
+
+function loggedInPlayerReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    var action = arguments[1];
+
+    switch (action.type) {
+        case LOGGED_IN_PLAYER:
+            return action.data;
+    }
+    return state;
+}
+
+/***/ }),
+/* 442 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _dec, _class, _class2, _temp;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(1);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactRedux = __webpack_require__(29);
+
+var _players = __webpack_require__(441);
+
+var _routes = __webpack_require__(443);
+
+var _routes2 = _interopRequireDefault(_routes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Main = (_dec = (0, _reactRedux.connect)(null, { getLoggedInPlayer: _players.getLoggedInPlayer }), _dec(_class = (_temp = _class2 = function (_Component) {
+    _inherits(Main, _Component);
+
+    function Main(props) {
+        _classCallCheck(this, Main);
+
+        var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
+
+        _this.state = {
+            authChecked: !props.auth
+        };
+        return _this;
+    }
+
+    _createClass(Main, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            var _this2 = this;
+
+            if (this.props.auth) {
+                this.props.getLoggedInPlayer().then(function () {
+                    _this2.setState({ authChecked: true });
+                });
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            if (!this.state.authChecked) return null;
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                _routes2.default
+            );
+        }
+    }]);
+
+    return Main;
+}(_react.Component), _class2.propTypes = {
+    auth: _propTypes2.default.bool.isRequired,
+    getLoggedInPlayer: _propTypes2.default.func
+}, _temp)) || _class);
+exports.default = Main;
+
+/***/ }),
+/* 443 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _reactRouterDom = __webpack_require__(242);
+
+var _uri = __webpack_require__(18);
+
+var _uri2 = _interopRequireDefault(_uri);
+
+var _dashboard = __webpack_require__(264);
+
+var _dashboard2 = _interopRequireDefault(_dashboard);
+
+var _matchScoreboards = __webpack_require__(151);
+
+var _matchScoreboards2 = _interopRequireDefault(_matchScoreboards);
+
+var _matchTeamScoreboard = __webpack_require__(366);
+
+var _matchTeamScoreboard2 = _interopRequireDefault(_matchTeamScoreboard);
+
+var _notFound = __webpack_require__(365);
+
+var _notFound2 = _interopRequireDefault(_notFound);
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var routes = _react2.default.createElement(
+    _reactRouterDom.Switch,
+    null,
+    _react2.default.createElement(_reactRouterDom.Redirect, { from: _uri.webBaseUrl, to: _uri2.default.web.home, exact: true }),
+    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.home, component: _dashboard2.default }),
+    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.matchScoreboards(':matchId'), component: _matchScoreboards2.default }),
+    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: _uri2.default.web.matchTeamScoreboard(':matchId', ':seasonTeamId'), component: _matchTeamScoreboard2.default }),
+    _react2.default.createElement(_reactRouterDom.Route, { component: _notFound2.default })
+);
+
+exports.default = routes;
 
 /***/ })
 /******/ ]);

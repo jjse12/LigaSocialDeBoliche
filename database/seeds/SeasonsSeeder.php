@@ -18,18 +18,18 @@ class SeasonsSeeder extends Seeder
             [
                 'year' => '2018',
                 'name' => 'Torneo de Invierno 2018',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]]);
         /*,
             [
                 'year' => '2019',
                 'name' => 'Torneo de Verano 2019',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'year' => '2019',
                 'name' => 'Torneo de Invierno 2019',
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);*/
     }

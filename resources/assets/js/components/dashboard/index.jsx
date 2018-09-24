@@ -30,7 +30,7 @@ export default class Dashboard extends Component {
                 <div className={'container'}>
                     <h4 className={'text-light'}>{this.props.currentSeason.name}</h4>
                     {/*<NextMatches/>*/}
-                    <MatchScoreboards matchId={1}/>
+                    {/*<MatchScoreboards matchId={1}/>*/}
                 </div>
             </div>
         );

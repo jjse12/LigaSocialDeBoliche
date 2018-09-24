@@ -2,9 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Player;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class PlayerController extends Controller
 {
-    //
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    public function authenticatedPlayer(): JsonResponse {
+        return response()->json(Auth::user());
+    }
+
+    public function show(Player $player): JsonResponse {
+        return response()->json($player);
+    }
 }

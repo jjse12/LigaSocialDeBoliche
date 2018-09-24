@@ -22,7 +22,7 @@ class MatchdaysSeeder extends Seeder
                 'virtual' => $i == 8 || $i == 16,
                 'red_pin' => ($i == 3 || $i == 8 || $i == 16 || $i == 13 || $i == 17 || $i == 22),
                 'season_id' => 1,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
             $date = $date->addWeek();
             if ($i == 8 || $i == 16)
@@ -37,7 +37,7 @@ class MatchdaysSeeder extends Seeder
                 'number' => $i,
                 'date' => $date,
                 'season_id' => 2,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
             if ($i != 4) {
                 $date = $date->addWeek();
@@ -50,7 +50,7 @@ class MatchdaysSeeder extends Seeder
                 'number' => $i,
                 'date' => $date,
                 'season_id' => 3,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
             if ($i != 4) {
                 $date = $date->addWeek();

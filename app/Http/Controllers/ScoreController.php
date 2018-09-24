@@ -34,11 +34,6 @@ class ScoreController extends Controller
     }
 
     public function update(ScoreUpdateRequest $scoreRequest): JsonResponse {
-//        dd($scoreRequest->bearerToken());
-//
-//        $user = Auth::user();
-//        $match = $scoreRequest->
-//        $user->
         $score = Score::find($scoreRequest->id);
         $score->update($scoreRequest->all());
         $score->save();

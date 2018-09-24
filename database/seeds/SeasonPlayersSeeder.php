@@ -20,37 +20,37 @@ class SeasonPlayersSeeder extends Seeder
             'player_id' => 1,
             'season_team_id' => 1,
             'category_id' => 2,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('season_players')->insert([
             'player_id' => 2,
             'season_team_id' => 1,
             'category_id' => 1,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('season_players')->insert([
             'player_id' => 3,
             'season_team_id' => 1,
             'category_id' => 1,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('season_players')->insert([
             'player_id' => 4,
             'season_team_id' => 1,
             'category_id' => 2,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('season_players')->insert([
             'player_id' => 5,
             'season_team_id' => 1,
             'category_id' => 2,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('season_players')->insert([
             'player_id' => 6,
             'season_team_id' => 1,
             'category_id' => 2,
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
 
         $team = 2;
@@ -59,7 +59,7 @@ class SeasonPlayersSeeder extends Seeder
                 'player_id' => $i,
                 'season_team_id' => $team,
                 'category_id' => rand(1,4),
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
 
             if ($i % 6 == 0)

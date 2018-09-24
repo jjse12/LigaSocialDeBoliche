@@ -16,9 +16,8 @@ class ScoreUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        $score = Score::find($this->request->get('id'));
-//        dd(Auth::user()->id, $score->seasonPlayer()->player()->id);
-        return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::user()->id);
+        $score = Score::find($this->id);
+        return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::id());
     }
 
 

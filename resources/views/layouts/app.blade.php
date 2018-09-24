@@ -21,6 +21,6 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="react-app"></div>
+    <div id="react-app" data-auth="{{$auth}}"></div>
 </body>
 </html>

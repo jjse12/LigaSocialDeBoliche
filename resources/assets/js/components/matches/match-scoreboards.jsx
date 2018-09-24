@@ -53,7 +53,7 @@ export default class MatchScoreboards extends Component {
                     console.log(e);
                     console.log(cellInfo);
                     console.log(e.target.innerHTML);
-                    this.props.updateScore(7, 300)
+                    this.props.updateScore(2, 300)
                         .then(() => {
                             this.props.getMatchScoreboards(this.props.match.params.matchId);
                         })

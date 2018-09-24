@@ -27,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = 'app';
 
     /**
      * Create a new controller instance.
@@ -37,30 +37,5 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-    }
-
-    public function login(Request $request)
-    {
-        $this->validateLogin($request);
-        if ($this->attemptLogin($request)) {
-            $user = $request->user();
-            $tokenResult = $user->createToken('Liga Social de Boliche Personal Access Client');
-            $token = $tokenResult->token;
-            if ($request->remember_me)
-                $token->expires_at = Carbon::now()->addWeeks(1);
-            $token->save();
-
-            return $this->sendLoginResponse($request);
-        }
-
-        return $this->sendFailedLoginResponse($request);
-    }
-
-    public function logout(Request $request)
-    {
-        $request->user()->token()->revoke();
-        $this->guard()->logout();
-        $request->session()->invalidate();
-        return $this->loggedOut($request) ?: redirect('/');
     }
 }

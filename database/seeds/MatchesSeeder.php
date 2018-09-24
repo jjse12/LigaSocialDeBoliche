@@ -23,7 +23,7 @@ class MatchesSeeder extends Seeder
                     'team2_lane' => ($j*2-1)+5,
                     'season_team1_id' => $tid,
                     'season_team2_id' => $tid != 24 ? $tid+1 : $tid - 1,
-                    'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                    'created_at' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
             }
         }
@@ -40,7 +40,7 @@ class MatchesSeeder extends Seeder
                 'team2_lane' => 4,
                 'season_team1_id' => 1,
                 'season_team2_id' => 2,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'matchday_id' => 1,
@@ -48,7 +48,7 @@ class MatchesSeeder extends Seeder
                 'team2_lane' => 6,
                 'season_team1_id' => 3,
                 'season_team2_id' => 4,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'matchday_id' => 1,
@@ -56,7 +56,7 @@ class MatchesSeeder extends Seeder
                 'team2_lane' => 8,
                 'season_team1_id' => 5,
                 'season_team2_id' => 6,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'matchday_id' => 1,
@@ -64,7 +64,7 @@ class MatchesSeeder extends Seeder
                 'team2_lane' => 10,
                 'season_team1_id' => 7,
                 'season_team2_id' => 8,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ],
             [
                 'matchday_id' => 9,
@@ -72,7 +72,7 @@ class MatchesSeeder extends Seeder
                 'team2_lane' => 4,
                 'season_team1_id' => 9,
                 'season_team2_id' => 10,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]
         ]);
         */

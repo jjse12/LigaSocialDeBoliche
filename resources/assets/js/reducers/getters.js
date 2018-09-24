@@ -3,6 +3,9 @@ import {isFetchingFromStore} from "../utilities/action-creators";
 import {MATCH_SCOREBOARDS, MATCH_TEAM_SCOREBOARD} from "./matches";
 import {SCORE_CREATE, SCORE_DELETE, SCORE_UPDATE} from "./scores";
 
+// Logged in player
+export const getLoggedInPlayerFromStore = store => store.loggedInPlayer;
+
 // Season
 export const getCurrentSeasonFromStore = store => store.currentSeason;
 export const getNextMatchdayFromStore = store => store.nextMatchday;

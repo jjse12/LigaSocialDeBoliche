@@ -22,7 +22,7 @@ class PlayersSeeder extends Seeder
             'email' => 'sanchezjenner@hotmail.com',
             'phone' => '50199703',
             'birthday' => '1994-07-12',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
@@ -32,7 +32,7 @@ class PlayersSeeder extends Seeder
             'email' => 'chevyn_8@hotmail.com',
             'phone' => '33120964',
             'birthday' => '1989-12-08',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
@@ -42,7 +42,7 @@ class PlayersSeeder extends Seeder
             'email' => 'amysofia1234@hotmail.com',
             'phone' => '12730534',
             'birthday' => '2001-02-03',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
@@ -52,7 +52,7 @@ class PlayersSeeder extends Seeder
             'email' => 'osanchez@bytews.com',
             'phone' => '57040544',
             'birthday' => '1962-08-11',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
@@ -62,7 +62,7 @@ class PlayersSeeder extends Seeder
             'email' => 'julioroa@hotmail.com',
             'phone' => '55551530',
             'birthday' => '1954-01-19',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
@@ -72,7 +72,7 @@ class PlayersSeeder extends Seeder
             'email' => 'perlaquinto123@hotmail.com',
             'phone' => '25412524',
             'birthday' => '1993-04-24',
-            'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
 
         for ($i = 0; $i < 125; $i++){
@@ -86,7 +86,7 @@ class PlayersSeeder extends Seeder
                 'email' => $fake->email,
                 'phone' => $fake->phoneNumber,
                 'birthday' => $fake->dateTime,
-                'created_at' => Carbon::now(config('CARBON_TIMEZONE', 'CST'))->format('Y-m-d H:i:s')
+                'created_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
     }
