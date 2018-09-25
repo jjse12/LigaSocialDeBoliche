@@ -4,7 +4,7 @@ import { isFetchingReducer as isFetching } from '../utilities/action-creators';
 import { loggedInPlayerReducer } from "./players";
 import { currentSeasonReducer, nextMatchdayReducer, nextMatchdayMatchesReducer} from './current-season';
 import { teamPlayersReducer } from "./teams";
-import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer } from "./matches";
+import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer, matchPlayerSeasonTeamIdReducer } from "./matches";
 import { scoreCreateReducer, scoreUpdateReducer, scoreDeleteReducer } from "./scores";
 import seasonMatchdays from './season-matchdays';
 
@@ -15,6 +15,7 @@ export const reducers = {
     currentSeason: currentSeasonReducer,
     nextMatchday: nextMatchdayReducer,
     nextMatchdayMatches: nextMatchdayMatchesReducer,
+    matchPlayerSeasonTeamId: matchPlayerSeasonTeamIdReducer,
     matchResults: matchResultsReducer,
     matchScoreboards: matchScoreboardsReducer,
     matchTeamScoreboard: matchTeamScoreboardReducer,

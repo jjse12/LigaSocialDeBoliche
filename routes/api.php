@@ -19,6 +19,9 @@ Route::group(['prefix' => 'player'], function() {
     Route::get('/auth-player', 'PlayerController@authenticatedPlayer');
     Route::get('/{player}', 'PlayerController@show');
 });
+
+
+
 Route::group(['prefix' => 'season'], function() {
 
     Route::get('/current', 'SeasonController@currentSeason');
@@ -51,6 +54,7 @@ Route::group(['prefix' => 'match'], function() {
         Route::get('/scoreboards', 'MatchController@scoreboards');
         Route::get('/scoreboard/team/{seasonTeam}', 'MatchController@teamScoreboard');
         Route::get('/scores', 'MatchController@scores');
+        Route::get('/player-season-team-id/{player}', 'MatchController@playerSeasonTeamId');
     });
 });
 

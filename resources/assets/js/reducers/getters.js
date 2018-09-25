@@ -16,6 +16,7 @@ export const getTeamPlayersFromStore = store => store.teamPlayers;
 
 // Matches
 export const getMatchResultsFromStore = store => store.matchResults;
+export const getMatchPlayerSeasonTeamIdFromStore = store => store.matchPlayerSeasonTeamId;
 export const getMatchScoreboardsFromStore = store => store.matchScoreboards;
 export const getMatchScoreboardsFetchingFromStore = store => isFetchingFromStore(store, MATCH_SCOREBOARDS);
 export const getMatchTeamScoreboardFromStore = store => store.matchTeamScoreboard;

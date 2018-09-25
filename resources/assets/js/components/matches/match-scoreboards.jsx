@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { connect } from "react-redux";
-import { getMatchScoreboards} from "../../reducers/matches";
+import {getMatchPlayerSeasonTeamId, getMatchScoreboards} from "../../reducers/matches";
 import { createScore, updateScore, deleteScore } from "../../reducers/scores";
 import {
+    getLoggedInPlayerFromStore,
     createScoreFetchingFromStore, deleteScoreFetchingFromStore,
     getMatchScoreboardsFetchingFromStore,
-    getMatchScoreboardsFromStore, updateScoreFetchingFromStore
+    getMatchScoreboardsFromStore, updateScoreFetchingFromStore, getMatchPlayerSeasonTeamIdFromStore
 } from "../../reducers/getters";
 import _ from 'lodash';
 import ReactTable from "react-table";
@@ -16,35 +17,44 @@ import ReactLoading from "react-loading";
 
 @connect(
     store => ({
+        loggedInPlayer: getLoggedInPlayerFromStore(store),
+        matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
         matchScoreboards: getMatchScoreboardsFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
         fetchingCreateScore: createScoreFetchingFromStore(store),
         fetchingUpdateScore: updateScoreFetchingFromStore(store),
         fetchingDeleteScore: deleteScoreFetchingFromStore(store),
     }),
-    { getMatchScoreboards, createScore, updateScore, deleteScore }
+    { getMatchPlayerSeasonTeamId, getMatchScoreboards, createScore, updateScore, deleteScore }
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
         match: PropTypes.object.isRequired,
+        matchPlayerSeasonTeamId: PropTypes.number.isRequired,
         matchScoreboards: PropTypes.object.isRequired,
         fetchingMatchScoreboards: PropTypes.bool,
-        getMatchScoreboards: PropTypes.func.isRequired
+        getMatchScoreboards: PropTypes.func.isRequired,
+        getMatchPlayerSeasonTeamId: PropTypes.func
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.renderEditableCell = this.renderEditableCell.bind(this);
     }
 
     componentWillMount() {
         const { matchId } = this.props.match.params;
+        if (!_.isEmpty(this.props.loggedInPlayer)){
+            this.props.getMatchPlayerSeasonTeamId(matchId, this.props.loggedInPlayer.id)
+        }
         this.props.getMatchScoreboards(matchId);
     }
 
     renderEditableCell(cellInfo, column) {
         /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
           TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
+        if (this.props.matchPlayerSeasonTeamId === 0)
+            return cellInfo.value;
         return (
             <div
                 contentEditable
@@ -91,10 +101,6 @@ export default class MatchScoreboards extends Component {
         const team2Scoreboard = team2Data.results;
         return (
             <div className={'container mt-3 mb-3'}>
-                {/*<button onClick={() => {
-                    this.props.matchScoreboards.team1.laneNumber = 10;
-                    this.render
-                }}>refrescar</button>*/}
             <div className={'match-scoreboards-container'}>
                 <div className={'mr-3'}>
                     <div className={'bg-semi-transparent-gradient-primary'}>

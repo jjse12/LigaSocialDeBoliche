@@ -27,6 +27,7 @@ class MatchScoreboardResource extends JsonResource
                 'id' => $team1->id,
                 'name' => $team1->name(),
                 'laneNumber' => $this->team1_lane,
+                'gamesConfirmed' => $this->team1_games_confirmed,
                 'results' => new MatchTeamScoreboardResource($team1, $this->id),
                 'points' => $this->team1Points(),
                 'comments' => $this->team1_comments
@@ -35,6 +36,7 @@ class MatchScoreboardResource extends JsonResource
                 'id' => $team2->id,
                 'name' => $team2->name(),
                 'laneNumber' => $this->team2_lane,
+                'gamesConfirmed' => $this->team2_games_confirmed,
                 'results' => new MatchTeamScoreboardResource($team2, $this->id),
                 'points' => $this->team2Points(),
                 'comments' => $this->team2_comments
