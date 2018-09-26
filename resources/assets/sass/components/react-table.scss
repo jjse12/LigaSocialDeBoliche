@@ -62,19 +62,19 @@ div.score-update-error {
 }
 
 @-moz-keyframes score-patching-border {
-    0% {border-color: rgba(gold, 0.60);}
-    25% {border-color: rgba(greenyellow, 0.60);}
+    0% {border-color: rgba(yellow, 0.70);}
+    30% {border-color: rgba(greenyellow, 0.60);}
     50% {border-color: rgba(lightgreen, 0.60);}
-    75% {border-color: rgba(greenyellow, 0.60);}
-    100% {border-color: rgba(gold, 0.60);}
+    70% {border-color: rgba(greenyellow, 0.60);}
+    100% {border-color: rgba(yellow, 0.70);}
 }
 
 @-webkit-keyframes score-patching-border {
-    0% {border-color: rgba(gold, 0.60);}
-    25% {border-color: rgba(greenyellow, 0.60);}
+    0% {border-color: rgba(yellow, 0.70);}
+    30% {border-color: rgba(greenyellow, 0.60);}
     50% {border-color: rgba(lightgreen, 0.60);}
-    75% {border-color: rgba(greenyellow, 0.60);}
-    100% {border-color: rgba(gold, 0.60);}
+    70% {border-color: rgba(greenyellow, 0.60);}
+    100% {border-color: rgba(yellow, 0.70);}
 }
 
 @-moz-keyframes success-fade {

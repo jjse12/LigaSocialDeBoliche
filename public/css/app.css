@@ -24792,10 +24792,10 @@ div.score-update-error {
 
 @-webkit-keyframes score-patching-border {
   0% {
-    border-color: rgba(255, 215, 0, 0.6);
+    border-color: rgba(255, 255, 0, 0.7);
   }
 
-  25% {
+  30% {
     border-color: rgba(173, 255, 47, 0.6);
   }
 
@@ -24803,12 +24803,12 @@ div.score-update-error {
     border-color: rgba(144, 238, 144, 0.6);
   }
 
-  75% {
+  70% {
     border-color: rgba(173, 255, 47, 0.6);
   }
 
   100% {
-    border-color: rgba(255, 215, 0, 0.6);
+    border-color: rgba(255, 255, 0, 0.7);
   }
 }
 

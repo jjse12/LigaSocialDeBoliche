@@ -1696,11 +1696,13 @@ exports['default'] = StyleRule;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getMatchPlayerSeasonTeamId = exports.getMatchTeamScoreboard = exports.getMatchScoreboards = exports.getMatchResults = exports.MATCH_PLAYER_SEASON_TEAM_ID = exports.MATCH_TEAM_SCOREBOARD = exports.MATCH_SCOREBOARDS = exports.MATCH_RESULTS = undefined;
+exports.setMatchRivalTeamOfflineScoreboard = exports.setMatchMyTeamOfflineScoreboard = exports.getMatchPlayerSeasonTeamId = exports.getMatchTeamScoreboard = exports.getMatchScoreboards = exports.getMatchResults = exports.MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD = exports.MATCH_MY_TEAM_OFFLINE_SCOREBOARD = exports.MATCH_PLAYER_SEASON_TEAM_ID = exports.MATCH_TEAM_SCOREBOARD = exports.MATCH_SCOREBOARDS = exports.MATCH_RESULTS = undefined;
 exports.matchResultsReducer = matchResultsReducer;
 exports.matchScoreboardsReducer = matchScoreboardsReducer;
 exports.matchTeamScoreboardReducer = matchTeamScoreboardReducer;
 exports.matchPlayerSeasonTeamIdReducer = matchPlayerSeasonTeamIdReducer;
+exports.matchMyTeamOfflineScoreboardReducer = matchMyTeamOfflineScoreboardReducer;
+exports.matchRivalTeamOfflineScoreboardReducer = matchRivalTeamOfflineScoreboardReducer;
 
 var _actionCreators = __webpack_require__(10);
 
@@ -1714,6 +1716,8 @@ var MATCH_RESULTS = exports.MATCH_RESULTS = 'get_match_results';
 var MATCH_SCOREBOARDS = exports.MATCH_SCOREBOARDS = 'get_match_scoreboards';
 var MATCH_TEAM_SCOREBOARD = exports.MATCH_TEAM_SCOREBOARD = 'get_match_team_scoreboard';
 var MATCH_PLAYER_SEASON_TEAM_ID = exports.MATCH_PLAYER_SEASON_TEAM_ID = 'get_match_player_season_team_id';
+var MATCH_MY_TEAM_OFFLINE_SCOREBOARD = exports.MATCH_MY_TEAM_OFFLINE_SCOREBOARD = 'get_match_my_team_offline_scoreboard';
+var MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD = exports.MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD = 'get_match_rival_team_offline_scoreboard';
 
 var getMatchResults = exports.getMatchResults = function getMatchResults(id) {
     return function (dispatch) {
@@ -1736,6 +1740,24 @@ var getMatchTeamScoreboard = exports.getMatchTeamScoreboard = function getMatchT
 var getMatchPlayerSeasonTeamId = exports.getMatchPlayerSeasonTeamId = function getMatchPlayerSeasonTeamId(matchId, playerId) {
     return function (dispatch) {
         return dispatch((0, _actionCreators.ajaxGet)(MATCH_PLAYER_SEASON_TEAM_ID, _uri2.default.api.matchPlayerSeasonTeamId(matchId, playerId)));
+    };
+};
+
+var setMatchMyTeamOfflineScoreboard = exports.setMatchMyTeamOfflineScoreboard = function setMatchMyTeamOfflineScoreboard(scoreboard) {
+    return function (dispatch) {
+        return dispatch({
+            type: MATCH_MY_TEAM_OFFLINE_SCOREBOARD,
+            scoreboard: scoreboard
+        });
+    };
+};
+
+var setMatchRivalTeamOfflineScoreboard = exports.setMatchRivalTeamOfflineScoreboard = function setMatchRivalTeamOfflineScoreboard(scoreboard) {
+    return function (dispatch) {
+        return dispatch({
+            type: MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD,
+            scoreboard: scoreboard
+        });
     };
 };
 
@@ -1779,6 +1801,28 @@ function matchPlayerSeasonTeamIdReducer() {
     switch (action.type) {
         case MATCH_PLAYER_SEASON_TEAM_ID:
             return action.data.seasonTeamId;
+    }
+    return state;
+}
+
+function matchMyTeamOfflineScoreboardReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case MATCH_MY_TEAM_OFFLINE_SCOREBOARD:
+            return action.scoreboard;
+    }
+    return state;
+}
+
+function matchRivalTeamOfflineScoreboardReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var action = arguments[1];
+
+    switch (action.type) {
+        case MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD:
+            return action.scoreboard;
     }
     return state;
 }
@@ -9721,21 +9765,30 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
 
         var _this = _possibleConstructorReturn(this, (MatchScoreboards.__proto__ || Object.getPrototypeOf(MatchScoreboards)).call(this, props));
 
+        _this.toggleUsingMyTeamOfflineScoreboard = function () {
+            var current = _this.state.usingRivalTeamOfflineScoreboard;
+            _this.setState({ usingRivalTeamOfflineScoreboard: !current });
+        };
+
+        _this.toggleUsingRivalTeamOfflineScoreboard = function () {
+            var current = _this.state.usingRivalTeamOfflineScoreboard;
+            _this.setState({ usingRivalTeamOfflineScoreboard: !current });
+        };
+
         _this.handleScoreFocus = function (e) {
             var cell = e.target;
             cell.setAttribute('class', 'score-focus');
-            if (cell.textContent === '0') cell.textContent = '';
         };
 
         _this.handleScoreKeyPress = function (e) {
+
             if (e.which === 13) {
                 e.target.blur();
                 return false;
             }
 
-            if (isNaN(String.fromCharCode(e.which)) || e.target.textContent.length >= 3) {
+            if (isNaN(String.fromCharCode(e.which)) || e.which === 32 || e.target.textContent.length >= 3) {
                 e.preventDefault();
-                return false;
             }
         };
 
@@ -9748,7 +9801,8 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
 
         _this.handleScoreBlur = function (e, oldScore, scoreId) {
             var cell = e.target;
-            var newScore = cell.textContent !== '' ? cell.textContent : 0;
+            var newScore = cell.textContent !== '' && cell.textContent !== ' ' ? cell.textContent : 0;
+
             if (oldScore !== Number(newScore)) {
                 cell.setAttribute('class', 'score-patching');
                 _this.props.updateScore(scoreId, newScore).then(function () {
@@ -9766,6 +9820,60 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
             }
         };
 
+        _this.renderTeamScoreboardInfoBar = function (teamData) {
+
+            var element = _react2.default.createElement(
+                'h5',
+                { className: 'text-light' },
+                teamData.name
+            );
+
+            if (_this.props.matchScoreboards.active) {
+                // Button for player's team
+                if (_this.props.matchPlayerSeasonTeamId === teamData.id) {
+                    var button = null;
+
+                    element = _react2.default.createElement(
+                        'div',
+                        { className: 'row' },
+                        _react2.default.createElement(
+                            'h5',
+                            { className: 'text-light col-6' },
+                            teamData.name
+                        ),
+                        button
+                    );
+                }
+                // Button for player's rival team
+                else if (_this.props.matchPlayerSeasonTeamId !== 0) {}
+            }
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'bg-semi-transparent-gradient-primary' },
+                _react2.default.createElement(
+                    'h5',
+                    { className: 'text-light' },
+                    'Pista: #',
+                    teamData.laneNumber
+                ),
+                element,
+                _react2.default.createElement(
+                    'div',
+                    { 'class': 'row' },
+                    _react2.default.createElement(
+                        'h5',
+                        { className: 'text-light col-6' },
+                        teamData.name
+                    )
+                )
+            );
+        };
+
+        _this.state = {
+            usingMyTeamOfflineScoreboard: false,
+            usingRivalTeamOfflineScoreboard: false
+        };
         _this.renderCell = _this.renderCell.bind(_this);
         return _this;
     }
@@ -9821,10 +9929,10 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
 
             var matchScoreboards = this.props.matchScoreboards;
 
-            var team1Data = matchScoreboards.team1;
-            var team2Data = matchScoreboards.team2;
-            var team1Scoreboard = team1Data.results;
-            var team2Scoreboard = team2Data.results;
+            var team1Data = matchScoreboards.team1.data;
+            var team2Data = matchScoreboards.team2.data;
+            var team1Scoreboard = matchScoreboards.team1.results;
+            var team2Scoreboard = matchScoreboards.team2.results;
             return _react2.default.createElement(
                 'div',
                 { className: 'container mt-3 mb-3' },
@@ -9834,21 +9942,7 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
                     _react2.default.createElement(
                         'div',
                         { className: 'mr-3' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'bg-semi-transparent-gradient-primary' },
-                            _react2.default.createElement(
-                                'h5',
-                                { className: 'text-light' },
-                                'Pista: #',
-                                team1Data.laneNumber
-                            ),
-                            _react2.default.createElement(
-                                'h5',
-                                { className: 'text-light' },
-                                team1Data.name
-                            )
-                        ),
+                        this.renderTeamScoreboardInfoBar(team1Data),
                         _react2.default.createElement(
                             'div',
                             { className: 'match-scoreboard-table-container' },
@@ -9884,21 +9978,7 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
                     _react2.default.createElement(
                         'div',
                         { className: 'ml-3' },
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'bg-semi-transparent-gradient-primary' },
-                            _react2.default.createElement(
-                                'h5',
-                                { className: 'text-light' },
-                                'Pista: #',
-                                team2Data.laneNumber
-                            ),
-                            _react2.default.createElement(
-                                'h5',
-                                { className: 'text-light' },
-                                team2Data.name
-                            )
-                        ),
+                        this.renderTeamScoreboardInfoBar(team2Data),
                         _react2.default.createElement(
                             'div',
                             { className: 'match-scoreboard-table-container' },
@@ -52568,6 +52648,8 @@ var reducers = exports.reducers = {
     nextMatchday: _currentSeason.nextMatchdayReducer,
     nextMatchdayMatches: _currentSeason.nextMatchdayMatchesReducer,
     matchPlayerSeasonTeamId: _matches.matchPlayerSeasonTeamIdReducer,
+    matchMyTeamOfflineScoreboard: _matches.matchMyTeamOfflineScoreboardReducer,
+    matchRivalTeamOfflineScoreboard: _matches.matchRivalTeamOfflineScoreboardReducer,
     matchResults: _matches.matchResultsReducer,
     matchScoreboards: _matches.matchScoreboardsReducer,
     matchTeamScoreboard: _matches.matchTeamScoreboardReducer,

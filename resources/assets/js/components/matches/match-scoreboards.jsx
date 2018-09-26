@@ -39,6 +39,10 @@ export default class MatchScoreboards extends Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            usingMyTeamOfflineScoreboard: false,
+            usingRivalTeamOfflineScoreboard: false,
+        };
         this.renderCell = this.renderCell.bind(this);
     }
 
@@ -50,23 +54,31 @@ export default class MatchScoreboards extends Component {
         this.props.getMatchScoreboards(matchId);
     }
 
+    toggleUsingMyTeamOfflineScoreboard = () => {
+        const current = this.state.usingRivalTeamOfflineScoreboard;
+        this.setState({ usingRivalTeamOfflineScoreboard: !current });
+    };
+
+    toggleUsingRivalTeamOfflineScoreboard = () => {
+        const current = this.state.usingRivalTeamOfflineScoreboard;
+        this.setState({ usingRivalTeamOfflineScoreboard: !current });
+    };
+
     handleScoreFocus = e => {
         const cell = e.target;
         cell.setAttribute('class', 'score-focus');
-        if (cell.textContent === '0')
-            cell.textContent = '';
-
     };
 
     handleScoreKeyPress = e => {
+
         if (e.which === 13){
             e.target.blur();
             return false;
         }
 
-        if (isNaN(String.fromCharCode(e.which)) || e.target.textContent.length >= 3){
+        if (isNaN(String.fromCharCode(e.which)) ||
+            e.which === 32 || e.target.textContent.length >= 3){
             e.preventDefault();
-            return false;
         }
     };
 
@@ -79,18 +91,21 @@ export default class MatchScoreboards extends Component {
 
     handleScoreBlur = (e, oldScore, scoreId) => {
         const cell = e.target;
-        const newScore = cell.textContent !== '' ? cell.textContent : 0;
+        const newScore = cell.textContent !== '' &&
+                         cell.textContent !== ' '  ?
+                         cell.textContent : 0;
+
         if (oldScore !== Number(newScore)) {
             cell.setAttribute('class', 'score-patching');
             this.props.updateScore(scoreId, newScore)
-                .then(() => {
-                    cell.setAttribute('class', 'score-update-success');
-                    this.props.getMatchScoreboards(this.props.match.params.matchId);
-                })
-                .catch(() => {
-                    cell.setAttribute('class', 'score-update-error');
-                    cell.textContent = oldScore;
-                });
+            .then(() => {
+                cell.setAttribute('class', 'score-update-success');
+                this.props.getMatchScoreboards(this.props.match.params.matchId);
+            })
+            .catch(() => {
+                cell.setAttribute('class', 'score-update-error');
+                cell.textContent = oldScore;
+            });
         }
         else {
             cell.setAttribute('class', '');
@@ -120,6 +135,36 @@ export default class MatchScoreboards extends Component {
         );
     }
 
+    renderTeamScoreboardInfoBar = teamData => {
+
+        let element = <h5 className={'text-light'}>{teamData.name}</h5>;
+
+        if (this.props.matchScoreboards.active) {
+            // Button for player's team
+            if (this.props.matchPlayerSeasonTeamId === teamData.id) {
+                let button = null;
+
+                element = <div className={'row'}>
+                    <h5 className={'text-light col-6'}>{teamData.name}</h5>
+                    {button}
+                </div>
+            }
+            // Button for player's rival team
+            else if (this.props.matchPlayerSeasonTeamId !== 0) {
+
+            }
+        }
+
+        return <div className={'bg-semi-transparent-gradient-primary'}>
+            <h5 className={'text-light'}>Pista: #{teamData.laneNumber}</h5>
+            { element }
+            <div class={'row'}>
+                <h5 className={'text-light col-6'}>{teamData.name}</h5>
+
+            </div>
+        </div>;
+    };
+
     render() {
         if (_.isEmpty(this.props.matchScoreboards)){
             if (this.props.fetchingMatchScoreboards)
@@ -130,18 +175,15 @@ export default class MatchScoreboards extends Component {
         }
 
         const { matchScoreboards } = this.props;
-        const team1Data = matchScoreboards.team1;
-        const team2Data = matchScoreboards.team2;
-        const team1Scoreboard = team1Data.results;
-        const team2Scoreboard = team2Data.results;
+        const team1Data = matchScoreboards.team1.data;
+        const team2Data = matchScoreboards.team2.data;
+        const team1Scoreboard = matchScoreboards.team1.results;
+        const team2Scoreboard = matchScoreboards.team2.results;
         return (
             <div className={'container mt-3 mb-3'}>
             <div className={'match-scoreboards-container'}>
                 <div className={'mr-3'}>
-                    <div className={'bg-semi-transparent-gradient-primary'}>
-                        <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
-                        <h5 className={'text-light'}>{team1Data.name}</h5>
-                    </div>
+                    {this.renderTeamScoreboardInfoBar(team1Data)}
                     <div className={'match-scoreboard-table-container'}>
                         <ReactTable
                             className={'match-scoreboard-table -striped -highlight'}
@@ -167,10 +209,7 @@ export default class MatchScoreboards extends Component {
                     </div>
                 </div>
                 <div className={'ml-3'}>
-                    <div className={'bg-semi-transparent-gradient-primary'}>
-                        <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
-                        <h5 className={'text-light'}>{team2Data.name}</h5>
-                    </div>
+                    {this.renderTeamScoreboardInfoBar(team2Data)}
                     <div className={'match-scoreboard-table-container'}>
                         <ReactTable
                             className={'match-scoreboard-table -striped -highlight'}
