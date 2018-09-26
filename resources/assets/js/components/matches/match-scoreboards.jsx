@@ -39,7 +39,7 @@ export default class MatchScoreboards extends Component {
 
     constructor(props) {
         super(props);
-        this.renderEditableCell = this.renderEditableCell.bind(this);
+        this.renderCell = this.renderCell.bind(this);
     }
 
     componentWillMount() {
@@ -50,42 +50,78 @@ export default class MatchScoreboards extends Component {
         this.props.getMatchScoreboards(matchId);
     }
 
-    renderEditableCell(cellInfo, column) {
+    handleScoreFocus = e => {
+        const cell = e.target;
+        cell.setAttribute('class', 'score-focus');
+        if (cell.textContent === '0')
+            cell.textContent = '';
+
+    };
+
+    handleScoreKeyPress = e => {
+        if (e.which === 13){
+            e.target.blur();
+            return false;
+        }
+
+        if (isNaN(String.fromCharCode(e.which)) || e.target.textContent.length >= 3){
+            e.preventDefault();
+            return false;
+        }
+    };
+
+    handleScoreKeyUp = e => {
+        if (Number(e.target.textContent) > 300) {
+            e.target.textContent = "300";
+            return true;
+        }
+    };
+
+    handleScoreBlur = (e, oldScore, scoreId) => {
+        const cell = e.target;
+        const newScore = cell.textContent !== '' ? cell.textContent : 0;
+        if (oldScore !== Number(newScore)) {
+            this.props.updateScore(scoreId, newScore)
+                .then(() => {
+                    cell.setAttribute('class', 'score-update-success');
+                })
+                .catch(() => {
+                    cell.setAttribute('class', 'score-update-error');
+                    cell.textContent = oldScore;
+                })
+                .finally(() => {
+                    this.props.getMatchScoreboards(this.props.match.params.matchId);
+                });
+        }
+        else {
+            cell.setAttribute('class', '');
+            if (newScore === 0){
+                cell.textContent = oldScore;
+            }
+        }
+    };
+
+    renderCell(cellInfo, column) {
         /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
           TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
-        if (this.props.matchPlayerSeasonTeamId === 0)
+        if (this.props.matchPlayerSeasonTeamId === 0 || cellInfo.value === undefined || cellInfo === null)
             return cellInfo.value;
+
+
         return (
             <div
+                onFocus={this.handleScoreFocus}
+                onKeyPress={this.handleScoreKeyPress}
+                onKeyUp={this.handleScoreKeyUp}
+                onPaste={e => { e.preventDefault(); }}
                 contentEditable
                 suppressContentEditableWarning
-                onBlur={e => {
-                    console.log(e);
-                    console.log(cellInfo);
-                    console.log(e.target.innerHTML);
-                    this.props.updateScore(2, 300)
-                        .then(() => {
-                            this.props.getMatchScoreboards(this.props.match.params.matchId);
-                        })
-                        .catch(jqXHR => {
-                            console.log(jqXHR);
-                        })
-                        .then(() => {
-                            // this.props.getMatchScoreboards(this.props.match.params.matchId);
-                            this.render();
-                        });
-                    // const data = [...this.state.data];
-                    // data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-                    // this.setState({ data });
-                }}
-                // dangerouslySetInnerHTML={{
-                //     __html: cellInfo.value
-                // }}
+                onBlur={e => this.handleScoreBlur(e, cellInfo.value, cellInfo.original[column])}
             >{cellInfo.value}</div>
         );
     }
 
-    render(){
+    render() {
         if (_.isEmpty(this.props.matchScoreboards)){
             if (this.props.fetchingMatchScoreboards)
                 return <div className={'container flex flex-wrap content-center justify-center'}>

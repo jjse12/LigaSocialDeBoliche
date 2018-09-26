@@ -24721,6 +24721,19 @@ main.cover {
   background: url("/videossv.mp4");
 }
 
+div.loading-table {
+  margin-left: 40%;
+  padding-top: 10%;
+  width: 20%;
+  height: 20%;
+}
+
+@media (max-width: 991.98px) {
+  div.loading-table {
+    margin-left: 25%;
+  }
+}
+
 div.match-scoreboard-table-container {
   border-radius: 15px;
   border: 3px solid whitesmoke;
@@ -24751,16 +24764,41 @@ div.match-scoreboards-container {
   width: 500px;
 }
 
-div.loading-table {
-  margin-left: 40%;
-  padding-top: 10%;
-  width: 20%;
-  height: 20%;
+div.score-focus {
+  border-color: #488aaa;
+  border-radius: 5px;
+  border-style: solid;
 }
 
-@media (max-width: 991.98px) {
-  div.loading-table {
-    margin-left: 25%;
+div.score-update-success {
+  animation: success-fade 1.5s;
+  -moz-animation: success-fade 1.5s;
+  -webkit-animation: success-fade 1.5s;
+}
+
+div.score-update-error {
+  animation: error-fade 1.5s;
+  -moz-animation: error-fade 1.5s;
+  -webkit-animation: error-fade 1.5s;
+}
+
+@-webkit-keyframes success-fade {
+  20% {
+    background: rgba(144, 238, 144, 0.75);
+  }
+
+  50% {
+    background: rgba(144, 238, 144, 0.75);
+  }
+}
+
+@-webkit-keyframes error-fade {
+  20% {
+    background: rgba(205, 92, 92, 0.75);
+  }
+
+  50% {
+    background: rgba(205, 92, 92, 0.75);
   }
 }
 

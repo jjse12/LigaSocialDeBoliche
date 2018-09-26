@@ -1,5 +1,5 @@
 import React from 'react';
-export const matchScoreboardScoresColumns = (inst) => {
+export const matchScoreboardScoresColumns = (match, teamId) => {
     return [
         {
             Header: 'HDCP',
@@ -10,7 +10,7 @@ export const matchScoreboardScoresColumns = (inst) => {
         },
         {
             Header: 'Jugador',
-            accessor: 'player',
+            accessor: 'playerName',
             className: 'text-center',
             sortable: false,
             width: 175
@@ -21,7 +21,7 @@ export const matchScoreboardScoresColumns = (inst) => {
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => inst.renderEditableCell(row, 'firstGame')
+            Cell: row => match.renderCell(row, 'firstGameScoreId')
         },
         {
             Header: 'Linea 2',
@@ -29,7 +29,7 @@ export const matchScoreboardScoresColumns = (inst) => {
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => inst.renderEditableCell(row, 'secondGame')
+            Cell: row => match.renderCell(row, 'secondGameScoreId')
         },
         {
             Header: 'Linea 3',
@@ -37,7 +37,7 @@ export const matchScoreboardScoresColumns = (inst) => {
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => inst.renderEditableCell(row, 'thirdGame')
+            Cell: row => match.renderCell(row, 'thirdGameScoreId')
         },
         {
             Header: 'Total',

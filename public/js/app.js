@@ -702,10 +702,24 @@ function checkResponse(response) {
 }
 
 function checkErrorResponse(error) {
-    if (error.response && error.response.data && error.response.data.message && (error.response.status === 401 || error.response.status === 403 || error.response.status === 404)) {
+    if (error.response && (error.response.status === 401 || error.response.status === 403 || error.response.status === 404 || error.response.status === 422)) {
 
-        //TODO: Use pretty alert dialog to show error
-        alert(error.response.data.message);
+        if (error.response.data) {
+            console.log(error.response.data);
+            //TODO: Use pretty alert dialog to show error
+            if (error.response.data.errors) {
+                var errors = [];
+                Object.values(error.response.data.errors).map(function (err) {
+                    err.map(function (e) {
+                        errors.push(e);
+                        // alert(e);
+                    });
+                });
+                // TODO: create dialog with list of errors.
+            } else if (error.response.data.message) {
+                // alert(error.response.data.message);
+            }
+        }
     }
 }
 
@@ -9707,7 +9721,52 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
 
         var _this = _possibleConstructorReturn(this, (MatchScoreboards.__proto__ || Object.getPrototypeOf(MatchScoreboards)).call(this, props));
 
-        _this.renderEditableCell = _this.renderEditableCell.bind(_this);
+        _this.handleScoreFocus = function (e) {
+            var cell = e.target;
+            cell.setAttribute('class', 'score-focus');
+            if (cell.textContent === '0') cell.textContent = '';
+        };
+
+        _this.handleScoreKeyPress = function (e) {
+            if (e.which === 13) {
+                e.target.blur();
+                return false;
+            }
+
+            if (isNaN(String.fromCharCode(e.which)) || e.target.textContent.length >= 3) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        _this.handleScoreKeyUp = function (e) {
+            if (Number(e.target.textContent) > 300) {
+                e.target.textContent = "300";
+                return true;
+            }
+        };
+
+        _this.handleScoreBlur = function (e, oldScore, scoreId) {
+            var cell = e.target;
+            var newScore = cell.textContent !== '' ? cell.textContent : 0;
+            if (oldScore !== Number(newScore)) {
+                _this.props.updateScore(scoreId, newScore).then(function () {
+                    cell.setAttribute('class', 'score-update-success');
+                }).catch(function () {
+                    cell.setAttribute('class', 'score-update-error');
+                    cell.textContent = oldScore;
+                }).finally(function () {
+                    _this.props.getMatchScoreboards(_this.props.match.params.matchId);
+                });
+            } else {
+                cell.setAttribute('class', '');
+                if (newScore === 0) {
+                    cell.textContent = oldScore;
+                }
+            }
+        };
+
+        _this.renderCell = _this.renderCell.bind(_this);
         return _this;
     }
 
@@ -9722,37 +9781,28 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
             this.props.getMatchScoreboards(matchId);
         }
     }, {
-        key: 'renderEditableCell',
-        value: function renderEditableCell(cellInfo, column) {
+        key: 'renderCell',
+        value: function renderCell(cellInfo, column) {
             var _this2 = this;
 
             /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
               TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
-            if (this.props.matchPlayerSeasonTeamId === 0) return cellInfo.value;
+            if (this.props.matchPlayerSeasonTeamId === 0 || cellInfo.value === undefined || cellInfo === null) return cellInfo.value;
+
             return _react2.default.createElement(
                 'div',
                 {
+                    onFocus: this.handleScoreFocus,
+                    onKeyPress: this.handleScoreKeyPress,
+                    onKeyUp: this.handleScoreKeyUp,
+                    onPaste: function onPaste(e) {
+                        e.preventDefault();
+                    },
                     contentEditable: true,
                     suppressContentEditableWarning: true,
                     onBlur: function onBlur(e) {
-                        console.log(e);
-                        console.log(cellInfo);
-                        console.log(e.target.innerHTML);
-                        _this2.props.updateScore(2, 300).then(function () {
-                            _this2.props.getMatchScoreboards(_this2.props.match.params.matchId);
-                        }).catch(function (jqXHR) {
-                            console.log(jqXHR);
-                        }).then(function () {
-                            // this.props.getMatchScoreboards(this.props.match.params.matchId);
-                            _this2.render();
-                        });
-                        // const data = [...this.state.data];
-                        // data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
-                        // this.setState({ data });
+                        return _this2.handleScoreBlur(e, cellInfo.value, cellInfo.original[column]);
                     }
-                    // dangerouslySetInnerHTML={{
-                    //     __html: cellInfo.value
-                    // }}
                 },
                 cellInfo.value
             );
@@ -27845,7 +27895,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = function matchScoreboardScoresColumns(inst) {
+var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = function matchScoreboardScoresColumns(match, teamId) {
     return [{
         Header: 'HDCP',
         accessor: 'handicap',
@@ -27854,7 +27904,7 @@ var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = functi
         width: 55
     }, {
         Header: 'Jugador',
-        accessor: 'player',
+        accessor: 'playerName',
         className: 'text-center',
         sortable: false,
         width: 175
@@ -27865,7 +27915,7 @@ var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = functi
         sortable: false,
         width: 65,
         Cell: function Cell(row) {
-            return inst.renderEditableCell(row, 'firstGame');
+            return match.renderCell(row, 'firstGameScoreId');
         }
     }, {
         Header: 'Linea 2',
@@ -27874,7 +27924,7 @@ var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = functi
         sortable: false,
         width: 65,
         Cell: function Cell(row) {
-            return inst.renderEditableCell(row, 'secondGame');
+            return match.renderCell(row, 'secondGameScoreId');
         }
     }, {
         Header: 'Linea 3',
@@ -27883,7 +27933,7 @@ var matchScoreboardScoresColumns = exports.matchScoreboardScoresColumns = functi
         sortable: false,
         width: 65,
         Cell: function Cell(row) {
-            return inst.renderEditableCell(row, 'thirdGame');
+            return match.renderCell(row, 'thirdGameScoreId');
         }
     }, {
         Header: 'Total',

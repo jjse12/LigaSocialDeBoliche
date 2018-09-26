@@ -3,9 +3,11 @@
 namespace App\Http\Requests;
 
 use App\Score;
+use App\Season;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ScoreUpdateRequest extends FormRequest
 {
@@ -16,10 +18,13 @@ class ScoreUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        $score = Score::find($this->id);
-        return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::id());
-    }
+        if (Score::where('id', $this->id)->exists()){
+            $score = Score::find($this->id);
+            return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::id());
+        }
 
+        return false;
+    }
 
     protected function failedAuthorization()
     {
@@ -33,10 +38,10 @@ class ScoreUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required',
-            'score' => 'numeric',
-            'season_player_id' => 'numeric',
-            'handicap' => 'numeric'
+            'id' => 'numeric|required|'.Rule::in(Season::currentSeason()->scores()->pluck('id')->toArray()),
+            'score' => 'numeric|min:0|max:300',
+            'season_player_id' => 'numeric|min:0',
+            'handicap' => 'numeric|min:0|max:80'
         ];
     }
 }

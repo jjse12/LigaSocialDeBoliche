@@ -14,7 +14,7 @@ class CreateTeamCategoriesTable extends Migration
     public function up()
     {
         Schema::create('team_categories', function (Blueprint $table) {
-            $table->increments('id');
+            $table->tinyIncrements('id');
             $table->string('name');
             $table->timestamps();
         });

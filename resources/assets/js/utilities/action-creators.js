@@ -30,14 +30,27 @@ export function checkResponse(response) {
 
 function checkErrorResponse(error) {
     if (error.response &&
-        error.response.data &&
-        error.response.data.message &&
        (error.response.status === 401 ||
         error.response.status === 403 ||
-        error.response.status === 404 )) {
+        error.response.status === 404 ||
+        error.response.status === 422)) {
 
+        if (error.response.data){
+            console.log(error.response.data);
         //TODO: Use pretty alert dialog to show error
-        alert(error.response.data.message);
+            if (error.response.data.errors){
+                let errors = [];
+                Object.values(error.response.data.errors).map(err => {
+                    err.map(e => {
+                        errors.push(e);
+                        // alert(e);
+                    }) ;
+                });
+                // TODO: create dialog with list of errors.
+            } else if (error.response.data.message){
+                // alert(error.response.data.message);
+            }
+        }
     }
 }
 

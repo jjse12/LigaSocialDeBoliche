@@ -14,7 +14,7 @@ class CreatePlayerCategoriesTable extends Migration
     public function up()
     {
         Schema::create('player_categories', function (Blueprint $table) {
-            $table->increments('id');
+            $table->tinyIncrements('id');
             $table->string('name');
             $table->unsignedTinyInteger('males_min');
             $table->unsignedTinyInteger('males_max');

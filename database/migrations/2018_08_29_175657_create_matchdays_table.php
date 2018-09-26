@@ -14,7 +14,7 @@ class CreateMatchdaysTable extends Migration
     public function up()
     {
         Schema::create('matchdays', function (Blueprint $table) {
-            $table->increments('id');
+            $table->smallIncrements('id');
             $table->dateTime('date');
             $table->unsignedTinyInteger('number');
             $table->unsignedTinyInteger('season_id');

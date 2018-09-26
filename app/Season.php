@@ -38,4 +38,12 @@ class Season extends Model
         }
         return $players;
     }
+
+    public function scores(): Collection {
+        $scores = new Collection();
+        foreach ($this->seasonPlayers() as $player) {
+            $scores = $scores->merge($player->scores());
+        }
+        return $scores;
+    }
 }

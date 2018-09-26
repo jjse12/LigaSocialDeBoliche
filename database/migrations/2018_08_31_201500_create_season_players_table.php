@@ -14,7 +14,7 @@ class CreateSeasonPlayersTable extends Migration
     public function up()
     {
         Schema::create('season_players', function (Blueprint $table) {
-            $table->increments('id');
+            $table->smallIncrements('id');
             $table->unsignedSmallInteger('player_id');
             $table->unsignedSmallInteger('season_team_id');
             $table->unsignedTinyInteger('category_id');

@@ -39,7 +39,7 @@ return [
     'dimensions'           => 'El campo :attribute tiene dimensiones inválidas.',
     'distinct'             => 'El campo :attribute tiene un valor duplicado.',
     'email'                => 'El campo :attribute debe ser una dirección de correo válida.',
-    'exists'               => 'El campo :attribute seleccionado no existe.',
+    'exists'               => 'El recurso no existe en la base de datos.',
     'file'                 => 'El campo :attribute debe ser un archivo.',
     'filled'               => 'El campo :attribute debe tener algún valor.',
     'gt'                   => [
@@ -75,7 +75,7 @@ return [
         'array'   => 'El campo :attribute debe contener :value elementos o menos.',
     ],
     'max'                  => [
-        'numeric' => 'El campo :attribute no debe ser mayor a :max.',
+        'numeric' => 'El campo :attribute no puede ser mayor que :max.',
         'file'    => 'El archivo :attribute no debe pesar más de :max kilobytes.',
         'string'  => 'El campo :attribute no debe contener más de :max caracteres.',
         'array'   => 'El campo :attribute no debe contener más de :max.',
@@ -83,7 +83,7 @@ return [
     'mimes'                => 'El campo :attribute debe ser un archivo de tipo :values.',
     'mimetypes'            => 'El campo :attribute debe ser un archivo de tipo :values.',
     'min'                  => [
-        'numeric' => 'El campo :attribute debe tener al menos :min.',
+        'numeric' => 'El campo :attribute no puede ser menor que :min.',
         'file'    => 'El archivo :attribute debe pesar al menos :min kilobytes.',
         'string'  => 'El campo :attribute debe contener al menos :min caracteres.',
         'array'   => 'El campo :attribute debe contener al menos :min elementos.',
