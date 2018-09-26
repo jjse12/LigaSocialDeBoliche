@@ -9750,13 +9750,13 @@ var MatchScoreboards = (_dec = (0, _reactRedux.connect)(function (store) {
             var cell = e.target;
             var newScore = cell.textContent !== '' ? cell.textContent : 0;
             if (oldScore !== Number(newScore)) {
+                cell.setAttribute('class', 'score-patching');
                 _this.props.updateScore(scoreId, newScore).then(function () {
                     cell.setAttribute('class', 'score-update-success');
+                    _this.props.getMatchScoreboards(_this.props.match.params.matchId);
                 }).catch(function () {
                     cell.setAttribute('class', 'score-update-error');
                     cell.textContent = oldScore;
-                }).finally(function () {
-                    _this.props.getMatchScoreboards(_this.props.match.params.matchId);
                 });
             } else {
                 cell.setAttribute('class', '');

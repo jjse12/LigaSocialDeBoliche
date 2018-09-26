@@ -41,6 +41,14 @@ div.score-focus {
     border-style: solid;
 }
 
+div.score-patching {
+    border-radius: 5px;
+    border-style: solid;
+    animation: score-patching-border 2s infinite;
+    -moz-animation: score-patching-border 1s infinite;
+    -webkit-animation:score-patching-border 1s infinite;
+}
+
 div.score-update-success {
     animation: success-fade 1.5s;
     -moz-animation: success-fade 1.5s;
@@ -51,6 +59,22 @@ div.score-update-error {
     animation: error-fade 1.5s;
     -moz-animation: error-fade 1.5s;
     -webkit-animation:error-fade 1.5s;
+}
+
+@-moz-keyframes score-patching-border {
+    0% {border-color: rgba(gold, 0.60);}
+    25% {border-color: rgba(greenyellow, 0.60);}
+    50% {border-color: rgba(lightgreen, 0.60);}
+    75% {border-color: rgba(greenyellow, 0.60);}
+    100% {border-color: rgba(gold, 0.60);}
+}
+
+@-webkit-keyframes score-patching-border {
+    0% {border-color: rgba(gold, 0.60);}
+    25% {border-color: rgba(greenyellow, 0.60);}
+    50% {border-color: rgba(lightgreen, 0.60);}
+    75% {border-color: rgba(greenyellow, 0.60);}
+    100% {border-color: rgba(gold, 0.60);}
 }
 
 @-moz-keyframes success-fade {
@@ -64,8 +88,8 @@ div.score-update-error {
 }
 
 @-moz-keyframes error-fade {
-    20% {background: rgba(lightgreen, 0.75);}
-    50% {background: rgba(lightgreen, 0.75);}
+    20% {background: rgba(indianred, 0.75);}
+    50% {background: rgba(indianred, 0.75);}
 }
 
 @-webkit-keyframes error-fade {

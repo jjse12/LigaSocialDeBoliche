@@ -81,16 +81,15 @@ export default class MatchScoreboards extends Component {
         const cell = e.target;
         const newScore = cell.textContent !== '' ? cell.textContent : 0;
         if (oldScore !== Number(newScore)) {
+            cell.setAttribute('class', 'score-patching');
             this.props.updateScore(scoreId, newScore)
                 .then(() => {
                     cell.setAttribute('class', 'score-update-success');
+                    this.props.getMatchScoreboards(this.props.match.params.matchId);
                 })
                 .catch(() => {
                     cell.setAttribute('class', 'score-update-error');
                     cell.textContent = oldScore;
-                })
-                .finally(() => {
-                    this.props.getMatchScoreboards(this.props.match.params.matchId);
                 });
         }
         else {
