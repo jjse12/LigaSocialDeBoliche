@@ -17,9 +17,47 @@ class MatchScoreboardResource extends JsonResource
     {
         $team1 = $this->team1();
         $team2 = $this->team2();
+        $date = Carbon::createFromTimeString($this->matchday()->date);
+//        $date->subDays(9);
+//        $date->subHours(16);
+//        $date->addMinutes(9);
+        $today = Carbon::now();
+        $minutesDiff = $today->diffInMinutes($date, false);
+        $statusInfo = [];
+        if ($minutesDiff > 0){
+            $statusInfo['status'] = 'Sin Comenzar';
+            if ($minutesDiff >= 60){
+                $hoursDiff = $today->diffInHours($date, false);
+                if ($hoursDiff >= 24) {
+                    $daysDiff = $today->diffInDays($date, false);
+                    $statusInfo['timeUnit'] = 'days';
+                    $statusInfo['daysRemaining'] = $daysDiff;
+                } else {
+                    $statusInfo['timeUnit'] = 'hours';
+                    $statusInfo['hoursRemaining'] = $hoursDiff;
+                    if ($hoursDiff < 4){
+                        $statusInfo['minutesRemaining'] = $minutesDiff - $hoursDiff*60;
+                    }
+                }
+            }
+            else {
+                $statusInfo['timeUnit'] = 'minutes';
+                $statusInfo['minutesRemaining'] = $minutesDiff;
+            }
+        } else if ($this->team1_games_confirmed == 3 &&
+                $this->team2_games_confirmed == 3) {
+            $statusInfo = [
+                'status' => 'Finalizado'
+            ];
+        } else {
+            $statusInfo = [
+                'status' => 'En Progreso'
+            ];
+        }
+
         return [
-            'active' => $this->active == 1,
-            'date' => Carbon::createFromTimeString($this->matchday()->date)->format('d/M/Y'),
+            'status' => $statusInfo,
+            'date' => $date->format('d/M/Y'),
             'matchdayNumber' => $this->matchday()->number,
             'redPin' => $this->matchday()->red_pin,
             'virtual' => $this->matchday()->virtual,

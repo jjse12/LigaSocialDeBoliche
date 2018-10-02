@@ -2,30 +2,48 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { connect } from "react-redux";
-import {getMatchPlayerSeasonTeamId, getMatchScoreboards} from "../../reducers/matches";
+import {getMatchPlayerSeasonTeamId, getMatchScoreboards,
+    setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard} from "../../reducers/matches";
 import { createScore, updateScore, deleteScore } from "../../reducers/scores";
 import {
     getLoggedInPlayerFromStore,
-    createScoreFetchingFromStore, deleteScoreFetchingFromStore,
+    createScoreFetchingFromStore,
+    deleteScoreFetchingFromStore,
     getMatchScoreboardsFetchingFromStore,
-    getMatchScoreboardsFromStore, updateScoreFetchingFromStore, getMatchPlayerSeasonTeamIdFromStore
+    getMatchScoreboardsFromStore,
+    updateScoreFetchingFromStore,
+    getMatchPlayerSeasonTeamIdFromStore,
+    getMatchMyTeamOfflineScoreboardFromStore,
+    getMatchRivalTeamOfflineScoreboardFromStore
 } from "../../reducers/getters";
 import _ from 'lodash';
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
 import ReactLoading from "react-loading";
+import {
+    ArrowRightLg,
+    ArrowRightSm, CloudDownloadLg,
+    CloudDownloadSm,
+    CloudLg,
+    CloudSm,
+    DesktopLg,
+    DesktopSm
+} from "../../utilities/icons";
 
 @connect(
     store => ({
         loggedInPlayer: getLoggedInPlayerFromStore(store),
         matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
+        matchMyTeamOfflineScoreboard: getMatchMyTeamOfflineScoreboardFromStore(store),
+        matchRivalTeamOfflineScoreboard: getMatchRivalTeamOfflineScoreboardFromStore(store),
         matchScoreboards: getMatchScoreboardsFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
         fetchingCreateScore: createScoreFetchingFromStore(store),
         fetchingUpdateScore: updateScoreFetchingFromStore(store),
         fetchingDeleteScore: deleteScoreFetchingFromStore(store),
     }),
-    { getMatchPlayerSeasonTeamId, getMatchScoreboards, createScore, updateScore, deleteScore }
+    { getMatchPlayerSeasonTeamId, getMatchScoreboards, createScore, updateScore, deleteScore,
+        setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard }
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
@@ -55,8 +73,8 @@ export default class MatchScoreboards extends Component {
     }
 
     toggleUsingMyTeamOfflineScoreboard = () => {
-        const current = this.state.usingRivalTeamOfflineScoreboard;
-        this.setState({ usingRivalTeamOfflineScoreboard: !current });
+        const current = this.state.usingMyTeamOfflineScoreboard;
+        this.setState({ usingMyTeamOfflineScoreboard: !current });
     };
 
     toggleUsingRivalTeamOfflineScoreboard = () => {
@@ -135,34 +153,69 @@ export default class MatchScoreboards extends Component {
         );
     }
 
+    updateMyTeamScoreboardFromCloud = () => {
+        const { matchScoreboards } = this.props;
+        if (this.props.matchPlayerSeasonTeamId === matchScoreboards.team1.data.id){
+            this.props.setMatchMyTeamOfflineScoreboard(matchScoreboards.team1.results)
+        } else if (this.props.matchPlayerSeasonTeamId === matchScoreboards.team2.data.id){
+            this.props.setMatchMyTeamOfflineScoreboard(matchScoreboards.team2.results)
+        }
+    };
+
+    updateRivalTeamScoreboardFromCloud = () => {
+        const { matchScoreboards } = this.props;
+        if (this.props.matchPlayerSeasonTeamId !== matchScoreboards.team1.data.id){
+            this.props.setMatchRivalTeamOfflineScoreboard(matchScoreboards.team1.results)
+        } else if (this.props.matchPlayerSeasonTeamId !== matchScoreboards.team2.data.id){
+            this.props.setMatchRivalTeamOfflineScoreboard(matchScoreboards.team2.results)
+        }
+    };
+
     renderTeamScoreboardInfoBar = teamData => {
 
-        let element = <h5 className={'text-light'}>{teamData.name}</h5>;
+        let element = null;
 
-        if (this.props.matchScoreboards.active) {
-            // Button for player's team
-            if (this.props.matchPlayerSeasonTeamId === teamData.id) {
-                let button = null;
+        if (!this.props.matchScoreboards.active) {
+            if (this.props.matchPlayerSeasonTeamId !== 0) {
+                let icon = null;
+                let toggler = null;
+                let className = '';
+                // Button for player's team
+                if (this.props.matchPlayerSeasonTeamId === teamData.id) {
+                    toggler = () => {this.toggleUsingMyTeamOfflineScoreboard()};
+                    if (this.state.usingMyTeamOfflineScoreboard) {
+                        icon = DesktopLg();
+                        className = 'btn-info';
+                    } else {
+                        icon = CloudLg();
+                        className = 'btn-success';
+                    }
+                }
+                // Button for player's rival team
+                else {
+                    toggler = () => {this.toggleUsingRivalTeamOfflineScoreboard()};
+                    if (this.state.usingRivalTeamOfflineScoreboard) {
+                        icon = DesktopLg();
+                        className = 'btn-info';
+                    } else {
+                        icon = CloudLg();
+                        className = 'btn-success';
+                    }
+                }
 
-                element = <div className={'row'}>
-                    <h5 className={'text-light col-6'}>{teamData.name}</h5>
-                    {button}
-                </div>
-            }
-            // Button for player's rival team
-            else if (this.props.matchPlayerSeasonTeamId !== 0) {
-
+                element = <button className={`btn btn-sm ${className}`}
+                        onClick={toggler}>{icon}</button>
             }
         }
 
-        return <div className={'bg-semi-transparent-gradient-primary'}>
-            <h5 className={'text-light'}>Pista: #{teamData.laneNumber}</h5>
+        return <div className={'mr-2 align-self-center'}>
+            <button className={'mr-2 btn btn-secondary btn-sm'} onClick={this.updateMyTeamScoreboardFromCloud}>{CloudDownloadLg()} {ArrowRightLg()} {DesktopLg()}</button>
             { element }
-            <div class={'row'}>
-                <h5 className={'text-light col-6'}>{teamData.name}</h5>
-
-            </div>
         </div>;
+    };
+
+    isMatchPlayer = () => {
+        return this.props.matchPlayerSeasonTeamId !== 0;
     };
 
     render() {
@@ -177,17 +230,37 @@ export default class MatchScoreboards extends Component {
         const { matchScoreboards } = this.props;
         const team1Data = matchScoreboards.team1.data;
         const team2Data = matchScoreboards.team2.data;
-        const team1Scoreboard = matchScoreboards.team1.results;
-        const team2Scoreboard = matchScoreboards.team2.results;
+        let team1Scoreboard = matchScoreboards.team1.results;
+        let team2Scoreboard = matchScoreboards.team2.results;
+        if (this.isMatchPlayer()){
+            if (this.props.matchPlayerSeasonTeamId === team1Data.id){
+                if (this.state.usingMyTeamOfflineScoreboard)
+                    team1Scoreboard = this.props.matchMyTeamOfflineScoreboard;
+                if (this.state.usingRivalTeamOfflineScoreboard)
+                    team2Scoreboard = this.props.matchRivalTeamOfflineScoreboard;
+            } else {
+                if (this.state.usingMyTeamOfflineScoreboard)
+                    team2Scoreboard = this.props.matchMyTeamOfflineScoreboard;
+                if (this.state.usingRivalTeamOfflineScoreboard)
+                    team1Scoreboard = this.props.matchRivalTeamOfflineScoreboard;
+            }
+        }
+
         return (
             <div className={'container mt-3 mb-3'}>
             <div className={'match-scoreboards-container'}>
                 <div className={'mr-3'}>
-                    {this.renderTeamScoreboardInfoBar(team1Data)}
+                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                        <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                            <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
+                            <h5 className={'text-light'}>{team1Data.name}</h5>
+                        </div>
+                        { this.renderTeamScoreboardInfoBar(team1Data) }
+                    </div>
                     <div className={'match-scoreboard-table-container'}>
                         <ReactTable
                             className={'match-scoreboard-table -striped -highlight'}
-                            data={team1Scoreboard.playersScores}
+                            data={ team1Scoreboard.playersScores}
                             columns={matchScoreboardScoresColumns(this)}
                             getProps={() => {return {style: {color: 'white'}}}}
                             showPagination={false}
@@ -209,7 +282,13 @@ export default class MatchScoreboards extends Component {
                     </div>
                 </div>
                 <div className={'ml-3'}>
-                    {this.renderTeamScoreboardInfoBar(team2Data)}
+                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                        <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                            <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
+                            <h5 className={'text-light'}>{team2Data.name}</h5>
+                        </div>
+                        { this.renderTeamScoreboardInfoBar(team2Data) }
+                    </div>
                     <div className={'match-scoreboard-table-container'}>
                         <ReactTable
                             className={'match-scoreboard-table -striped -highlight'}

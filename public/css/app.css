@@ -24832,6 +24832,19 @@ div.score-update-error {
   }
 }
 
+div.loading-table {
+  margin-left: 40%;
+  padding-top: 10%;
+  width: 20%;
+  height: 20%;
+}
+
+@media (max-width: 991.98px) {
+  div.loading-table {
+    margin-left: 25%;
+  }
+}
+
 .navbar-laravel {
   background-color: #18536f;
   -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);

@@ -8,6 +8,25 @@ export const MATCH_PLAYER_SEASON_TEAM_ID = 'get_match_player_season_team_id';
 export const MATCH_MY_TEAM_OFFLINE_SCOREBOARD = 'get_match_my_team_offline_scoreboard';
 export const MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD = 'get_match_rival_team_offline_scoreboard';
 
+const totalsObject = title => {
+    return {
+        title: title,
+        firstGame: 0,
+        secondGame: 0,
+        thirdGame: 0,
+        total: 0
+    }
+};
+
+const offlineScoreboardInitialState = {
+    playersScores: [],
+    gamesTotals: [
+        totalsObject('Pin neto'),
+        totalsObject('Handicap'),
+        totalsObject('Total')
+    ]
+};
+
 export const getMatchResults = (id) => dispatch =>
     dispatch(ajaxGet(MATCH_RESULTS, uri.api.matchResults(id)));
 
@@ -65,7 +84,7 @@ export function matchPlayerSeasonTeamIdReducer(state = 0, action) {
     return state;
 }
 
-export function matchMyTeamOfflineScoreboardReducer(state = {}, action) {
+export function matchMyTeamOfflineScoreboardReducer(state = offlineScoreboardInitialState, action) {
     switch (action.type) {
         case MATCH_MY_TEAM_OFFLINE_SCOREBOARD:
             return action.scoreboard
@@ -73,7 +92,7 @@ export function matchMyTeamOfflineScoreboardReducer(state = {}, action) {
     return state;
 }
 
-export function matchRivalTeamOfflineScoreboardReducer(state = {}, action) {
+export function matchRivalTeamOfflineScoreboardReducer(state = offlineScoreboardInitialState, action) {
     switch (action.type) {
         case MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD:
             return action.scoreboard

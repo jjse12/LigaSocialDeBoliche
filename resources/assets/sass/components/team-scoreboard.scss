@@ -1,0 +1,9 @@
+div.loading-table {
+    margin-left: 40%;
+    padding-top: 10%;
+    width: 20%;
+    height: 20%;
+    @include media-breakpoint-down(md) {
+        margin-left: 25%;
+    }
+}

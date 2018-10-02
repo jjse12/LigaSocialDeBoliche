@@ -43,12 +43,12 @@ function checkErrorResponse(error) {
                 Object.values(error.response.data.errors).map(err => {
                     err.map(e => {
                         errors.push(e);
-                        // alert(e);
+                        alert(e);
                     }) ;
                 });
                 // TODO: create dialog with list of errors.
             } else if (error.response.data.message){
-                // alert(error.response.data.message);
+                alert(error.response.data.message);
             }
         }
     }

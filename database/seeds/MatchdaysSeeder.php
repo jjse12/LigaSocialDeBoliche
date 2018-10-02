@@ -14,7 +14,7 @@ class MatchdaysSeeder extends Seeder
     public function run()
     {
         //
-        $date = Carbon::createFromTimeString('2018-06-13 23:59:59');
+        $date = Carbon::createFromTimeString('2018-06-13 19:30:00');
         for($i = 1; $i <= 24; $i++) {
             DB::table('matchdays')->insert([
                 'number' => $i,

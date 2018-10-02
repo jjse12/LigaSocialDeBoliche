@@ -21,6 +21,8 @@ export const getMatchScoreboardsFromStore = store => store.matchScoreboards;
 export const getMatchScoreboardsFetchingFromStore = store => isFetchingFromStore(store, MATCH_SCOREBOARDS);
 export const getMatchTeamScoreboardFromStore = store => store.matchTeamScoreboard;
 export const getMatchTeamScoreboardFetchingFromStore = store => isFetchingFromStore(store, MATCH_TEAM_SCOREBOARD);
+export const getMatchMyTeamOfflineScoreboardFromStore = store => store.matchMyTeamOfflineScoreboard;
+export const getMatchRivalTeamOfflineScoreboardFromStore = store => store.matchRivalTeamOfflineScoreboard;
 
 // Scores
 export const createScoreFetchingFromStore = store => isFetchingFromStore(store, SCORE_CREATE);
