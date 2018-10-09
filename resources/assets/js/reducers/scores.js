@@ -13,7 +13,7 @@ export const createScore = (seasonPlayerId, matchId, score, handicap) => dispatc
         handicap: handicap
     };
     dispatch(ajaxPost(SCORE_CREATE, uri.api.score, data));
-}
+};
 
 export const updateScore = (scoreId, score = null, seasonPlayerId = null, handicap = null) => dispatch => {
     let data = { id: scoreId };
@@ -27,8 +27,8 @@ export const updateScore = (scoreId, score = null, seasonPlayerId = null, handic
     return dispatch(ajaxPatch(SCORE_UPDATE, uri.api.score, data));
 };
 
-export const deleteScore = (matchId, seasonTeamId) => dispatch =>
-    dispatch(ajaxDelete(MATCH_TEAM_SCOREBOARD, uri.api.matchTeamScoreboard(matchId, seasonTeamId)));
+export const deleteScore = (scoreId) => dispatch =>
+    dispatch(ajaxDelete(SCORE_DELETE, uri.api.scoreDelete(scoreId)));
 
 export function scoreCreateReducer(state = {}, action) {
     switch (action.type) {

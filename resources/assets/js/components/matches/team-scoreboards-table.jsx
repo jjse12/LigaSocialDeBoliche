@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {connect} from 'react-redux';
-import { getMatchTeamScoreboard} from "../../reducers/matches";
-import {getMatchTeamScoreboardFetchingFromStore, getMatchTeamScoreboardFromStore} from "../../reducers/getters";
+import { getMatchSeasonTeamScoreboard} from "../../reducers/matches";
+import {getMatchSeasonTeamScoreboardFetchingFromStore, getMatchSeasonTeamScoreboardFromStore} from "../../reducers/getters";
 import ReactLoading from 'react-loading';
 import ReactTable from 'react-table';
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
@@ -11,10 +11,10 @@ import _ from "lodash";
 
 @connect(
     store => ({
-        matchTeamScoreboard: getMatchTeamScoreboardFromStore(store),
-        fetchingMatchTeamScoreboard: getMatchTeamScoreboardFetchingFromStore(store)
+        matchSeasonTeamScoreboard: getMatchSeasonTeamScoreboardFromStore(store),
+        fetchingMatchSeasonTeamScoreboard: getMatchSeasonTeamScoreboardFetchingFromStore(store)
     }),
-    { getMatchTeamScoreboard }
+    { getMatchSeasonTeamScoreboard }
 )
 export default class TeamScoreboardsTable extends Component {
 
@@ -22,13 +22,13 @@ export default class TeamScoreboardsTable extends Component {
         match: PropTypes.object,
         matchId: PropTypes.number,
         seasonTeamId: PropTypes.number,
-        matchTeamScoreboard: PropTypes.object,
-        fetchingMatchTeamScoreboard: PropTypes.bool,
-        getMatchTeamScoreboard: PropTypes.func.isRequired
+        matchSeasonTeamScoreboard: PropTypes.object,
+        fetchingMatchSeasonTeamScoreboard: PropTypes.bool,
+        getMatchSeasonTeamScoreboard: PropTypes.func.isRequired
     };
 
     componentWillMount() {
-        if (_.isEmpty(this.props.matchTeamScoreboard)){
+        if (_.isEmpty(this.props.matchSeasonTeamScoreboard)){
             let matchId, seasonTeamId;
             if (this.props.match && this.props.match.params){
                 matchId = this.props.match.params.matchId;
@@ -39,7 +39,7 @@ export default class TeamScoreboardsTable extends Component {
                 seasonTeamId = this.props.seasonTeamId;
             }
             if (matchId && seasonTeamId)
-                this.props.getMatchTeamScoreboard(matchId, seasonTeamId);
+                this.props.getMatchSeasonTeamScoreboard(matchId, seasonTeamId);
             else {
                 //TODO: Show alert error: no matchId &/or seasonTeamId
             }
@@ -47,8 +47,8 @@ export default class TeamScoreboardsTable extends Component {
     }
 
     render(){
-        if (_.isEmpty(this.props.matchTeamScoreboard)){
-            if (this.props.fetchingMatchTeamScoreboard)
+        if (_.isEmpty(this.props.matchSeasonTeamScoreboard)){
+            if (this.props.fetchingMatchSeasonTeamScoreboard)
                 return <div className={'match-scoreboard-table-container'}>
                     <div className={'loading-table'}>
                         <ReactLoading type={'spin'} color={'#488aaa'} width={'100%'} height={'100%'}/>
@@ -57,8 +57,8 @@ export default class TeamScoreboardsTable extends Component {
             return null;
         }
 
-        const playersScores = this.props.matchTeamScoreboard.playersScores;
-        const gamesTotals = this.props.matchTeamScoreboard.gamesTotals;
+        const playersScores = this.props.matchSeasonTeamScoreboard.playersScores;
+        const gamesTotals = this.props.matchSeasonTeamScoreboard.gamesTotals;
         return <div className={'match-scoreboard-table-container'}>
             <ReactTable
             className={'-striped -highlight'}

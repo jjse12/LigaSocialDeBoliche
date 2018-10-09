@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { connect } from "react-redux";
-import {getMatchPlayerSeasonTeamId, getMatchScoreboards,
-    setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard} from "../../reducers/matches";
+import {getMatchPlayerSeasonTeamId, getMatchScoreboards, getMatchMyTeamAvailablePlayers,
+    setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard, matchSeasonTeamEndPhase } from "../../reducers/matches";
 import { createScore, updateScore, deleteScore } from "../../reducers/scores";
 import {
     getLoggedInPlayerFromStore,
@@ -13,6 +13,8 @@ import {
     getMatchScoreboardsFromStore,
     updateScoreFetchingFromStore,
     getMatchPlayerSeasonTeamIdFromStore,
+    getMatchMyTeamAvailablePlayersFromStore,
+    getMatchMyTeamAvailablePlayersFetchingFromStore,
     getMatchMyTeamOfflineScoreboardFromStore,
     getMatchRivalTeamOfflineScoreboardFromStore
 } from "../../reducers/getters";
@@ -30,20 +32,26 @@ import {
     DesktopSm
 } from "../../utilities/icons";
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+
 @connect(
     store => ({
         loggedInPlayer: getLoggedInPlayerFromStore(store),
         matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
+        matchMyTeamAvailablePlayers: getMatchMyTeamAvailablePlayersFromStore(store),
         matchMyTeamOfflineScoreboard: getMatchMyTeamOfflineScoreboardFromStore(store),
         matchRivalTeamOfflineScoreboard: getMatchRivalTeamOfflineScoreboardFromStore(store),
         matchScoreboards: getMatchScoreboardsFromStore(store),
+        fetchingMatchMyTeamAvailablePlayers: getMatchMyTeamAvailablePlayersFetchingFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
         fetchingCreateScore: createScoreFetchingFromStore(store),
         fetchingUpdateScore: updateScoreFetchingFromStore(store),
         fetchingDeleteScore: deleteScoreFetchingFromStore(store),
     }),
-    { getMatchPlayerSeasonTeamId, getMatchScoreboards, createScore, updateScore, deleteScore,
-        setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard }
+    { getMatchPlayerSeasonTeamId, getMatchMyTeamAvailablePlayers, getMatchScoreboards, createScore, updateScore,
+        deleteScore, setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard, matchSeasonTeamEndPhase }
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
@@ -58,19 +66,114 @@ export default class MatchScoreboards extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            playerSelectionDialogOpen: false,
+            pollingTime: 5,
             usingMyTeamOfflineScoreboard: false,
             usingRivalTeamOfflineScoreboard: false,
         };
         this.renderCell = this.renderCell.bind(this);
     }
 
+    setMatchPollingTime = time => {
+        this.setState({pollingTime : time});
+    };
+
+    matchScoreboardsPoller = async () => {
+        let promise = new Promise(resolve => setTimeout(() => {resolve('Done')}, this.state.pollingTime * 1000));
+        if (await promise === 'Done'){
+            this.loadMatchScoreboardsWithCallbacks(response => {
+                if (this.matchStatus() === 'En Progreso'){
+                    this.openPlayerSelectionDialogIfRequired();
+                    this.matchScoreboardsPoller();
+                }
+            });
+        } else {
+            this.matchScoreboardsPoller();
+        }
+    };
+
     componentWillMount() {
         const { matchId } = this.props.match.params;
+        let getTeamIdPromise = null;
         if (!_.isEmpty(this.props.loggedInPlayer)){
-            this.props.getMatchPlayerSeasonTeamId(matchId, this.props.loggedInPlayer.id)
+            getTeamIdPromise = this.props.getMatchPlayerSeasonTeamId(matchId, this.props.loggedInPlayer.id);
         }
-        this.props.getMatchScoreboards(matchId);
+
+        this.loadMatchScoreboardsWithCallbacks(response => {
+            if (this.matchStatus() === 'En Progreso'){
+                // Poller for updating match scoreboards every `this.state.pollingTime` seconds
+                // this.matchScoreboardsPoller();
+
+                // Check if player's team is in 'select game players phase', and if so, open dialog for players selection
+                if (getTeamIdPromise !== null){
+                    getTeamIdPromise.then(() => this.openPlayerSelectionDialogIfRequired());
+                }
+            }
+        });
     }
+
+    loadMatchScoreboardsWithCallbacks = (thenCallback = null, catchCallback = null, finallyCallback = null) => {
+        const { matchId } = this.props.match.params;
+        const promise = this.props.getMatchScoreboards(matchId);
+
+        if (thenCallback !== null)
+            promise.then(response => thenCallback(response));
+
+        if (catchCallback !== null)
+            promise.catch(jqXHR => catchCallback(jqXHR));
+
+        if (finallyCallback !== null)
+            promise.finally(response => finallyCallback(response));
+    };
+
+    openPlayerSelectionDialogIfRequired = () => {
+        if (this.isMatchPlayer() && this.getMatchMyTeam().data.gamesConfirmed >= 0) {
+            if (this.gameScoresCount(this.getMatchMyTeam().results.playersScores, this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
+                this.setPlayerSelectionDialogOpen(true);
+            }
+        }
+    };
+
+    isMatchPlayer = () => {
+        return this.props.matchPlayerSeasonTeamId !== 0;
+    };
+
+    getMatchMyTeam = () => {
+        if (!this.isMatchPlayer())
+            return null;
+
+        if (this.props.matchPlayerSeasonTeamId === this.props.matchScoreboards.team1.data.id)
+            return this.props.matchScoreboards.team1;
+
+        if (this.props.matchPlayerSeasonTeamId === this.props.matchScoreboards.team2.data.id)
+            return this.props.matchScoreboards.team2;
+        
+        return null;
+    };
+
+    getMatchRivalTeam = () => {
+        if (!this.isMatchPlayer())
+            return null;
+
+        if (this.props.matchPlayerSeasonTeamId !== this.props.matchScoreboards.team1.data.id)
+            return this.props.matchScoreboards.team1;
+
+        if (this.props.matchPlayerSeasonTeamId !== this.props.matchScoreboards.team2.data.id)
+            return this.props.matchScoreboards.team2;
+
+        return null;
+    };
+
+    setPlayerSelectionDialogOpen = (open = false) => {
+        this.setState({playerSelectionDialogOpen : open});
+    };
+
+    handlePlayerSelectionDialogEnter = () => {
+        if (this.isMatchPlayer()){
+            const { matchId } = this.props.match.params;
+            this.props.getMatchMyTeamAvailablePlayers(matchId, this.props.matchPlayerSeasonTeamId);
+        }
+    };
 
     toggleUsingMyTeamOfflineScoreboard = () => {
         const current = this.state.usingMyTeamOfflineScoreboard;
@@ -136,9 +239,8 @@ export default class MatchScoreboards extends Component {
     renderCell(cellInfo, column) {
         /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
           TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
-        if (this.props.matchPlayerSeasonTeamId === 0 || cellInfo.value === undefined || cellInfo === null)
+        if (this.getMatchMyTeam() === null || cellInfo.value === undefined || cellInfo === null)
             return cellInfo.value;
-
 
         return (
             <div
@@ -154,68 +256,144 @@ export default class MatchScoreboards extends Component {
     }
 
     updateMyTeamScoreboardFromCloud = () => {
-        const { matchScoreboards } = this.props;
-        if (this.props.matchPlayerSeasonTeamId === matchScoreboards.team1.data.id){
-            this.props.setMatchMyTeamOfflineScoreboard(matchScoreboards.team1.results)
-        } else if (this.props.matchPlayerSeasonTeamId === matchScoreboards.team2.data.id){
-            this.props.setMatchMyTeamOfflineScoreboard(matchScoreboards.team2.results)
-        }
+        if (this.getMatchMyTeam() !== null)
+            this.props.setMatchMyTeamOfflineScoreboard(this.getMatchMyTeam().results);
     };
 
     updateRivalTeamScoreboardFromCloud = () => {
-        const { matchScoreboards } = this.props;
-        if (this.props.matchPlayerSeasonTeamId !== matchScoreboards.team1.data.id){
-            this.props.setMatchRivalTeamOfflineScoreboard(matchScoreboards.team1.results)
-        } else if (this.props.matchPlayerSeasonTeamId !== matchScoreboards.team2.data.id){
-            this.props.setMatchRivalTeamOfflineScoreboard(matchScoreboards.team2.results)
-        }
+        if (this.getMatchRivalTeam())
+            this.props.setMatchRivalTeamOfflineScoreboard(this.getMatchRivalTeam().results);
     };
 
-    renderTeamScoreboardInfoBar = teamData => {
+    gameScoresCount = (playersScores, gameIndex) => {
+        if (playersScores.length === 0)
+            return 0;
 
+        let count = 0;
+        playersScores.map(playerScore => {
+            if (playerScore[gameIndex]){
+                count++;
+            }
+        });
+        return count;
+    };
+
+    matchStatus = () => {
+        return this.props.matchScoreboards.statusData.status;
+    };
+
+    matchPhase = () => {
+        if (this.matchStatus() === 'En Progreso'){
+            return this.props.matchScoreboards.statusData.phase;
+        }
+        return null;
+    };
+
+    matchPhaseByMyTeamGamesConfirmed = () => {
+        if (this.matchStatus() === 'En Progreso' && this.isMatchPlayer()){
+            switch (this.getMatchMyTeam().data.gamesConfirmed) {
+                case -1:
+                    return 'warming';
+                case 0:
+                    return 'firstGame';
+                case 1:
+                    return 'secondGame';
+                case 2:
+                    return 'thirdGame';
+                case 3:
+                    return 'concluded';
+            }
+        }
+        return null;
+    };
+
+    seasonTeamEndPhase = () => {
+        const { matchId } = this.props.match.params;
+        const { matchPlayerSeasonTeamId } = this.props;
+        this.props.matchSeasonTeamEndPhase(matchId, matchPlayerSeasonTeamId, this.matchPhase())
+            .then(response => {
+
+            })
+            .finally(() => {
+                this.props.getMatchScoreboards(matchId);
+            });
+    };
+
+    renderTeamActions = team => {
         let element = null;
-
-        if (!this.props.matchScoreboards.active) {
-            if (this.props.matchPlayerSeasonTeamId !== 0) {
-                let icon = null;
-                let toggler = null;
-                let className = '';
-                // Button for player's team
-                if (this.props.matchPlayerSeasonTeamId === teamData.id) {
-                    toggler = () => {this.toggleUsingMyTeamOfflineScoreboard()};
-                    if (this.state.usingMyTeamOfflineScoreboard) {
-                        icon = DesktopLg();
-                        className = 'btn-info';
+        let icon = null;
+        let toggler = null;
+        let className = '';
+        // Actions for player's team
+        if (this.props.matchPlayerSeasonTeamId === team.data.id) {
+            if (this.state.playerSelectionDialogOpen){
+                element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
+            } else {
+                if (this.matchPhase() === 'warming'){
+                    if (team.data.gamesConfirmed === -1){
+                        element = <button className={`btn btn-md btn-success`} onClick={this.seasonTeamEndPhase}>Terminar calentamiento</button>
                     } else {
-                        icon = CloudLg();
-                        className = 'btn-success';
+                        element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Esperando al rival</div>
+                    }
+                } else {
+                    if (this.gameScoresCount(team.results.playersScores, this.matchPhase()) === 0){
+                        element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
+                    } else {
+                        element = <button className={`btn btn-md btn-success`} onClick={toggler}>Terminar Linea</button>
                     }
                 }
-                // Button for player's rival team
-                else {
-                    toggler = () => {this.toggleUsingRivalTeamOfflineScoreboard()};
-                    if (this.state.usingRivalTeamOfflineScoreboard) {
-                        icon = DesktopLg();
-                        className = 'btn-info';
-                    } else {
-                        icon = CloudLg();
-                        className = 'btn-success';
-                    }
+            }
+            /*
+            else {
+                toggler = () => {this.toggleUsingMyTeamOfflineScoreboard()};
+                if (this.state.usingMyTeamOfflineScoreboard) {
+                    icon = DesktopLg();
+                    className = 'btn-info';
+                } else {
+                    icon = CloudLg();
+                    className = 'btn-success';
                 }
+            }*/
+        }
+        // Actions for player's rival team
 
-                element = <button className={`btn btn-sm ${className}`}
-                        onClick={toggler}>{icon}</button>
+        else {
+            toggler = () => {this.toggleUsingRivalTeamOfflineScoreboard()};
+            if (this.state.usingRivalTeamOfflineScoreboard) {
+                icon = DesktopLg();
+                className = 'btn-info';
+            } else {
+                icon = CloudLg();
+                className = 'btn-success';
             }
         }
 
+        // element = <button className={`btn btn-sm ${className}`}
+        //         onClick={toggler}>{icon}</button>
+
         return <div className={'mr-2 align-self-center'}>
-            <button className={'mr-2 btn btn-secondary btn-sm'} onClick={this.updateMyTeamScoreboardFromCloud}>{CloudDownloadLg()} {ArrowRightLg()} {DesktopLg()}</button>
+            {/*<button className={'mr-2 btn btn-secondary btn-sm'} onClick={this.updateMyTeamScoreboardFromCloud}>{CloudDownloadLg()} {ArrowRightLg()} {DesktopLg()}</button>*/}
             { element }
         </div>;
     };
 
-    isMatchPlayer = () => {
-        return this.props.matchPlayerSeasonTeamId !== 0;
+    renderPlayersSelectionDialog = () => {
+        return <Dialog aria-labelledby='dialog-title'
+                disableBackdropClick
+                disableEscapeKeyDown
+                open={this.state.playerSelectionDialogOpen}
+                onEnter={this.handlePlayerSelectionDialogEnter}
+                onClose={() => this.setPlayerSelectionDialogOpen(false)}
+                >
+                <DialogTitle id='dialog-title'>Selección de Jugadores</DialogTitle>
+                <DialogContent>
+                    {this.props.fetchingMatchMyTeamAvailablePlayers ?
+                        <ReactLoading type={'spin'} color={'#488aaa'}/> :
+                        null
+                    }
+                </DialogContent>
+                <button className='btn btn-sm btn-success' onClick={() => this.setPlayerSelectionDialogOpen(false)}>Aceptar</button>
+            </Dialog>
     };
 
     render() {
@@ -248,72 +426,77 @@ export default class MatchScoreboards extends Component {
 
         return (
             <div className={'container mt-3 mb-3'}>
-            <div className={'match-scoreboards-container'}>
-                <div className={'mr-3'}>
-                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
-                        <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
-                            <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
-                            <h5 className={'text-light'}>{team1Data.name}</h5>
+                <div className={'match-scoreboards-container'}>
+                    <div className={'mr-3'}>
+                        <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                            <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                                <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
+                                <h5 className={'text-light'}>{team1Data.name}</h5>
+                            </div>
+                            { this.matchStatus() === 'En Progreso' && this.isMatchPlayer() ?
+                              this.renderTeamActions(matchScoreboards.team1) : null }
                         </div>
-                        { this.renderTeamScoreboardInfoBar(team1Data) }
+                        <div className={'match-scoreboard-table-container'}>
+                            <ReactTable
+                                className={'match-scoreboard-table -striped -highlight'}
+                                getNoDataProps={() => {return {style: {display: 'none'}}}}
+                                data={ team1Scoreboard.playersScores}
+                                columns={matchScoreboardScoresColumns(this)}
+                                getProps={() => {return {style: {color: 'white'}}}}
+                                showPagination={false}
+                                showPageSizeOptions={false}
+                                minRows={0}
+                                pageSize={team1Scoreboard.playersScores.length}
+                            />
+                            <ReactTable
+                                className={'match-scoreboard-table -striped -highlight'}
+                                data={team1Scoreboard.gamesTotals}
+                                columns={matchScoreboardTotalsColumns(team1Scoreboard.playersScores.length === 0)}
+                                getProps={() => {return {style: {color: 'white'}}}}
+                                getTheadThProps={() => {return {style:{display: 'none'}}}}
+                                showPagination={false}
+                                showPageSizeOptions={false}
+                                minRows={0}
+                                pageSize={3}
+                            />
+                        </div>
                     </div>
-                    <div className={'match-scoreboard-table-container'}>
-                        <ReactTable
-                            className={'match-scoreboard-table -striped -highlight'}
-                            data={ team1Scoreboard.playersScores}
-                            columns={matchScoreboardScoresColumns(this)}
-                            getProps={() => {return {style: {color: 'white'}}}}
-                            showPagination={false}
-                            showPageSizeOptions={false}
-                            minRows={0}
-                            pageSize={team1Scoreboard.playersScores.length}
-                        />
-                        <ReactTable
-                            className={'match-scoreboard-table -striped -highlight'}
-                            data={team1Scoreboard.gamesTotals}
-                            columns={matchScoreboardTotalsColumns()}
-                            getProps={() => {return {style: {color: 'white'}}}}
-                            getTheadThProps={() => {return {style:{display: 'none'}}}}
-                            showPagination={false}
-                            showPageSizeOptions={false}
-                            minRows={0}
-                            pageSize={3}
-                        />
+                    <div className={'ml-3'}>
+                        <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                            <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                                <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
+                                <h5 className={'text-light'}>{team2Data.name}</h5>
+                            </div>
+                            { this.matchStatus() === 'En Progreso' && this.isMatchPlayer() ?
+                              this.renderTeamActions(matchScoreboards.team2) : null }
+                        </div>
+                        <div className={'match-scoreboard-table-container'}>
+                            <ReactTable
+                                className={'match-scoreboard-table -striped -highlight'}
+                                getNoDataProps={() => {return {style: {display: 'none'}}}}
+                                data={team2Scoreboard.playersScores}
+                                columns={matchScoreboardScoresColumns(this)}
+                                getProps={() => {return {style: {color: 'white'}}}}
+                                showPagination={false}
+                                showPageSizeOptions={false}
+                                minRows={0}
+                                pageSize={team2Scoreboard.playersScores.length}
+                            />
+                            <ReactTable
+                                className={'match-scoreboard-table -striped -highlight'}
+                                data={team2Scoreboard.gamesTotals}
+                                columns={matchScoreboardTotalsColumns(team2Scoreboard.playersScores.length === 0)}
+                                getTheadThProps={() => {return {style:{display: 'none'}}}}
+                                getProps={() => {return {style: {color: 'white'}}}}
+                                showPagination={false}
+                                showPageSizeOptions={false}
+                                minRows={0}
+                                pageSize={3}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className={'ml-3'}>
-                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
-                        <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
-                            <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
-                            <h5 className={'text-light'}>{team2Data.name}</h5>
-                        </div>
-                        { this.renderTeamScoreboardInfoBar(team2Data) }
-                    </div>
-                    <div className={'match-scoreboard-table-container'}>
-                        <ReactTable
-                            className={'match-scoreboard-table -striped -highlight'}
-                            data={team2Scoreboard.playersScores}
-                            columns={matchScoreboardScoresColumns(this)}
-                            getProps={() => {return {style: {color: 'white'}}}}
-                            showPagination={false}
-                            showPageSizeOptions={false}
-                            minRows={0}
-                            pageSize={team2Scoreboard.playersScores.length}
-                        />
-                        <ReactTable
-                            className={'match-scoreboard-table -striped -highlight'}
-                            data={team2Scoreboard.gamesTotals}
-                            columns={matchScoreboardTotalsColumns()}
-                            getTheadThProps={() => {return {style:{display: 'none'}}}}
-                            getProps={() => {return {style: {color: 'white'}}}}
-                            showPagination={false}
-                            showPageSizeOptions={false}
-                            minRows={0}
-                            pageSize={3}
-                        />
-                    </div>
-                </div>
-            </div>
+                {this.renderPlayersSelectionDialog()}
             </div>
         );
     }

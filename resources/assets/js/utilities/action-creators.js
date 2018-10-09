@@ -29,11 +29,13 @@ export function checkResponse(response) {
 }
 
 function checkErrorResponse(error) {
-    if (error.response &&
-       (error.response.status === 401 ||
-        error.response.status === 403 ||
-        error.response.status === 404 ||
-        error.response.status === 422)) {
+    if (error.response) //&&
+       // (error.response.status === 400 ||
+       //  error.response.status === 401 ||
+       //  error.response.status === 403 ||
+       //  error.response.status === 404 ||
+       //  error.response.status === 422))
+    {
 
         if (error.response.data){
             console.log(error.response.data);
@@ -49,7 +51,11 @@ function checkErrorResponse(error) {
                 // TODO: create dialog with list of errors.
             } else if (error.response.data.message){
                 alert(error.response.data.message);
+            } else {
+                alert('Ha ocurrido un error inesperado, por favor intenta nuevamente.');
             }
+        } else {
+            alert('Ha ocurrido un error inesperado, por favor intenta nuevamente.');
         }
     }
 }

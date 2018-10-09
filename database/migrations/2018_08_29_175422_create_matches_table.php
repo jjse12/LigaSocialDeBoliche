@@ -20,8 +20,8 @@ class CreateMatchesTable extends Migration
             $table->unsignedSmallInteger('season_team2_id');
             $table->unsignedTinyInteger('team1_lane');
             $table->unsignedTinyInteger('team2_lane');
-            $table->unsignedTinyInteger('team1_games_confirmed')->default(0);
-            $table->unsignedTinyInteger('team2_games_confirmed')->default(0);
+            $table->tinyInteger('team1_games_confirmed')->default(-1);
+            $table->tinyInteger('team2_games_confirmed')->default(-1);
             $table->mediumText('team1_comments')->default(null)->nullable();
             $table->mediumText('team2_comments')->default(null)->nullable();
             $table->boolean('active')->default(false);

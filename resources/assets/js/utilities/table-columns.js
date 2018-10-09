@@ -49,10 +49,10 @@ export const matchScoreboardScoresColumns = (match, teamId) => {
     ];
 };
 
-export const matchScoreboardTotalsColumns = () => {
+export const matchScoreboardTotalsColumns = (empty = false) => {
     return [
         {
-            Header: 'Totales',
+            Header: !empty ? 'Totales' : <div style={{background: 'tomato'}}>! Aún no se han registrado marcadores para este juego !</div>,
             columns: [
                 {
                     Header: null,

@@ -30,6 +30,7 @@ class ScoreUpdateRequest extends FormRequest
     {
         throw new AuthorizationException('¡No tienes permisos para editar estos marcadores!');
     }
+
     /**
      * Get the validation rules that apply to the request.
      *

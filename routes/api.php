@@ -21,8 +21,10 @@ Route::group(['prefix' => 'player'], function() {
 });
 
 
-
+// Season and SeasonTeam related routes
 Route::group(['prefix' => 'season'], function() {
+
+    // SeasonTeam routes
 
     Route::get('/current', 'SeasonController@currentSeason');
     Route::get('/next-matchday', 'SeasonController@nextMatchday');
@@ -37,25 +39,35 @@ Route::group(['prefix' => 'season'], function() {
         Route::get('/matchdays', 'SeasonController@matchdays');
     });
 
-
-
     Route::get('/index', 'SeasonController@index');
 });
 
-Route::group(['prefix' => 'team'], function() {
+Route::group(['prefix' => 'season-team'], function() {
     Route::group(['prefix' => '/{seasonTeam}'], function() {
         Route::get('/players', 'SeasonTeamController@players');
     });
+});
+
+Route::group(['prefix' => 'team'], function() {
+//    Route::group(['prefix' => '/{seasonTeam}'], function() {
+//        Route::get('/players', 'SeasonTeamController@players');
+//    });
 });
 
 Route::group(['prefix' => 'match'], function() {
     Route::group(['prefix' => '/{match}'], function() {
         Route::get('/results', 'MatchController@results');
         Route::get('/scoreboards', 'MatchController@scoreboards');
-        Route::get('/scoreboard/team/{seasonTeam}', 'MatchController@teamScoreboard');
         Route::get('/scores', 'MatchController@scores');
-        Route::get('/player-season-team-id/{player}', 'MatchController@playerSeasonTeamId');
+
+        Route::get('/player/{player}/season-team-id', 'MatchController@playerSeasonTeamId');
+
+        Route::group(['prefix' => '/season-team/{seasonTeam}'], function() {
+            Route::get('/scoreboard', 'MatchController@seasonTeamScoreboard');
+            Route::get('/available-players', 'MatchController@seasonTeamAvailablePlayers');
+        });
     });
+    Route::post('season-team-end-phase', 'MatchController@seasonTeamEndPhase');
 });
 
 

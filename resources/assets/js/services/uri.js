@@ -10,7 +10,7 @@ const uris = {
         home: '/home',
         login: '/login',
         matchScoreboards: id => `/match/${id}/scoreboards`,
-        matchTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
+        matchSeasonTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
         error: '/error',
     },
     api: {
@@ -25,16 +25,19 @@ const uris = {
         nextMatchdayMatches: '/season/next-matchday-matches',
 
         // Teams data:
-        teamPlayers: id => `/team/${id}/players`,
+        teamPlayers: id => `/season-team/${id}/players`,
 
         // Matches data:
         matchResults: id => `/match/${id}/results`,
         matchScoreboards: id => `/match/${id}/scoreboards`,
-        matchTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
-        matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player-season-team-id/${playerId}`,
+        matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player/${playerId}/season-team-id`,
+        matchSeasonTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/season-team/${seasonTeamId}/scoreboard`,
+        matchMyTeamAvailablePlayers: (matchId, seasonTeamId) => `/match/${matchId}/season-team/${seasonTeamId}/available-players`,
+        matchSeasonTeamEndPhase: '/match/season-team-end-phase',
 
         // Scores
         score: '/score',
+        scoreDelete: scoreId => `/score/${scoreId}`,
     }
 };
 

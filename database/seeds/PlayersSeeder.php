@@ -75,7 +75,7 @@ class PlayersSeeder extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
 
-        for ($i = 0; $i < 125; $i++){
+        for ($i = 0; $i < 138; $i++){
             $fake = Faker::create('es_ES');
             $gender = $fake->randomElement(['M', 'F', 'M']);
             DB::table('players')->insert([

@@ -59,7 +59,7 @@ class SeasonTeam extends Model
 
     public function hasPlayer(int $player_id): bool {
         foreach ($this->seasonPlayers() as $player) {
-            if ($player->player()->id == $player_id)
+            if ($player->playerId() == $player_id)
                 return true;
         }
         return false;

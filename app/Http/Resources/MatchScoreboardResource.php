@@ -23,40 +23,42 @@ class MatchScoreboardResource extends JsonResource
 //        $date->addMinutes(9);
         $today = Carbon::now();
         $minutesDiff = $today->diffInMinutes($date, false);
-        $statusInfo = [];
+        $statusData = [];
         if ($minutesDiff > 0){
-            $statusInfo['status'] = 'Sin Comenzar';
+            $statusData['status'] = 'Sin Comenzar';
             if ($minutesDiff >= 60){
                 $hoursDiff = $today->diffInHours($date, false);
                 if ($hoursDiff >= 24) {
                     $daysDiff = $today->diffInDays($date, false);
-                    $statusInfo['timeUnit'] = 'days';
-                    $statusInfo['daysRemaining'] = $daysDiff;
+                    $statusData['timeUnit'] = 'days';
+                    $statusData['daysRemaining'] = $daysDiff;
                 } else {
-                    $statusInfo['timeUnit'] = 'hours';
-                    $statusInfo['hoursRemaining'] = $hoursDiff;
+                    $statusData['timeUnit'] = 'hours';
+                    $statusData['hoursRemaining'] = $hoursDiff;
                     if ($hoursDiff < 4){
-                        $statusInfo['minutesRemaining'] = $minutesDiff - $hoursDiff*60;
+                        $statusData['minutesRemaining'] = $minutesDiff - $hoursDiff*60;
                     }
                 }
             }
             else {
-                $statusInfo['timeUnit'] = 'minutes';
-                $statusInfo['minutesRemaining'] = $minutesDiff;
+                $statusData['timeUnit'] = 'minutes';
+                $statusData['minutesRemaining'] = $minutesDiff;
             }
         } else if ($this->team1_games_confirmed == 3 &&
                 $this->team2_games_confirmed == 3) {
-            $statusInfo = [
+            $statusData = [
                 'status' => 'Finalizado'
             ];
         } else {
-            $statusInfo = [
-                'status' => 'En Progreso'
+            $statusData = [
+                'status' => 'En Progreso',
+                'phase' => $this->matchPhase(),
+
             ];
         }
 
         return [
-            'status' => $statusInfo,
+            'statusData' => $statusData,
             'date' => $date->format('d/M/Y'),
             'matchdayNumber' => $this->matchday()->number,
             'redPin' => $this->matchday()->red_pin,

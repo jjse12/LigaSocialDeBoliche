@@ -3,8 +3,8 @@ import { routerReducer } from 'react-router-redux';
 import { isFetchingReducer as isFetching } from '../utilities/action-creators';
 import { loggedInPlayerReducer } from "./players";
 import { currentSeasonReducer, nextMatchdayReducer, nextMatchdayMatchesReducer} from './current-season';
-import { teamPlayersReducer } from "./teams";
-import { matchResultsReducer, matchScoreboardsReducer, matchTeamScoreboardReducer,
+import { seasonTeamPlayersReducer } from "./teams";
+import { matchResultsReducer, matchScoreboardsReducer, matchSeasonTeamScoreboardReducer, matchMyTeamAvailablePlayersReducer,
     matchPlayerSeasonTeamIdReducer, matchMyTeamOfflineScoreboardReducer, matchRivalTeamOfflineScoreboardReducer} from "./matches";
 import { scoreCreateReducer, scoreUpdateReducer, scoreDeleteReducer } from "./scores";
 import seasonMatchdays from './season-matchdays';
@@ -17,16 +17,17 @@ export const reducers = {
     nextMatchday: nextMatchdayReducer,
     nextMatchdayMatches: nextMatchdayMatchesReducer,
     matchPlayerSeasonTeamId: matchPlayerSeasonTeamIdReducer,
+    matchMyTeamAvailablePlayers: matchMyTeamAvailablePlayersReducer,
     matchMyTeamOfflineScoreboard: matchMyTeamOfflineScoreboardReducer,
     matchRivalTeamOfflineScoreboard: matchRivalTeamOfflineScoreboardReducer,
     matchResults: matchResultsReducer,
     matchScoreboards: matchScoreboardsReducer,
-    matchTeamScoreboard: matchTeamScoreboardReducer,
+    matchSeasonTeamScoreboard: matchSeasonTeamScoreboardReducer,
     createScore: scoreCreateReducer,
     updateScore: scoreUpdateReducer,
     deleteScore: scoreDeleteReducer,
 
-    teamPlayers: teamPlayersReducer,
+    teamPlayers: seasonTeamPlayersReducer,
     isFetching,
 };
 

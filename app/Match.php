@@ -36,6 +36,34 @@ class Match extends Model
         return $this->team2()->categoryName();
     }
 
+    public function matchPhase(): string {
+        if ($this->team1_games_confirmed === $this->team2_games_confirmed){
+            if ($this->team1_games_confirmed == -1)
+                return 'warming';
+            if ($this->team1_games_confirmed == 0)
+                return 'firstGame';
+            if ($this->team1_games_confirmed == 1)
+                return 'secondGame';
+            if ($this->team1_games_confirmed == 2)
+                return 'thirdGame';
+            if ($this->team1_games_confirmed == 3)
+                return 'concluded';
+        } else if ($this->team1_games_confirmed + $this->team2_games_confirmed > -2) {
+            $minorGameConfirmed = $this->team1_games_confirmed < $this->team2_games_confirmed ? 
+                $this->team1_games_confirmed : $this->team2_games_confirmed;
+            if ($minorGameConfirmed == -1)
+                return 'warming';
+            if ($minorGameConfirmed == 0)
+                return 'firstGame';
+            if ($minorGameConfirmed == 1)
+                return 'secondGame';
+            if ($minorGameConfirmed == 2)
+                return 'thirdGame';
+        }
+
+        return null;
+    }
+
     public function scores(): Collection {
         return $this->hasMany(Score::class, 'match_id', 'id')->get();
     }

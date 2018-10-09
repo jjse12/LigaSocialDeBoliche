@@ -18,8 +18,8 @@ class Matchday extends Model
         }
 
         $winners = new Collection();
-        $malesMinimumScore = config(getenv('GAME_WINNERS_MALES_MINIMUM'), 200);
-        $femalesMinimumScore = config(getenv('GAME_WINNERS_FEMALES_MINIMUM'), 160);
+        $malesMinimumScore = config('GAME_WINNERS_MALES_MINIMUM', 200);
+        $femalesMinimumScore = config('GAME_WINNERS_FEMALES_MINIMUM', 160);
         foreach ($scores as $score) {
             if ($score->score >= $malesMinimumScore ||
                 ($score->score >= $femalesMinimumScore &&

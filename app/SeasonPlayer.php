@@ -12,6 +12,10 @@ class SeasonPlayer extends Model
         return $this->belongsTo(Player::class, 'player_id', 'id')->first();
     }
 
+    public function playerId(): int {
+        return $this->player()->id;
+    }
+
     public function fullName(): string {
         return $this->player()->fullName();
     }
@@ -75,8 +79,8 @@ class SeasonPlayer extends Model
         }
 
         // Calculate handicap based on players average
-        $handicap = (config(getenv('HANDICAP_CALC_BASE_SCORE'), 200) - $this->average())
-                    *config(getenv('HANDICAP_CALC_MULTIPLIER'), 0.8);
+        $handicap = (config('HANDICAP_CALC_BASE_SCORE',200) - $this->average())
+                    *config('HANDICAP_CALC_MULTIPLIER', 0.8);
         if ($handicap > 80)
             return 80;
 
