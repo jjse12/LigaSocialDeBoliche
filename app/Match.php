@@ -2,11 +2,17 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Match extends Model
 {
+    static function previousMatch(Match $match): ?Match {
+        $matchday = $match->matchday();
+//        if ($m)
+    }
+
     //
     public function matchday(): Matchday {
         return $this->belongsTo(Matchday::class, 'matchday_id', 'id')->first();
@@ -36,28 +42,68 @@ class Match extends Model
         return $this->team2()->categoryName();
     }
 
-    public function matchPhase(): string {
+    public function statusData(): array {
+        $date = Carbon::createFromTimeString($this->matchday()->date);
+        $today = Carbon::now();
+        $minutesDiff = $today->diffInMinutes($date, false);
+        $statusData = [];
+        if ($minutesDiff > 0){
+            $statusData['status'] = 'Sin Comenzar';
+            if ($minutesDiff >= 60){
+                $hoursDiff = $today->diffInHours($date, false);
+                if ($hoursDiff >= 24) {
+                    $daysDiff = $today->diffInDays($date, false);
+                    $statusData['timeUnit'] = 'days';
+                    $statusData['daysRemaining'] = $daysDiff;
+                } else {
+                    $statusData['timeUnit'] = 'hours';
+                    $statusData['hoursRemaining'] = $hoursDiff;
+                    if ($hoursDiff < 4){
+                        $statusData['minutesRemaining'] = $minutesDiff - $hoursDiff*60;
+                    }
+                }
+            }
+            else {
+                $statusData['timeUnit'] = 'minutes';
+                $statusData['minutesRemaining'] = $minutesDiff;
+            }
+        } else if ($this->team1_games_confirmed == 3 &&
+            $this->team2_games_confirmed == 3) {
+            $statusData = [
+                'status' => 'Finalizado'
+            ];
+        } else {
+            $statusData = [
+                'status' => 'En Progreso',
+                'phase' => $this->matchPhase(),
+            ];
+        }
+
+        return $statusData;
+    }
+
+    public function matchPhase(): ?string {
         if ($this->team1_games_confirmed === $this->team2_games_confirmed){
-            if ($this->team1_games_confirmed == -1)
+            if ($this->team1_games_confirmed === null)
                 return 'warming';
-            if ($this->team1_games_confirmed == 0)
+            if ($this->team1_games_confirmed === 0)
                 return 'firstGame';
-            if ($this->team1_games_confirmed == 1)
+            if ($this->team1_games_confirmed === 1)
                 return 'secondGame';
-            if ($this->team1_games_confirmed == 2)
+            if ($this->team1_games_confirmed === 2)
                 return 'thirdGame';
-            if ($this->team1_games_confirmed == 3)
+            if ($this->team1_games_confirmed === 3)
                 return 'concluded';
         } else if ($this->team1_games_confirmed + $this->team2_games_confirmed > -2) {
             $minorGameConfirmed = $this->team1_games_confirmed < $this->team2_games_confirmed ? 
                 $this->team1_games_confirmed : $this->team2_games_confirmed;
-            if ($minorGameConfirmed == -1)
+            if ($minorGameConfirmed === null)
                 return 'warming';
-            if ($minorGameConfirmed == 0)
+            if ($minorGameConfirmed === 0)
                 return 'firstGame';
-            if ($minorGameConfirmed == 1)
+            if ($minorGameConfirmed === 1)
                 return 'secondGame';
-            if ($minorGameConfirmed == 2)
+            if ($minorGameConfirmed === 2)
                 return 'thirdGame';
         }
 
@@ -99,7 +145,7 @@ class Match extends Model
         else if ($this->team2()->id == $season_team_id)
             return $this->team2_games_confirmed;
 
-        return null;
+        return -1;
     }
 
     public function setTeamByIdGamesConfirmed(int $season_team_id, int $gamesConfirmed): ?bool {

@@ -8,7 +8,6 @@ use App\Http\Resources\MatchScoreboardResource;
 use App\Http\Resources\MatchTeamAvailablePlayersResource;
 use App\Http\Resources\MatchTeamScoreboardResource;
 use App\Http\Resources\MatchSeasonTeamEndPhaseResource;
-use App\Http\Resources\SeasonTeamPlayersResource;
 use App\Match;
 use App\Player;
 use App\SeasonTeam;
@@ -41,14 +40,10 @@ class MatchController extends Controller
         return response()->json(new MatchScoreboardResource($match));
     }
 
-    public function playerSeasonTeamId(Match $match, Player $player): JsonResponse {
-        $team1 = $match->team1();
-        if ($team1->hasPlayer($player->id))
-            return response()->json(['seasonTeamId' => $team1->id]);
-
-        $team2 = $match->team2();
-        if ($team2->hasPlayer($player->id))
-            return response()->json(['seasonTeamId' => $team2->id]);
+    public function loggedInPlayerSeasonTeamId(Match $match, Player $player): JsonResponse {
+        $team = $match->getTeamById($player->seasonPlayer($match->matchday()->season()->id)->seasonTeam()->id);
+        if ($team !== null && $team->hasPlayer($player->id))
+            return response()->json(['seasonTeamId' => $team->id]);
 
         return response()->json(['seasonTeamId' => 0]);
     }

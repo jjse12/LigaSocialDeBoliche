@@ -30,7 +30,7 @@ class Player extends Authenticatable
     public function seasonPlayer(int $season_id): ?SeasonPlayer {
         foreach ($this->allSeasonPlayers() as $player) {
             if ($player->seasonTeam()->season_id == $season_id){
-                return $player->scores();
+                return $player;
             }
         }
 
@@ -41,6 +41,7 @@ class Player extends Authenticatable
         $seasonPlayer = $this->seasonPlayer($season_id);
         return $seasonPlayer != null ? $seasonPlayer->scores() : null;
     }
+
     public function scores(): Collection{
         $scores = new Collection();
         foreach ($this->allSeasonPlayers() as $player) {

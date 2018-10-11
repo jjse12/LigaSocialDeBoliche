@@ -18,44 +18,7 @@ class MatchScoreboardResource extends JsonResource
         $team1 = $this->team1();
         $team2 = $this->team2();
         $date = Carbon::createFromTimeString($this->matchday()->date);
-//        $date->subDays(9);
-//        $date->subHours(16);
-//        $date->addMinutes(9);
-        $today = Carbon::now();
-        $minutesDiff = $today->diffInMinutes($date, false);
-        $statusData = [];
-        if ($minutesDiff > 0){
-            $statusData['status'] = 'Sin Comenzar';
-            if ($minutesDiff >= 60){
-                $hoursDiff = $today->diffInHours($date, false);
-                if ($hoursDiff >= 24) {
-                    $daysDiff = $today->diffInDays($date, false);
-                    $statusData['timeUnit'] = 'days';
-                    $statusData['daysRemaining'] = $daysDiff;
-                } else {
-                    $statusData['timeUnit'] = 'hours';
-                    $statusData['hoursRemaining'] = $hoursDiff;
-                    if ($hoursDiff < 4){
-                        $statusData['minutesRemaining'] = $minutesDiff - $hoursDiff*60;
-                    }
-                }
-            }
-            else {
-                $statusData['timeUnit'] = 'minutes';
-                $statusData['minutesRemaining'] = $minutesDiff;
-            }
-        } else if ($this->team1_games_confirmed == 3 &&
-                $this->team2_games_confirmed == 3) {
-            $statusData = [
-                'status' => 'Finalizado'
-            ];
-        } else {
-            $statusData = [
-                'status' => 'En Progreso',
-                'phase' => $this->matchPhase(),
-
-            ];
-        }
+        $statusData = $this->statusData();
 
         return [
             'statusData' => $statusData,

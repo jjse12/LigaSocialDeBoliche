@@ -23,22 +23,25 @@ class MatchSeasonTeamEndPhaseResource extends JsonResource
         $match = Match::find($request->match);
         $teamName = SeasonTeam::find($request->seasonTeamId)->first()->name();
         $gamesConfirmed = $match->getTeamByIdGamesConfirmed($request->seasonTeamId);
-        if ($gamesConfirmed == null)
+        if ($gamesConfirmed === -1)
             throw new BadRequestHttpException("¡El equipo $teamName no es participante de este juego!" );
 
         $exceptionMessage = '';
-        if ($request->phase == 'warming' && $gamesConfirmed > -1)
+        if ($request->phase == 'warming' && $gamesConfirmed !== null)
             $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
-        if ($request->phase == 'firstGame' && $gamesConfirmed > 0)
-            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
-        if ($request->phase == 'secondGame' && $gamesConfirmed > 1)
-            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
-        if ($request->phase == 'thirdGame' && $gamesConfirmed > 2)
-            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'firstGame' && $gamesConfirmed >= 1)
+            $exceptionMessage = "¡La primera linea de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'secondGame' && $gamesConfirmed >= 2)
+            $exceptionMessage = "¡La segunda linea de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'thirdGame' && $gamesConfirmed >= 3)
+            $exceptionMessage = "¡La tercera linea de este juego ya ha concluido para el equipo $teamName!";
         if ($exceptionMessage != '')
             throw new BadRequestHttpException($exceptionMessage);
 
-        $updateSucceed = $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed+1);
+        if ($gamesConfirmed === null)
+            $gamesConfirmed = 0;
+        else $gamesConfirmed++;
+        $updateSucceed = $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed);
         if (!$updateSucceed)
             throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
 

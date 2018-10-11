@@ -60,7 +60,7 @@ Route::group(['prefix' => 'match'], function() {
         Route::get('/scoreboards', 'MatchController@scoreboards');
         Route::get('/scores', 'MatchController@scores');
 
-        Route::get('/player/{player}/season-team-id', 'MatchController@playerSeasonTeamId');
+        Route::get('/player/{player}/season-team-id', 'MatchController@loggedInPlayerSeasonTeamId');
 
         Route::group(['prefix' => '/season-team/{seasonTeam}'], function() {
             Route::get('/scoreboard', 'MatchController@seasonTeamScoreboard');

@@ -95,7 +95,7 @@ export default class MatchScoreboards extends Component {
 
         this.state = {
             playerSelectionDialogOpen: false,
-            pollingTime: 5,
+            pollingTime: 30,
             usingMyTeamOfflineScoreboard: false,
             usingRivalTeamOfflineScoreboard: false,
             selectedPlayers: selectedPlayers
@@ -177,7 +177,7 @@ export default class MatchScoreboards extends Component {
 
     setPlayerSelectionDialogOpenAsRequired = () => {
         if (this.isMatchPlayer()){
-            if (this.getMatchMyTeam().data.gamesConfirmed >= 0) {
+            if (this.getMatchMyTeam().data.gamesConfirmed !== null) {
                 if (this.gameScoresCount(this.getMatchMyTeam().results.playersScores, this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
                     if (!this.state.playerSelectionDialogOpen)
                         this.setPlayerSelectionDialogOpen(true);
@@ -326,9 +326,10 @@ export default class MatchScoreboards extends Component {
 
     matchPhaseByMyTeamGamesConfirmed = () => {
         if (this.isMatchPlayer() && this.matchStatus() === 'En Progreso'){
+            if (this.getMatchMyTeam().data.gamesConfirmed === null)
+                return 'warming';
+
             switch (this.getMatchMyTeam().data.gamesConfirmed) {
-                case -1:
-                    return 'warming';
                 case 0:
                     return 'firstGame';
                 case 1:
@@ -339,6 +340,7 @@ export default class MatchScoreboards extends Component {
                     return 'concluded';
             }
         }
+
         return null;
     };
 
@@ -365,7 +367,7 @@ export default class MatchScoreboards extends Component {
                 element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
             } else {
                 if (this.matchPhase() === 'warming'){
-                    if (team.data.gamesConfirmed === -1){
+                    if (team.data.gamesConfirmed === null){
                         element = <button className={`btn btn-md btn-success`} onClick={this.seasonTeamEndPhase}>Terminar calentamiento</button>
                     } else {
                         element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Esperando al rival</div>
@@ -374,7 +376,7 @@ export default class MatchScoreboards extends Component {
                     if (this.gameScoresCount(team.results.playersScores, this.matchPhase()) === 0){
                         element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
                     } else {
-                        element = <button className={`btn btn-md btn-success`} onClick={toggler}>Terminar Linea</button>
+                        element = <button className={`btn btn-md btn-success`} onClick={this.seasonTeamEndPhase}>Terminar Linea</button>
                     }
                 }
             }
@@ -414,7 +416,8 @@ export default class MatchScoreboards extends Component {
 
     prepareScoreDataForSelectedPlayers = () => {
         const { matchId } = this.props.match.params;
-        const newGameNumber = this.getMatchMyTeam().data.gamesConfirmed + 1;
+        const newGameNumber = this.getMatchMyTeam().data.gamesConfirmed !== null ?
+            this.getMatchMyTeam().data.gamesConfirmed + 1 : 0;
         let scoresData = [];
         let turnNumber = 1;
         this.state.selectedPlayers.map(player => {
@@ -429,6 +432,7 @@ export default class MatchScoreboards extends Component {
 
             scoresData.push(scoreData);
         });
+
         return scoresData;
     };
 
@@ -436,7 +440,7 @@ export default class MatchScoreboards extends Component {
         if (!this.isMatchPlayer())
             return;
 
-        const scoreData = this.prepareScoreDataForSelectedPlayers();
+        const scoresData = this.prepareScoreDataForSelectedPlayers();
         this.props.createMatchNewGameScores(scoresData)
             .then(() => {
                 this.setPlayerSelectionDialogOpen(false);
@@ -512,6 +516,8 @@ export default class MatchScoreboards extends Component {
             if (!selectedPlayersId.includes(player.id)){
                 let p = {};
                 p.label = player.fullName + ' - HDCP: ' + player.handicap;
+                if (player.handicap === null)
+                    p.label = player.fullName + ' - HDCP: Debe jugar 3 lineas';
                 p.value = player.fullName;
                 p.id = player.id;
                 p.handicap = player.handicap;
@@ -572,7 +578,7 @@ export default class MatchScoreboards extends Component {
             />;
         } else {
             let hdcpBoxContent = player.id === 0 ? <small><b>&nbsp;100 Pines</b></small> :
-                <small>HDCP : <b>{player.handicap < 10 ? `\u00A0${player.handicap}\u00A0` : player.handicap}</b></small>;
+                <small>HDCP : <b>{player.handicap === null ? '¿ ?' : player.handicap < 10 ? `\u00A0${player.handicap}\u00A0` : player.handicap}</b></small>;
             playerBox = <div className='d-flex flex-row mb-3 mt-2'>
                 <span className='input-group-text player-selection-handicap'>{hdcpBoxContent}</span>
                 <input readOnly className={`form-control player-category-${player.category}`} value={player.name}/>

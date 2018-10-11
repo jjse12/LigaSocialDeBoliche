@@ -7,7 +7,12 @@ export const matchScoreboardScoresColumns = (match, teamId) => {
             accessor: 'handicap',
             className: 'text-center',
             sortable: false,
-            width: 55
+            width: 55,
+            Cell: row => {
+                if (row.original.handicap === null)
+                    return "¿ ?";
+                else return row.original.handicap;
+            }
         },
         {
             Header: 'Jugador',
@@ -56,7 +61,7 @@ export const matchScoreboardTotalsColumns = (empty = false, fetching = false) =>
             Header: !empty ? 'Totales' :
                 fetching ?
                     <div className={'d-flex justify-content-center'}>
-                        <ReactLoading type={'spin'} color={'#488aaa'} height={'20%'} width={'20%'}/>
+                        <ReactLoading type={'spin'} color={'white'} height={'20%'} width={'20%'}/>
                     </div> :
                     <div style={{background: 'tomato'}}>! Aún no se han registrado marcadores para este juego !</div>,
             columns: [

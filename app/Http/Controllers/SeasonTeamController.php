@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SeasonTeamPlayersResource;
 use App\SeasonTeam;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SeasonTeamController extends Controller
 {

@@ -21,16 +21,16 @@ class MatchTeamAvailablePlayersResource extends JsonResource
         $seasonTeam = SeasonTeam::find($request->seasonTeam);
         $teamName = $seasonTeam->name();
         $gamesConfirmed = $match->getTeamByIdGamesConfirmed($seasonTeam->id);
-        if ($gamesConfirmed === null)
+        if ($gamesConfirmed === -1)
             throw new BadRequestHttpException("¡El equipo $teamName no es participante de este juego!" );
 
         $availablePlayers = [];
-        if ($gamesConfirmed <= -1)
+        if ($gamesConfirmed === null)
             throw new BadRequestHttpException("¡El equipo $teamName aún está en la fase de calentamiento de este juego !" );
         else if ($gamesConfirmed === 0 || $gamesConfirmed === 1){
-            $availablePlayers = (new SeasonTeamPlayersResource($seasonTeam))->toArray(null);
+            $availablePlayers = (new SeasonTeamPlayersResource($seasonTeam, true))->toArray(null);
         } else if ($gamesConfirmed === 2){
-            $players = (new SeasonTeamPlayersResource($seasonTeam))->toArray(null);
+            $players = (new SeasonTeamPlayersResource($seasonTeam, true))->toArray(null);
             $teamScores = $match->scores()->whereIn('season_player_id', $seasonTeam->seasonPlayers()->pluck('id'));
 
             foreach ($players as $player) {

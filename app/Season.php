@@ -39,10 +39,19 @@ class Season extends Model
         return $players;
     }
 
+    public function matches(): Collection {
+        $matches= new Collection();
+        foreach ($this->matchdays() as $matchday) {
+            $matches = $matches->merge($matchday->matches());
+        }
+
+        return $matches;
+    }
+
     public function scores(): Collection {
         $scores = new Collection();
         foreach ($this->seasonPlayers() as $player) {
-            $scores = $scores->merge($player->scores());
+            $scores = $scores->merge($player->scores(false));
         }
         return $scores;
     }

@@ -40,29 +40,35 @@ class SeasonPlayer extends Model
         return $this->category()->name;
     }
 
-    public function scores(): Collection {
-        return $this->hasMany(Score::class, 'season_player_id', 'id')->get();
+    public function scores(bool $onlyConcludedMatches = true): Collection {
+        $scores = $this->hasMany(Score::class, 'season_player_id', 'id')->get();
+        if ($onlyConcludedMatches){
+            $season = $this->seasonTeam()->season();
+            return $scores->whereIn('match_id', $season->matches()->where('concluded', '1')->pluck('id'));
+        }
+
+        return $scores;
     }
 
-    public function gamesPlayed(): int {
-        return $this->scores()->count();
+    public function gamesPlayed(bool $onlyConcludedMatches = true): int {
+        return $this->scores($onlyConcludedMatches)->count();
     }
 
-    public function pinTotal(): int {
-        return $this->scores()->sum('score');
+    public function pinTotal(bool $onlyConcludedMatches = true): int {
+        return $this->scores($onlyConcludedMatches)->sum('score');
     }
 
-    public function average(): float {
-        if ($this->gamesPlayed() == 0)
+    public function average(bool $onlyConcludedMatches = true): float {
+        if ($this->gamesPlayed($onlyConcludedMatches) == 0)
             return 0.0;
 
-        return round($this->scores()->avg('score'),2);
+        return round($this->scores($onlyConcludedMatches)->avg('score'),2);
     }
 
-    public function handicap(): int {
+    public function handicap(bool $onlyConcludedMatches = true): ?int {
 
-        // Get handicap for first matchday of season
-        if ($this->gamesPlayed() == 0) {
+        // Get handicap for player's first matchday in season
+        if ($this->gamesPlayed($onlyConcludedMatches) == 0) {
             $prevSeasonId = $this->seasonTeam()->season_id - 1;
             $queryResult = Season::find($prevSeasonId);
             if ($queryResult != null) {
@@ -75,23 +81,27 @@ class SeasonPlayer extends Model
                 }
             }
 
-            return -100;
+            return null;
         }
 
         // Calculate handicap based on players average
-        $handicap = (config('HANDICAP_CALC_BASE_SCORE',200) - $this->average())
-                    *config('HANDICAP_CALC_MULTIPLIER', 0.8);
-        if ($handicap > 80)
-            return 80;
+        $handicap = (config('HANDICAP_CALC_BASE_SCORE',200) - $this->average($onlyConcludedMatches));
+        $handicap =  $handicap*config('HANDICAP_CALC_MULTIPLIER', 0.8);
 
-        if ($handicap < 0)
-            return 0;
+        $maxHandicap = config('HANDICAP_MAX', 80);
+        if ($handicap > $maxHandicap)
+            return $maxHandicap;
+
+        $minHandicap= config('HANDICAP_MIN', 0);
+        if ($handicap < $minHandicap)
+            return $minHandicap;
 
         return round($handicap);
     }
 
     public function matchScores(int $match_id): Collection {
-        return $this->scores()->where('match_id', "$match_id");
+        $scores = $this->hasMany(Score::class, 'season_player_id', 'id')->get();
+        return $scores->where('match_id', "$match_id");
     }
 
     public function matchGameScore(int $match_id, int $game_number): Score {

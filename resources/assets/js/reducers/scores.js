@@ -6,8 +6,13 @@ export const CREATE_SCORE = 'create_score';
 export const UPDATE_SCORE = 'update_score';
 export const DELETE_SCORE = 'delete_score';
 
-export const createMatchNewGameScores = (scoresData) => dispatch => {
-    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES, uri.api.scoreCreateMatchNewGameScores, {scores: scoresData}));
+export const createMatchNewGameScores = (matchId, seasonTeamId, scoresData) => dispatch => {
+    const data = {
+        match: matchId,
+        seasonTeamId: seasonTeamId,
+        scores: scoresData,
+    };
+    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES, uri.api.scoreCreateMatchNewGameScores, data));
 };
 
 export const createScore = (matchId, seasonPlayerId, score, handicap) => dispatch => {
