@@ -24600,6 +24600,31 @@ main.cover {
   }
 }
 
+.player-category-AA {
+  color: white !important;
+  background: #4a4d50 !important;
+}
+
+.player-category-A {
+  color: white !important;
+  background: #116e7f !important;
+}
+
+.player-category-B {
+  color: white !important;
+  background: #119bac !important;
+}
+
+.player-category-C {
+  color: white !important;
+  background: #40c0b9 !important;
+}
+
+.player-selection-handicap {
+  background: #f7fff9 !important;
+  color: black !important;
+}
+
 div.auth-box {
   opacity: 0.5;
   filter: alpha(opacity=50);
@@ -24637,88 +24662,6 @@ div.auth-box {
 
 main.cover {
   background-color: transparent;
-}
-
-@media (max-width: 991.98px) {
-  .cover-front {
-    padding-top: 80px !important;
-  }
-}
-
-.cover_photo {
-  background: -webkit-gradient(linear, left top, left bottom, from(rgba(72, 138, 170, 0.5)), to(rgba(72, 138, 170, 0.5))), url("/images/where-to-buy.jpg") center center fixed;
-  background: linear-gradient(rgba(72, 138, 170, 0.5), rgba(72, 138, 170, 0.5)), url("/images/where-to-buy.jpg") center center fixed;
-  background-position: center center;
-  background-attachment: fixed;
-  background-size: cover;
-}
-
-.cover_where-to-buy {
-  background: -webkit-gradient(linear, left top, left bottom, from(rgba(52, 58, 58, 0.8)), to(rgba(52, 58, 58, 0.8))), url("/images/bg-shopping-girl.jpg") center center fixed;
-  background: linear-gradient(rgba(52, 58, 58, 0.8), rgba(52, 58, 58, 0.8)), url("/images/bg-shopping-girl.jpg") center center fixed;
-  background-position: center center;
-  background-attachment: fixed;
-  background-size: cover;
-}
-
-.cover-default {
-  background: url("/videosdefault.mp4");
-}
-
-.cover-co {
-  background: url("/videosco.mp4");
-}
-
-.cover-cr {
-  background: url("/videoscr.mp4");
-}
-
-.cover-cu {
-  background: url("/videoscu.mp4");
-}
-
-.cover-do {
-  background: url("/videosdo.mp4");
-}
-
-.cover-ec {
-  background: url("/videosec.mp4");
-}
-
-.cover-gt {
-  background: url("/videosgt.mp4");
-}
-
-.cover-hn {
-  background: url("/videoshn.mp4");
-}
-
-.cover-ht {
-  background: url("/videosht.mp4");
-}
-
-.cover-jm {
-  background: url("/videosjm.mp4");
-}
-
-.cover-mx {
-  background: url("/videosmx.mp4");
-}
-
-.cover-ni {
-  background: url("/videosni.mp4");
-}
-
-.cover-pa {
-  background: url("/videospa.mp4");
-}
-
-.cover-pr {
-  background: url("/videospr.mp4");
-}
-
-.cover-sv {
-  background: url("/videossv.mp4");
 }
 
 div.loading-table {

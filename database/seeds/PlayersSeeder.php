@@ -57,6 +57,16 @@ class PlayersSeeder extends Seeder
         DB::table('players')->insert([
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
             'gender' => 'M',
+            'first_name' => 'Guillermo',
+            'last_name' => 'Abate',
+            'email' => 'memo-abate@gmail.com',
+            'phone' => '58371021',
+            'birthday' => '1980-03-15',
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
+        DB::table('players')->insert([
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'gender' => 'M',
             'first_name' => 'Julio',
             'last_name' => 'Roa',
             'email' => 'julioroa@hotmail.com',

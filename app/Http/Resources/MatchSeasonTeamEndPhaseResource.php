@@ -22,44 +22,23 @@ class MatchSeasonTeamEndPhaseResource extends JsonResource
     {
         $match = Match::find($request->match);
         $teamName = SeasonTeam::find($request->seasonTeamId)->first()->name();
-        $gamesConfirmed = null;
-        if ($match->team1()->id == $request->seasonTeamId){
-            $gamesConfirmed = $match->team1_games_confirmed;
-        } else if ($match->team2()->id == $request->seasonTeam){
-            $gamesConfirmed = $match->team2_games_confirmed;
-        } else {
+        $gamesConfirmed = $match->getTeamByIdGamesConfirmed($request->seasonTeamId);
+        if ($gamesConfirmed == null)
             throw new BadRequestHttpException("¡El equipo $teamName no es participante de este juego!" );
-        }
-        
-        switch ($request->phase){
-            case 'warming':
-                if ($gamesConfirmed > -1)
-                    throw new BadRequestHttpException("¡El calentamiento de este juego ya ha concluido para el equipo $teamName!");
 
-                break;
-            case 'firstGame':
-                if ($gamesConfirmed > 0)
-                    throw new BadRequestHttpException("¡La primera linea de este juego ya ha concluido para el equipo $teamName!");
-                break;
-            case 'secondGame':
-                if ($gamesConfirmed > 1)
-                    throw new BadRequestHttpException("¡La segunda linea de este juego ya ha concluido para el equipo $teamName!");
-                break;
-            case 'thirdGame':
-                if ($gamesConfirmed > 2)
-                    throw new BadRequestHttpException("¡La tercera linea de este juego ya ha concluido para el equipo $teamName!");
-                break;
-            default:
-                throw new BadRequestHttpException();
-        }
+        $exceptionMessage = '';
+        if ($request->phase == 'warming' && $gamesConfirmed > -1)
+            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'firstGame' && $gamesConfirmed > 0)
+            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'secondGame' && $gamesConfirmed > 1)
+            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
+        if ($request->phase == 'thirdGame' && $gamesConfirmed > 2)
+            $exceptionMessage = "¡El calentamiento de este juego ya ha concluido para el equipo $teamName!";
+        if ($exceptionMessage != '')
+            throw new BadRequestHttpException($exceptionMessage);
 
-        if ($match->team1()->id == $request->seasonTeamId){
-            $match->team1_games_confirmed = $gamesConfirmed + 1;
-        } else if ($match->team2()->id == $request->seasonTeam) {
-            $match->team2_games_confirmed = $gamesConfirmed + 1;
-        }
-
-        $updateSucceed = $match->update();
+        $updateSucceed = $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed+1);
         if (!$updateSucceed)
             throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
 

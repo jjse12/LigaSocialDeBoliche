@@ -1,18 +1,23 @@
 import { ajaxPost, ajaxPatch, ajaxDelete } from "../utilities/action-creators";
 import uri from "../services/uri";
 
-export const SCORE_CREATE = 'score_create';
-export const SCORE_UPDATE = 'score_update';
-export const SCORE_DELETE = 'score_delete';
+export const CREATE_MATCH_NEW_GAME_SCORES = 'create_match_new_game_scores';
+export const CREATE_SCORE = 'create_score';
+export const UPDATE_SCORE = 'update_score';
+export const DELETE_SCORE = 'delete_score';
 
-export const createScore = (seasonPlayerId, matchId, score, handicap) => dispatch => {
+export const createMatchNewGameScores = (scoresData) => dispatch => {
+    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES, uri.api.scoreCreateMatchNewGameScores, {scores: scoresData}));
+};
+
+export const createScore = (matchId, seasonPlayerId, score, handicap) => dispatch => {
     const data = {
-        season_player_id: seasonPlayerId,
         match_id: matchId,
+        season_player_id: seasonPlayerId,
         score: score,
         handicap: handicap
     };
-    dispatch(ajaxPost(SCORE_CREATE, uri.api.score, data));
+    dispatch(ajaxPost(CREATE_SCORE, uri.api.score, data));
 };
 
 export const updateScore = (scoreId, score = null, seasonPlayerId = null, handicap = null) => dispatch => {
@@ -24,15 +29,15 @@ export const updateScore = (scoreId, score = null, seasonPlayerId = null, handic
     if (handicap != null)
         data.handicap = handicap;
 
-    return dispatch(ajaxPatch(SCORE_UPDATE, uri.api.score, data));
+    return dispatch(ajaxPatch(UPDATE_SCORE, uri.api.score, data));
 };
 
 export const deleteScore = (scoreId) => dispatch =>
-    dispatch(ajaxDelete(SCORE_DELETE, uri.api.scoreDelete(scoreId)));
+    dispatch(ajaxDelete(DELETE_SCORE, uri.api.scoreDelete(scoreId)));
 
 export function scoreCreateReducer(state = {}, action) {
     switch (action.type) {
-        case SCORE_CREATE:
+        case CREATE_SCORE:
             return action.data;
     }
     return state;
@@ -40,7 +45,7 @@ export function scoreCreateReducer(state = {}, action) {
 
 export function scoreUpdateReducer(state = {}, action) {
     switch (action.type) {
-        case SCORE_UPDATE:
+        case UPDATE_SCORE:
             return action.data;
     }
     return state;
@@ -48,7 +53,7 @@ export function scoreUpdateReducer(state = {}, action) {
 
 export function scoreDeleteReducer(state = {}, action) {
     switch (action.type) {
-        case SCORE_DELETE:
+        case DELETE_SCORE:
             return action.data;
     }
     return state;

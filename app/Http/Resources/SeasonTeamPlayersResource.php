@@ -19,6 +19,7 @@ class SeasonTeamPlayersResource extends JsonResource
             array_push($result, [
                 'id' => $player->id,
                 'fullName' => $player->fullName(),
+                'gender' => $player->gender(),
                 'category' => $player->categoryName(),
                 'gamesPlayed' => $player->gamesPlayed(),
                 'pinTotal' => $player->pinTotal(),

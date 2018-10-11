@@ -2,13 +2,20 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 
+library.add(faTimes);
 library.add(faDesktop);
 library.add(faCloud);
 library.add(faCloudDownloadAlt);
 library.add(faCloudUploadAlt);
 library.add(faArrowRight);
+
+export const Times = (size) => <FontAwesomeIcon icon={'times'} size={size}/>;
+export const TimesX = size => Times(`${size}x`);
+export const TimesLg = () => Times('lg');
+export const TimesSm = () => Times('sm');
+export const TimesXs = () => Times('xs');
 
 export const Desktop = (size) => <FontAwesomeIcon icon={'desktop'} size={size}/>;
 export const DesktopX = size => Desktop(`${size}x`);

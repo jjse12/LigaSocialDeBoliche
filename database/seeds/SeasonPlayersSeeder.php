@@ -52,9 +52,15 @@ class SeasonPlayersSeeder extends Seeder
             'category_id' => 2,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s')
         ]);
+        DB::table('season_players')->insert([
+            'player_id' => 7,
+            'season_team_id' => 1,
+            'category_id' => 2,
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s')
+        ]);
 
         $team = 2;
-        for($i = 7; $i <= 144; $i++){
+        for($i = 8; $i <= 145; $i++){
             DB::table('season_players')->insert([
                 'player_id' => $i,
                 'season_team_id' => $team,

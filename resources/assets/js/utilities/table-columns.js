@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactLoading from "react-loading";
 export const matchScoreboardScoresColumns = (match, teamId) => {
     return [
         {
@@ -49,10 +50,15 @@ export const matchScoreboardScoresColumns = (match, teamId) => {
     ];
 };
 
-export const matchScoreboardTotalsColumns = (empty = false) => {
+export const matchScoreboardTotalsColumns = (empty = false, fetching = false) => {
     return [
         {
-            Header: !empty ? 'Totales' : <div style={{background: 'tomato'}}>! Aún no se han registrado marcadores para este juego !</div>,
+            Header: !empty ? 'Totales' :
+                fetching ?
+                    <div className={'d-flex justify-content-center'}>
+                        <ReactLoading type={'spin'} color={'#488aaa'} height={'20%'} width={'20%'}/>
+                    </div> :
+                    <div style={{background: 'tomato'}}>! Aún no se han registrado marcadores para este juego !</div>,
             columns: [
                 {
                     Header: null,

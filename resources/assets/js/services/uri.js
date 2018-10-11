@@ -36,6 +36,7 @@ const uris = {
         matchSeasonTeamEndPhase: '/match/season-team-end-phase',
 
         // Scores
+        scoreCreateMatchNewGameScores: '/score/match-new-game-scores',
         score: '/score',
         scoreDelete: scoreId => `/score/${scoreId}`,
     }

@@ -93,6 +93,25 @@ class Match extends Model
         return null;
     }
 
+    public function getTeamByIdGamesConfirmed(int $season_team_id): ?int {
+        if ($this->team1()->id == $season_team_id)
+            return $this->team1_games_confirmed;
+        else if ($this->team2()->id == $season_team_id)
+            return $this->team2_games_confirmed;
+
+        return null;
+    }
+
+    public function setTeamByIdGamesConfirmed(int $season_team_id, int $gamesConfirmed): ?bool {
+        if ($this->team1()->id == $season_team_id)
+            $this->team1_games_confirmed = $gamesConfirmed;
+        else if ($this->team2()->id == $season_team_id)
+            $this->team2_games_confirmed = $gamesConfirmed;
+        else return null;
+
+        return $this->update();
+    }
+
     public function team1Points(): int {
         $team1 = $this->team1();
         $team2 = $this->team2();

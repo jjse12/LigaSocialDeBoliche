@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MatchSeasonTeamEndPhaseRequest;
 use App\Http\Resources\MatchResultsSummaryResource;
 use App\Http\Resources\MatchScoreboardResource;
+use App\Http\Resources\MatchTeamAvailablePlayersResource;
 use App\Http\Resources\MatchTeamScoreboardResource;
 use App\Http\Resources\MatchSeasonTeamEndPhaseResource;
 use App\Http\Resources\SeasonTeamPlayersResource;
@@ -13,6 +14,7 @@ use App\Player;
 use App\SeasonTeam;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class MatchController extends Controller
@@ -51,22 +53,12 @@ class MatchController extends Controller
         return response()->json(['seasonTeamId' => 0]);
     }
 
-    public function seasonTeamEndPhase(MatchSeasonTeamEndPhaseRequest $request): JsonResponse {
-
-        return response()->json(new MatchSeasonTeamEndPhaseResource($request));
+    // Get a team's available players (those whom have not played any game yet in the current match)
+    public function seasonTeamAvailablePlayers(Request $request): JsonResponse {
+        return response()->json(new MatchTeamAvailablePlayersResource($request));
     }
 
-    // Get a team's available players (those whom have not played any game yet in the current match)
-    public function seasonTeamAvailablePlayers(Match $match, SeasonTeam $seasonTeam): JsonResponse {
-        $players = new SeasonTeamPlayersResource($seasonTeam);
-        $playersId = $match->scores()->pluck('season_player_id')->toArray();
-        $availablePlayers = [];
-        foreach ($players->toArray(null) as $player) {
-            if (!in_array($player['id'], $playersId)){
-                array_push($availablePlayers, $player);
-            }
-        }
-
-        return response()->json($availablePlayers);
+    public function seasonTeamEndPhase(MatchSeasonTeamEndPhaseRequest $request): JsonResponse {
+        return response()->json(new MatchSeasonTeamEndPhaseResource($request));
     }
 }

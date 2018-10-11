@@ -1,6 +1,6 @@
 import {ajaxGet, ajaxPost} from "../utilities/action-creators";
 import uri from "../services/uri";
-import {SCORE_CREATE} from "./scores";
+import {CREATE_SCORE} from "./scores";
 
 export const MATCH_RESULTS = 'get_match_results';
 export const MATCH_SCOREBOARDS = 'get_match_scoreboards';
@@ -12,7 +12,7 @@ export const MATCH_RIVAL_TEAM_OFFLINE_SCOREBOARD = 'get_match_rival_team_offline
 
 export const MATCH_TEAM_END_PHASE = 'post_match_team_end_phase';
 
-const totalsObject = title => {
+export const totalsObject = title => {
     return {
         title: title,
         firstGame: 0,
@@ -101,7 +101,7 @@ export function matchPlayerSeasonTeamIdReducer(state = 0, action) {
     return state;
 }
 
-export function matchMyTeamAvailablePlayersReducer(state = {}, action) {
+export function matchMyTeamAvailablePlayersReducer(state = [], action) {
     switch (action.type) {
         case MATCH_MY_TEAM_AVAILABLE_PLAYERS:
             return action.data

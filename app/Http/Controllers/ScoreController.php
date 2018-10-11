@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateNewGameScoresRequest;
 use App\Http\Requests\ScoreStoreRequest;
 use App\Http\Requests\ScoreUpdateRequest;
+use App\Http\Resources\CreateNewGameScoresResource;
 use App\Http\Resources\ScoreResource;
 use App\Score;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +24,10 @@ class ScoreController extends Controller
         return response()->json(new ScoreResource($score));
     }
 
+    public function storeMatchNewGameScores(CreateNewGameScoresRequest $request): JsonResponse {
+        return response()->json(new CreateNewGameScoresResource($request));
+    }
+
     /**
      * Store a new score.
      *
@@ -32,6 +38,7 @@ class ScoreController extends Controller
         $newScore = Score::create($score->all());
         return response()->json($newScore, 201);
     }
+
 
     public function update(ScoreUpdateRequest $scoreRequest): JsonResponse {
         $score = Score::find($scoreRequest->id);
