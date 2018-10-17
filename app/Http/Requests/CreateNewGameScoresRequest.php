@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Match;
-use App\SeasonTeam;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +19,7 @@ class CreateNewGameScoresRequest extends FormRequest
     {
         $msg = 'Ocurrió un error inesperado';
         if (Match::where('id', $this->match)->exists()){
-            $match = Match::find($this->match);
+            $match = Match::find($this->match)->first();
             $status = $match->statusData()['status'];
             if ($status === 'En Progreso'){
                 $team = $match->getTeamById($this->seasonTeamId);
@@ -54,7 +53,7 @@ class CreateNewGameScoresRequest extends FormRequest
             'seasonTeamId' => 'required|numeric|exists:season_teams,id',
             'scores' => 'bail|array',
             'scores.*.match_id' => 'bail|required|numeric|exists:matches,id',//.Rule::in(Match::all()->pluck('id')->toArray()),
-            'scores.*.season_player_id' => 'bail|required|numeric|distinct|exists:season_players,id',//.Rule::in(SeasonPlayer::all()->pluck('id')->toArray()),
+            'scores.*.season_player_id' => 'bail|nullable|numeric|distinct|exists:season_players,id',//.Rule::in(SeasonPlayer::all()->pluck('id')->toArray()),
             'scores.*.score' => 'bail|required|numeric',
             'scores.*.game_number' => 'bail|required|numeric|in:"1","2","3"',
             'scores.*.turn_number' => 'bail|required|numeric|distinct|in:"1","2","3","4"',

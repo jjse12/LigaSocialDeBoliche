@@ -23,27 +23,27 @@ export const matchScoreboardScoresColumns = (match, teamId) => {
         },
         {
             Header: 'Linea 1',
-            accessor: 'firstGame',
+            accessor: 'firstGame.score',
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => match.renderCell(row, 'firstGameScoreId')
+            Cell: row => match.renderCell(row, 0)
         },
         {
             Header: 'Linea 2',
-            accessor: 'secondGame',
+            accessor: 'secondGame.score',
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => match.renderCell(row, 'secondGameScoreId')
+            Cell: row => match.renderCell(row, 1)
         },
         {
             Header: 'Linea 3',
-            accessor: 'thirdGame',
+            accessor: 'thirdGame.score',
             className: 'text-center',
             sortable: false,
             width: 65,
-            Cell: row => match.renderCell(row, 'thirdGameScoreId')
+            Cell: row => match.renderCell(row, 2)
         },
         {
             Header: 'Total',

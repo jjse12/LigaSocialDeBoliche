@@ -139,6 +139,15 @@ class Match extends Model
         return null;
     }
 
+    public function getTeamByIdGamesWithBlind(int $season_team_id): ?string{
+        if ($this->team1()->id == $season_team_id)
+            return $this->team1_games_with_blind;
+        else if ($this->team2()->id == $season_team_id)
+            return $this->team2_games_with_blind;
+
+        return null;
+    }
+
     public function getTeamByIdGamesConfirmed(int $season_team_id): ?int {
         if ($this->team1()->id == $season_team_id)
             return $this->team1_games_confirmed;

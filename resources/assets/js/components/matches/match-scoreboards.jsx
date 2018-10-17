@@ -37,12 +37,19 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Select from 'react-select';
+import KeepPlayersDialog from "./keep-players-dialog";
 
 const blind = {
     label: 'BLIND',
     value : 'BLIND',
     id : 0
 };
+
+const scoreIdGameNumberIndex = [
+    'firstGame',
+    'secondGame',
+    'thirdGame',
+];
 
 const turnPlaceholders = [
     'Jugador abridor', 'Segundo jugador', 'Tercer Jugador', 'Jugador cerrador'
@@ -94,6 +101,7 @@ export default class MatchScoreboards extends Component {
         ];
 
         this.state = {
+            keepPlayersDialogOpen: false,
             playerSelectionDialogOpen: false,
             pollingTime: 30,
             usingMyTeamOfflineScoreboard: false,
@@ -112,7 +120,7 @@ export default class MatchScoreboards extends Component {
         if (await promise === 'Done'){
             this.loadMatchScoreboardsWithCallbacks(response => {
                 if (this.matchStatus() === 'En Progreso'){
-                    this.setPlayerSelectionDialogOpenAsRequired();
+                    this.setKeepPlayersDialogOpenAsRequired();
                     this.matchScoreboardsPoller();
                 }
             });
@@ -135,7 +143,7 @@ export default class MatchScoreboards extends Component {
 
                 // Check if player's team is in 'select game players phase', and if so, open dialog for players selection
                 if (getTeamIdPromise !== null){
-                    getTeamIdPromise.then(() => this.setPlayerSelectionDialogOpenAsRequired());
+                    getTeamIdPromise.then(() => this.setKeepPlayersDialogOpenAsRequired());
                 }
             }
         });
@@ -158,39 +166,62 @@ export default class MatchScoreboards extends Component {
             promise.finally(response => finallyCallback(response));
     };
 
+    setKeepPlayersDialogOpen = (open = false) => {
+        this.setState({keepPlayersDialogOpen: open});
+    };
+
     setPlayerSelectionDialogOpen = (open = false) => {
         this.setState({playerSelectionDialogOpen : open});
     };
 
-    gameScoresCount = (playersScores, gameIndex) => {
+    matchMyTeamGameScoresCount = gameNumber => {
+        const playersScores = this.getMatchMyTeam().results.playersScores;
         if (playersScores.length === 0)
             return 0;
 
         let count = 0;
         playersScores.map(playerScore => {
-            if (playerScore[gameIndex] !== undefined){
+            if (playerScore[gameNumber] !== undefined){
                 count++;
             }
         });
         return count;
     };
 
-    setPlayerSelectionDialogOpenAsRequired = () => {
+    setKeepPlayersDialogOpenAsRequired = () => {
         if (this.isMatchPlayer()){
-            if (this.getMatchMyTeam().data.gamesConfirmed !== null) {
-                if (this.gameScoresCount(this.getMatchMyTeam().results.playersScores, this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
-                    if (!this.state.playerSelectionDialogOpen)
-                        this.setPlayerSelectionDialogOpen(true);
-                } else if (this.state.playerSelectionDialogOpen)
-                    this.setPlayerSelectionDialogOpen(false);
-            } else if (this.state.playerSelectionDialogOpen)
-                this.setPlayerSelectionDialogOpen(false);
+            if (this.matchPhaseByMyTeamGamesConfirmed().includes('Game')) {
+                if ( this.matchMyTeamGameScoresCount(this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
+                    if (this.state.playerSelectionDialogOpen)
+                        return;
+
+                    if (this.matchPhaseByMyTeamGamesConfirmed() === 'firstGame'){
+                        // For first game there are no players to keep, open the players selection dialog immediately
+                        if (!this.state.playerSelectionDialogOpen)
+                            this.setPlayerSelectionDialogOpen(true);
+                    }
+                    else {
+                        if (!this.state.keepPlayersDialogOpen)
+                            this.setKeepPlayersDialogOpen(true);
+                    }
+                    return ;
+                }
+            }
         }
+
+        if (this.state.playerSelectionDialogOpen)
+            this.setPlayerSelectionDialogOpen(false);
+        if (this.state.keepPlayersDialogOpen)
+            this.setKeepPlayersDialogOpen(false);
     };
 
     handlePlayerSelectionDialogEnter = () => {
         const { matchId } = this.props.match.params;
-        this.props.getMatchMyTeamAvailablePlayers(matchId, this.props.matchPlayerSeasonTeamId);
+        this.props.getMatchMyTeamAvailablePlayers(matchId, this.props.matchPlayerSeasonTeamId)
+            .then(() => {
+                if (this.matchPhaseByMyTeamGamesConfirmed() !== 'firstGame')
+                    this.selectLastGamePlayers();
+            });
     };
 
     isMatchPlayer = () => {
@@ -268,7 +299,7 @@ export default class MatchScoreboards extends Component {
         }
     };
 
-    handleScoreBlur = (e, oldScore, scoreId) => {
+    handleScoreBlur = (e, oldScore, gameScoreData) => {
         const cell = e.target;
         const newScore = cell.textContent !== '' &&
                          cell.textContent !== ' '  ?
@@ -276,7 +307,7 @@ export default class MatchScoreboards extends Component {
 
         if (oldScore !== Number(newScore)) {
             cell.setAttribute('class', 'score-patching');
-            this.props.updateScore(scoreId, newScore)
+            this.props.updateScore(gameScoreData.scoreId, newScore)
             .then(() => {
                 cell.setAttribute('class', 'score-update-success');
                 this.loadMatchScoreboards();
@@ -295,9 +326,15 @@ export default class MatchScoreboards extends Component {
     };
 
     renderCell(cellInfo, column) {
-        /*TODO: Add team1 and team2 'confirmedScores' for the match's three games and
-          TODO: render editable cell in case of scoresNOTconfirmed (match game still active)*/
-        if (this.getMatchMyTeam() === null || cellInfo.value === undefined || cellInfo === null)
+        if (this.getMatchMyTeam() === null ||
+            cellInfo.value === undefined ||
+            cellInfo === null ||
+            cellInfo.original.seasonPlayerId === undefined)
+            return cellInfo.value;
+
+        // If the player's team game have already confirmed this score game number, don't use `contentEditable`
+        const gc = this.getMatchMyTeam().data.gamesConfirmed;
+        if (gc > column)
             return cellInfo.value;
 
         return (
@@ -308,7 +345,7 @@ export default class MatchScoreboards extends Component {
                 onPaste={e => { e.preventDefault(); }}
                 contentEditable
                 suppressContentEditableWarning
-                onBlur={e => this.handleScoreBlur(e, cellInfo.value, cellInfo.original[column])}
+                onBlur={e => this.handleScoreBlur(e, cellInfo.value, cellInfo.original[scoreIdGameNumberIndex[column]])}
             >{cellInfo.value}</div>
         );
     }
@@ -347,13 +384,13 @@ export default class MatchScoreboards extends Component {
     seasonTeamEndPhase = () => {
         const { matchId } = this.props.match.params;
         const { matchPlayerSeasonTeamId } = this.props;
-        this.props.matchSeasonTeamEndPhase(matchId, matchPlayerSeasonTeamId, this.matchPhase())
+        this.props.matchSeasonTeamEndPhase(matchId, matchPlayerSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed())
             .then(response => {
+                this.loadMatchScoreboardsWithCallbacks(this.setKeepPlayersDialogOpenAsRequired);
+            })
+            .catch(jqXHR => {
 
             })
-            .finally(() => {
-                this.loadMatchScoreboardsWithCallbacks(this.setPlayerSelectionDialogOpenAsRequired);
-            });
     };
 
     renderTeamActions = team => {
@@ -373,10 +410,10 @@ export default class MatchScoreboards extends Component {
                         element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Esperando al rival</div>
                     }
                 } else {
-                    if (this.gameScoresCount(team.results.playersScores, this.matchPhase()) === 0){
-                        element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
-                    } else {
+                    if (this.matchMyTeamGameScoresCount(this.matchPhaseByMyTeamGamesConfirmed()) !== 0){
                         element = <button className={`btn btn-md btn-success`} onClick={this.seasonTeamEndPhase}>Terminar Linea</button>
+                    } else {
+                        // element = <div className={`btn btn-md `} style={{background: 'gold', color: 'white'}}>Seleccionando jugadores</div>
                     }
                 }
             }
@@ -415,14 +452,16 @@ export default class MatchScoreboards extends Component {
     };
 
     prepareScoreDataForSelectedPlayers = () => {
+        if (this.getMatchMyTeam().data.gamesConfirmed === null)
+            return ;
+
         const { matchId } = this.props.match.params;
-        const newGameNumber = this.getMatchMyTeam().data.gamesConfirmed !== null ?
-            this.getMatchMyTeam().data.gamesConfirmed + 1 : 0;
+        const newGameNumber = this.getMatchMyTeam().data.gamesConfirmed + 1;
         let scoresData = [];
         let turnNumber = 1;
         this.state.selectedPlayers.map(player => {
             let scoreData = {
-                season_player_id: player.id,
+                season_player_id: player.id === 0 ? null : player.id,
                 match_id: matchId,
                 game_number: newGameNumber,
                 turn_number: turnNumber++,
@@ -440,8 +479,10 @@ export default class MatchScoreboards extends Component {
         if (!this.isMatchPlayer())
             return;
 
+        const { matchId } = this.props.match.params;
+        const { matchPlayerSeasonTeamId } = this.props;
         const scoresData = this.prepareScoreDataForSelectedPlayers();
-        this.props.createMatchNewGameScores(scoresData)
+        this.props.createMatchNewGameScores(matchId, matchPlayerSeasonTeamId, scoresData)
             .then(() => {
                 this.setPlayerSelectionDialogOpen(false);
                 this.loadMatchScoreboards();
@@ -503,17 +544,11 @@ export default class MatchScoreboards extends Component {
         };
     };
 
-    selectablePlayers = () => {
+    getAvailablePlayersBasedInIdsArray = (idsArray, notInArray = true) => {
         let players = [];
-        const { matchMyTeamAvailablePlayers } = this.props;
-        let selectedPlayersId = [];
-        this.state.selectedPlayers.map(player => {
-            if (player !== null)
-                selectedPlayersId.push(player.id);
-        });
-
-        matchMyTeamAvailablePlayers.map(player => {
-            if (!selectedPlayersId.includes(player.id)){
+        this.props.matchMyTeamAvailablePlayers.map(player => {
+            if (notInArray && !idsArray.includes(player.id) ||
+                !notInArray && idsArray.includes(player.id)) {
                 let p = {};
                 p.label = player.fullName + ' - HDCP: ' + player.handicap;
                 if (player.handicap === null)
@@ -526,11 +561,64 @@ export default class MatchScoreboards extends Component {
                 players.push(p);
             }
         });
-
-        if (!selectedPlayersId.includes(0))
+        if (notInArray && !idsArray.includes(0) ||
+            !notInArray && idsArray.includes(0))
             players.push(blind);
 
         return players;
+    };
+
+    selectablePlayers = () => {
+        let selectedPlayersId = [];
+        this.state.selectedPlayers.map(player => {
+            if (player !== null)
+                selectedPlayersId.push(player.id);
+        });
+        let players = this.getAvailablePlayersBasedInIdsArray(selectedPlayersId);
+        return players;
+    };
+
+    selectLastGamePlayers = () => {
+        const myTeam = this.getMatchMyTeam();
+        const playersScores = this.getMatchMyTeam().results.playersScores;
+        const gameIndex = scoreIdGameNumberIndex[myTeam.data.gamesConfirmed-1];
+        let lastGamePlayersIds = [];
+        playersScores.map(player => {
+            if (player[gameIndex] !== undefined){
+                lastGamePlayersIds.push(player.seasonPlayerId);
+            }
+        });
+        console.log(lastGamePlayersIds);
+        let players = this.getAvailablePlayersBasedInIdsArray(lastGamePlayersIds, false);
+
+        // Add Blind to `players` if myTeam.playerScores in
+        let selectedPlayers = [null,null,null,null];
+        let blindTurnNumber = '1234';
+        players.map(player => {
+            let turnNumber = 0;
+            playersScores.map(p => {
+                if (player.id === p.seasonPlayerId){
+                    if (player.id !== 0){
+                        turnNumber = p[gameIndex].turnNumber;
+                        blindTurnNumber = _.replace(blindTurnNumber, ""+turnNumber, "");
+                    } else {
+                        turnNumber = Number(blindTurnNumber);
+                    }
+                }
+            });
+
+            let playerData = {};
+            playerData.value = player.value;
+            playerData.label = player.value;
+            playerData.name = player.value;
+            playerData.id = player.id;
+            playerData.handicap = player.handicap;
+            playerData.gender = player.gender;
+            playerData.category = player.category;
+            selectedPlayers[turnNumber - 1] = playerData;
+        });
+
+        this.setState({ selectedPlayers : selectedPlayers });
     };
 
     handlePlayerSelected = (v, a, turnNumber) => {
@@ -569,7 +657,7 @@ export default class MatchScoreboards extends Component {
         let playerBox = null;
         if (player === null){
             playerBox = <Select
-                menuShouldScrollIntoView={true}
+
                 className='mb-3 mt-2'
                 placeholder={turnPlaceholders[turnNumber-1]}
                 value={player}
@@ -589,6 +677,15 @@ export default class MatchScoreboards extends Component {
         }
 
         return playerBox;
+    };
+
+    handleChangePlayers= () => {
+        this.setPlayerSelectionDialogOpen(true);
+        this.setKeepPlayersDialogOpen(false);
+    };
+
+    handleKeepPlayers = () => {
+        this.setKeepPlayersDialogOpen(false);
     };
 
     renderPlayersSelectionDialog = () => {
@@ -639,18 +736,16 @@ export default class MatchScoreboards extends Component {
 
     render() {
         if (_.isEmpty(this.props.matchScoreboards)){
-            // if (this.props.fetchingMatchScoreboards) {
-                return (<div className={'container mt-3 mb-3'}>
-                    <div className={'match-scoreboards-container'}>
-                        <div className={'mr-3'}>
-                            {this.renderEmptyTableLoading()}
-                        </div>
-                        <div className={'ml-3'}>
-                            {this.renderEmptyTableLoading()}
-                        </div>
+            return (<div className={'container mt-3 mb-3'}>
+                <div className={'match-scoreboards-container'}>
+                    <div className={'mr-3'}>
+                        {this.renderEmptyTableLoading()}
                     </div>
-                </div>);
-            // } else return null;
+                    <div className={'ml-3'}>
+                        {this.renderEmptyTableLoading()}
+                    </div>
+                </div>
+            </div>);
         }
 
         const { matchScoreboards } = this.props;
@@ -745,6 +840,11 @@ export default class MatchScoreboards extends Component {
                     </div>
                 </div>
                 {this.renderPlayersSelectionDialog()}
+                <KeepPlayersDialog
+                    isOpen={this.state.keepPlayersDialogOpen}
+                    handleKeepPlayers={this.handleKeepPlayers}
+                    handleChangePlayers={this.handleChangePlayers}
+                />
             </div>
         );
     }

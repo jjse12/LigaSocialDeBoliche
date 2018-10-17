@@ -22,9 +22,11 @@ class CreateMatchesTable extends Migration
             $table->unsignedTinyInteger('team2_lane');
             $table->tinyInteger('team1_games_confirmed')->default(null)->nullable();
             $table->tinyInteger('team2_games_confirmed')->default(null)->nullable();
+            $table->boolean('concluded')->default(false);
+            $table->string('team1_games_with_blind', 3)->default(null)->nullable();
+            $table->string('team2_games_with_blind', 3)->default(null)->nullable();
             $table->mediumText('team1_comments')->default(null)->nullable();
             $table->mediumText('team2_comments')->default(null)->nullable();
-            $table->boolean('concluded')->default(false);
             $table->timestamps();
         });
     }

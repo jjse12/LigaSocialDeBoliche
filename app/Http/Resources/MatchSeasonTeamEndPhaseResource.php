@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Match;
 use App\SeasonTeam;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -41,9 +42,17 @@ class MatchSeasonTeamEndPhaseResource extends JsonResource
         if ($gamesConfirmed === null)
             $gamesConfirmed = 0;
         else $gamesConfirmed++;
-        $updateSucceed = $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed);
-        if (!$updateSucceed)
-            throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
+
+        try{
+            DB::transaction(function () use ($match, $request, $gamesConfirmed) {
+                $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed);
+            });
+        } catch (\Exception $e){
+            //TODO: Use correct http status code
+            throw new ServiceUnavailableHttpException(null,
+                'Ocurrió un error al intentar actualizar la base de datos.',
+                null, 400);
+        }
 
         return [];
     }

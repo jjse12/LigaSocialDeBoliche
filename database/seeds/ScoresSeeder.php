@@ -15,7 +15,7 @@ class ScoresSeeder extends Seeder
      */
     public function run()
     {
-
+        return;
         $t1 = App\Match::first()->team1();
         $t2 = App\Match::first()->team2();
 //        $t3 = App\Match::find(5)->team1();

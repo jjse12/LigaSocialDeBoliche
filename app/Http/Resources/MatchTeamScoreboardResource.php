@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Match;
 use App\SeasonTeam;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,7 +25,7 @@ class MatchTeamScoreboardResource extends JsonResource
     public function toArray($request)
     {
         $result = [];
-
+        $match = Match::find($this->matchId);
         $allScores = $this->seasonPlayersMatchScores($this->matchId);
         $firstGameScores = $allScores->where('game_number', '1')->sortBy('turn_number');
         $secondGameScores = $allScores->where('game_number', '2')->sortBy('turn_number');
@@ -34,7 +35,8 @@ class MatchTeamScoreboardResource extends JsonResource
 //        $firstGame = [];
 //        $secondGame = [];
 //        $thirdGame = [];
-        
+
+
         $playersId = [];
         foreach ($firstGameScores as $score) {
             /*
@@ -49,13 +51,17 @@ class MatchTeamScoreboardResource extends JsonResource
             $playersScores[count($playersScores)] = [
                 'seasonPlayerId' => $score->season_player_id,
                 'playerName' => $score->playerFullName(),
-                'firstGameScoreId' => $score->id,
                 'handicap' => $score->handicap,
-                'firstGame' => $score->score,
+                'firstGame' => [
+                    'score' => $score->score,
+                    'scoreId' => $score->id,
+                    'turnNumber' => $score->turn_number,
+                ],
                 'total' => $score->score
             ];
             array_push($playersId, $score->season_player_id);
         }
+
 //        $firstGame['scoresTotal'] = $firstGameScores->sum('score');
 //        $firstGame['handicapTotal'] = $firstGameScores->sum('handicap');
 //        $firstGame['scoresPlusHandicapsTotal'] = $firstGameScores->sum('score') + $firstGameScores->sum('handicap');
@@ -73,17 +79,23 @@ class MatchTeamScoreboardResource extends JsonResource
                 $playersScores[(count($playersScores))] = [
                     'seasonPlayerId' => $score->season_player_id,
                     'playerName' => $score->playerFullName(),
-                    'secondGameScoreId' => $score->id,
                     'handicap' => $score->handicap,
-                    'secondGame' => $score->score,
+                    'secondGame' => [
+                        'score' => $score->score,
+                        'scoreId' => $score->id,
+                        'turnNumber' => $score->turn_number,
+                    ],
                     'total' => $score->score
                 ];
                 array_push($playersId, $score->season_player_id);
             }
             else {
                 $index = array_search($score->season_player_id, $playersId);
-                $playersScores[$index]['secondGameScoreId'] = $score->id;
-                $playersScores[$index]['secondGame'] = $score->score;
+                $playersScores[$index]['secondGame'] = [
+                    'score' => $score->score,
+                    'scoreId' => $score->id,
+                    'turnNumber' => $score->turn_number,
+                ];
                 $playersScores[$index]['total'] += $score->score;
             }
         }
@@ -104,16 +116,22 @@ class MatchTeamScoreboardResource extends JsonResource
                 $playersScores[(count($playersScores))] = [
                     'seasonPlayerId' => $score->season_player_id,
                     'playerName' => $score->playerFullName(),
-                    'thirdGameScoreId' => $score->id,
                     'handicap' => $score->handicap,
-                    'thirdGame' => $score->score,
+                    'thirdGame' => [
+                        'score' => $score->score,
+                        'scoreId' => $score->id,
+                        'turnNumber' => $score->turn_number,
+                    ],
                     'total' => $score->score
                 ];
             }
             else {
                 $index = array_search($score->season_player_id, $playersId);
-                $playersScores[$index]['thirdGameScoreId'] = $score->id;
-                $playersScores[$index]['thirdGame'] = $score->score;
+                $playersScores[$index]['thirdGame'] = [
+                    'score' => $score->score,
+                    'scoreId' => $score->id,
+                    'turnNumber' => $score->turn_number,
+                ];
                 $playersScores[$index]['total'] += $score->score;
             }
         }
@@ -137,6 +155,48 @@ class MatchTeamScoreboardResource extends JsonResource
         $gamesTotals[2]['secondGame'] = $secondGameScores->sum('score') + $secondGameScores->sum('handicap');
         $gamesTotals[2]['thirdGame'] = $thirdGameScores->sum('score') + $thirdGameScores->sum('handicap');
         $gamesTotals[2]['total'] = $allScores->sum('score') + $allScores->sum('handicap');
+
+
+        // Add BLIND scores (if used):
+        $blindGames = $match->getTeamByIdGamesWithBlind($this->id);
+        if ($blindGames !== null){
+            $scoresCount = count($playersScores);
+            $playersScores[$scoresCount] = [
+                'seasonPlayerId' => 0,
+                'playerName' => 'BLIND',
+                'handicap' => 0,
+                'total' => strlen($blindGames)*100
+            ];
+
+            if (strpos($blindGames, '1') !== FALSE){
+                $playersScores[$scoresCount]['firstGame'] = [
+                    'score' => 100,
+                ];
+                $gamesTotals[0]['firstGame'] += 100;
+                $gamesTotals[0]['total'] += 100;
+                $gamesTotals[2]['firstGame'] += 100;
+                $gamesTotals[2]['total'] += 100;
+            }
+            if (strpos($blindGames, '2') !== FALSE){
+                $playersScores[$scoresCount]['secondGame'] = [
+                    'score' => 100,
+                ];
+                $gamesTotals[0]['secondGame'] += 100;
+                $gamesTotals[0]['total'] += 100;
+                $gamesTotals[2]['secondGame'] += 100;
+                $gamesTotals[2]['total'] += 100;
+            }
+            if (strpos($blindGames, '3') !== FALSE){
+                $playersScores[$scoresCount]['thirdGame'] = [
+                    'score' => 100,
+                ];
+                $gamesTotals[0]['thirdGame'] += 100;
+                $gamesTotals[0]['total'] += 100;
+                $gamesTotals[2]['thirdGame'] += 100;
+                $gamesTotals[2]['total'] += 100;
+            }
+        }
+
 
         /*$result['firstGame'] = $fistGame;
         $result['secondGame'] = $secondGame;
