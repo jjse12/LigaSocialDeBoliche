@@ -47,13 +47,15 @@ class MatchSeasonTeamEndPhaseResource extends JsonResource
             DB::transaction(function () use ($match, $request, $gamesConfirmed) {
                 $match->setTeamByIdGamesConfirmed($request->seasonTeamId, $gamesConfirmed);
             });
-        } catch (\Exception $e){
-            //TODO: Use correct http status code
-            throw new ServiceUnavailableHttpException(null,
-                'Ocurrió un error al intentar actualizar la base de datos.',
-                null, 400);
+        } catch (\Exception $exception){
+            if($exception instanceof QueryException ) {
+                throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
+            }
         }
 
-        return [];
+        return [
+            'status' => 'success',
+            'data' => null
+        ];
     }
 }

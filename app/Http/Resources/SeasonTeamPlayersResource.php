@@ -7,11 +7,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SeasonTeamPlayersResource extends JsonResource
 {
-    private $onlyConcludedMatchesHandicaps;
+    private $withUnconcludedData;
 
-    public function __construct(SeasonTeam $SeasonTeam, bool $onlyConcludedMatchesHandicaps = false)
+    public function __construct(SeasonTeam $SeasonTeam, bool $withUnconcludedData = false)
     {
-        $this->onlyConcludedMatchesHandicaps = $onlyConcludedMatchesHandicaps;
+        $this->withUnconcludedData = $withUnconcludedData;
         parent::__construct($SeasonTeam);
     }
     
@@ -26,7 +26,7 @@ class SeasonTeamPlayersResource extends JsonResource
         $result = [];
         foreach ($this->seasonPlayers() as $player) {
             array_push($result,
-                (new SeasonPlayerResource($player, $this->onlyConcludedMatchesHandicaps))->toArray(null));
+                (new SeasonPlayerResource($player, $this->withUnconcludedData))->toArray(null));
         }
         return $result;
     }

@@ -23,4 +23,16 @@ class Score extends Model
     public function match(): Match {
         return $this->belongsTo(Match::class, 'match_id', 'id')->first();
     }
+
+    public static function updateScoresForPartialHandicap(SeasonPlayer $player, int $matchId): bool {
+
+        $success = true;
+        $gameHandicap = $player->handicap(false);
+        foreach ($player->matchScores($matchId) as $matchScore) {
+            $matchScore->handicap = $gameHandicap;
+            $success = $success && $matchScore->update();
+        }
+
+        return $success;
+    }
 }

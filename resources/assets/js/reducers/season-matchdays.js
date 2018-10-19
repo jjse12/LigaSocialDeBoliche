@@ -1,4 +1,3 @@
-import axios from 'axios';
 import uri from "../services/uri";
 import {ajaxGet} from "../utilities/action-creators";
 

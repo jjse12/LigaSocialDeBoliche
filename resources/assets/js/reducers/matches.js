@@ -1,6 +1,5 @@
 import {ajaxGet, ajaxPost} from "../utilities/action-creators";
 import uri from "../services/uri";
-import {CREATE_SCORE} from "./scores";
 
 export const MATCH_RESULTS = 'get_match_results';
 export const MATCH_SCOREBOARDS = 'get_match_scoreboards';

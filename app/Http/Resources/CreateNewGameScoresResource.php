@@ -24,35 +24,33 @@ class CreateNewGameScoresResource extends JsonResource
         DB::transaction(function () use ($request) {
             foreach ($request->scores as $score) {
                 if ($score['season_player_id'] === null){
-                    $match = Match::find($request->match);
-                    if ($match->team1()->id === $request->seasonTeamId &&
-                        $match->team1_games_confirmed !== null) {
-                        $match->team1_games_with_blind .= ($match->team1_games_confirmed+1);
-                        $match->update();
-                    } else if ($match->team2_games_confirmed !== null) {
-                        $match->team2_games_with_blind .= ($match->team2_games_confirmed+1);
-                        $match->update();
+                    $match = Match::find($request->matchId);
+                    $gameNumber= $match->getTeamByIdGamesConfirmed($request->seasonTeamId);
+                    if ($gameNumber !== null){
+                        $gameNumber++;
+                        $gamesWithBlind = $match->getTeamByIdGamesWithBlind($request->seasonTeamId);
+                        if ($gamesWithBlind === null)
+                            $match->setTeamByIdGamesWithBlind($request->seasonTeamId, "$gameNumber");
+                        else $match->setTeamByIdGamesWithBlind($request->seasonTeamId, "$gamesWithBlind$gameNumber");
                     }
                 }
                 else{
-                    $score = new Score($score);
-                    $score->save();
+                    $newScore = new Score($score);
+                    $newScore->save();
+                    $player = $newScore->seasonPlayer();
+                    if ($player->handicap() === null) {
+                        Score::updateScoresForPartialHandicap($player, $newScore->match_id);
+                    }
                 }
-//                $success = $success && $score->save();
             }
         });
         } catch (\Exception $e){
             throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
         }
 
-        //TODO: If any of the scores failed to be stored in DB, delete the scores that succeed to be stored.
-//        if (!$success){
-//            if (!$success)
-//                throw new ServiceUnavailableHttpException(null, 'Ocurrió un error al intentar actualizar la base de datos.');
-//        }
-
         return [
-            'status' => 'success'
+            'status' => 'success',
+            'data' => null
         ];
     }
 }

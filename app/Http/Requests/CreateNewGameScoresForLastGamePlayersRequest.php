@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class CreateNewGameScoresRequest extends FormRequest
+class CreateNewGameScoresForLastGamePlayersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -50,14 +50,7 @@ class CreateNewGameScoresRequest extends FormRequest
     {
         return [
             'matchId' => 'required|numeric|exists:matches,id',
-            'seasonTeamId' => 'required|numeric|exists:season_teams,id',
-            'scores' => 'bail|array',
-            'scores.*.match_id' => 'bail|required|numeric|exists:matches,id',//.Rule::in(Match::all()->pluck('id')->toArray()),
-            'scores.*.season_player_id' => 'bail|nullable|numeric|distinct|exists:season_players,id',//.Rule::in(SeasonPlayer::all()->pluck('id')->toArray()),
-            'scores.*.score' => 'bail|required|numeric',
-            'scores.*.game_number' => 'bail|required|numeric|in:"1","2","3"',
-            'scores.*.turn_number' => 'bail|required|numeric|distinct|in:"1","2","3","4"',
-            'scores.*.handicap' => 'nullable|numeric',
+            'seasonTeamId' => 'required|numeric|exists:season_teams,id'
         ];
     }
 }

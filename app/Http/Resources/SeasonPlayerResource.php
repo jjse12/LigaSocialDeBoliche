@@ -7,13 +7,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SeasonPlayerResource extends JsonResource
 {
-    private $onlyConcludedMatchesHandicap;
+    private $withUnconcludedData;
     /*TODO: Include condition for retrieving player information for creating new game scores
         This, implies that handicap should be retrieved not taking in count the current game.
     */
-    public function __construct(SeasonPlayer $seasonPlayer, bool $newMatchHandicap = false)
+    public function __construct(SeasonPlayer $seasonPlayer, bool $withUnconcludedData = false)
     {
-        $this->onlyConcludedMatchesHandicap = $newMatchHandicap;
+        $this->withUnconcludedData= $withUnconcludedData;
         parent::__construct($seasonPlayer);
     }
 
@@ -30,10 +30,16 @@ class SeasonPlayerResource extends JsonResource
             'fullName' => $this->fullName(),
             'gender' => $this->gender(),
             'category' => $this->categoryName(),
-            'gamesPlayed' => $this->gamesPlayed($this->onlyConcludedMatchesHandicap),
-            'pinTotal' => $this->pinTotal($this->onlyConcludedMatchesHandicap),
-            'average' => $this->average($this->onlyConcludedMatchesHandicap),
-            'handicap' => $this->handicap($this->onlyConcludedMatchesHandicap),
+            'gamesPlayed' => $this->gamesPlayed(),
+            'pinTotal' => $this->pinTotal(),
+            'average' => $this->average(),
+            'handicap' => $this->handicap(),
+            'unconcluded' => $this->withUnconcludedData ? [
+                'gamesPlayed' => $this->gamesPlayed(false),
+                'pinTotal' => $this->pinTotal(false),
+                'average' => $this->average(false),
+                'handicap' => $this->handicap(false),
+            ] : null
         ];
     }
 }

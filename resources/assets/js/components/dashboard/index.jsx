@@ -5,8 +5,6 @@ import { connect } from "react-redux";
 import { getCurrentSeason } from "../../reducers/current-season";
 import { getMatchResults} from "../../reducers/matches";
 import { getCurrentSeasonFromStore} from "../../reducers/getters";
-import NextMatches from "./next-matches";
-import MatchScoreboards from "../matches/match-scoreboards";
 
 @connect(
     store => ({

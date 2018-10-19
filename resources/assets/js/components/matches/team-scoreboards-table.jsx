@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import {connect} from 'react-redux';
 import { getMatchSeasonTeamScoreboard} from "../../reducers/matches";
 import {getMatchSeasonTeamScoreboardFetchingFromStore, getMatchSeasonTeamScoreboardFromStore} from "../../reducers/getters";

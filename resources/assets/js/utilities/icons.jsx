@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDom from 'react-dom';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight} from '@fortawesome/free-solid-svg-icons';

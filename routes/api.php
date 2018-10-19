@@ -74,6 +74,7 @@ Route::group(['prefix' => 'match'], function() {
 
 Route::group(['prefix' => 'score'], function () {
     Route::post('/match-new-game-scores', 'ScoreController@storeMatchNewGameScores');
+    Route::post('/match-new-game-scores-for-last-game-players', 'ScoreController@storeMatchNewGameScoresForLastGamePlayers');
     Route::get('/{score}', 'ScoreController@show');
     Route::post('/', 'ScoreController@store');
     Route::patch('/', 'ScoreController@update');

@@ -2,17 +2,26 @@ import { ajaxPost, ajaxPatch, ajaxDelete } from "../utilities/action-creators";
 import uri from "../services/uri";
 
 export const CREATE_MATCH_NEW_GAME_SCORES = 'create_match_new_game_scores';
+export const CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS = 'create_match_new_game_scores_for_last_game_players';
 export const CREATE_SCORE = 'create_score';
 export const UPDATE_SCORE = 'update_score';
 export const DELETE_SCORE = 'delete_score';
 
 export const createMatchNewGameScores = (matchId, seasonTeamId, scoresData) => dispatch => {
     const data = {
-        match: matchId,
+        matchId: matchId,
         seasonTeamId: seasonTeamId,
         scores: scoresData,
     };
-    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES, uri.api.scoreCreateMatchNewGameScores, data));
+    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES, uri.api.createMatchNewGameScores, data));
+};
+
+export const createMatchNewGameScoresForLastGamePlayers = (matchId, seasonTeamId) => dispatch => {
+    const data = {
+        matchId: matchId,
+        seasonTeamId: seasonTeamId,
+    };
+    return dispatch(ajaxPost(CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS, uri.api.createMatchNewGameScoresForLastGamePlayers, data));
 };
 
 export const createScore = (matchId, seasonPlayerId, score, handicap) => dispatch => {

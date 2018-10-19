@@ -6,7 +6,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import {Provider} from 'react-redux';
 import store, { browserHistory } from './store';
-import { Router, Route, Redirect, Switch } from 'react-router-dom';
+import { Router} from 'react-router-dom';
 import Main from './components/main-container';
 
 const appComponent = document.getElementById('react-app');

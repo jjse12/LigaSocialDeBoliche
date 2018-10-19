@@ -1,7 +1,13 @@
 
 import {isFetchingFromStore} from "../utilities/action-creators";
 import {MATCH_MY_TEAM_AVAILABLE_PLAYERS, MATCH_SCOREBOARDS, MATCH_TEAM_SCOREBOARD} from "./matches";
-import {CREATE_MATCH_NEW_GAME_SCORES, CREATE_SCORE, DELETE_SCORE, UPDATE_SCORE} from "./scores";
+import {
+    CREATE_MATCH_NEW_GAME_SCORES,
+    CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS,
+    CREATE_SCORE,
+    DELETE_SCORE,
+    UPDATE_SCORE
+} from "./scores";
 import {SEASON_TEAM_PLAYERS} from "./teams";
 
 // Logged in player
@@ -29,7 +35,9 @@ export const getMatchMyTeamOfflineScoreboardFromStore = store => store.matchMyTe
 export const getMatchRivalTeamOfflineScoreboardFromStore = store => store.matchRivalTeamOfflineScoreboard;
 
 // Scores
-export const createNewScoreFetchingFromStore = store => isFetchingFromStore(store, CREATE_MATCH_NEW_GAME_SCORES);
+export const createMatchNewGameScoresFetchingFromStore = store => isFetchingFromStore(store, CREATE_MATCH_NEW_GAME_SCORES);
+export const createMatchNewGameScoresForLastGamePlayersFetchingFromStore =
+    store => isFetchingFromStore(store, CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS);
 export const createScoreFetchingFromStore = store => isFetchingFromStore(store, CREATE_SCORE);
 export const updateScoreFetchingFromStore = store => isFetchingFromStore(store, UPDATE_SCORE);
 export const deleteScoreFetchingFromStore = store => isFetchingFromStore(store, DELETE_SCORE);
