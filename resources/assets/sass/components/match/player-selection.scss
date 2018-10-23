@@ -1,0 +1,83 @@
+%handicap-box {
+    align-items: center;
+    font-size: smaller;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    color: black;
+    width: 2rem;
+    height: 2.3125rem;
+    line-height: 2.3125rem;
+}
+
+.handicap-box {
+    @extend %handicap-box;
+    background: #d4ffd5;
+}
+
+.pending-handicap-box {
+    @extend %handicap-box;
+    background: #fffdc1;
+}
+
+.blind-handicap-box {
+    @extend %handicap-box;
+    background: ghostwhite;
+}
+
+%description {
+    border-left-width: 3px;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: start;
+    text-align: start;
+}
+
+.handicap-description {
+    @extend %description;
+    border-left: #d4ffd5;
+}
+
+.pending-handicap-description {
+    @extend %description;
+    border-left: #fffdc1;
+}
+
+%player-name {
+    white-space: nowrap !important;
+    overflow: auto !important;
+    cursor: default;
+    color: white !important;
+}
+
+.player-category {
+
+    &-AA {
+        @extend %player-name;
+        background: #4a4d50 !important;
+    }
+
+    &-A {
+        @extend %player-name;
+        background: #116e7f !important;
+    }
+
+    &-B {
+        @extend %player-name;
+        background: #119bac !important;
+    }
+
+    &-C {
+        @extend %player-name;
+        background: #40c0b9 !important;
+    }
+
+    &-blind {
+        @extend %player-name;
+        background: ghostwhite !important;
+        color: black !important;
+    }
+}
+

@@ -17,7 +17,8 @@ import PlayerSelectBox from "./player-select-box";
 
 const blind = {
     label: 'BLIND',
-    value : 'BLIND',
+    value: 'BLIND',
+    name: 'BLIND',
     id : 0
 };
 
@@ -122,6 +123,7 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     validateSelectedPlayers = () => {
+        //TODO: Don't let a making handicap player abandon the game, as well as dont letting a player with no handicap enter 2nd nor 3rd game
         if (!this.check4PlayersSelected()){
             return {
                 valid: false,
@@ -173,6 +175,7 @@ export default class PlayersSelectionDialog extends Component {
                 if (player.handicap === null)
                     p.label = player.fullName + ' - HDCP: Debe jugar 3 lineas';
                 p.value = player.fullName;
+                p.name = player.fullName;
                 p.id = player.id;
                 p.handicap = player.handicap;
                 p.category = player.category;
@@ -223,6 +226,7 @@ export default class PlayersSelectionDialog extends Component {
             playerData.handicap = player.handicap;
             playerData.gender = player.gender;
             playerData.category = player.category;
+            playerData.unconcluded = player.unconcluded;
             selectedPlayers[turnNumber - 1] = playerData;
         });
 
@@ -284,6 +288,21 @@ export default class PlayersSelectionDialog extends Component {
         );
     };
 
+    getTotalHandicap = () => {
+        let handicap = 0;
+        this.state.selectedPlayers.map(p => {
+            if (p !== null && p.id !== 0){
+                if (p.handicap !== null)
+                    handicap += Number(p.handicap);
+                else if (p.unconcluded.handicap !== null) {
+                    handicap += Number(p.unconcluded.handicap);
+                }
+            }
+        });
+
+        return handicap;
+    };
+
     render() {
 
         let button = null, selectablePlayers = null;
@@ -311,14 +330,13 @@ export default class PlayersSelectionDialog extends Component {
         let dialogTitle = this.props.fetchingMatchMyTeamAvailablePlayers ? 'Cargando Jugadores...' :
             this.props.fetchingCreateMatchNewGameScores ? 'Creando Marcadores...' : 'Ingreso de Jugadores';
 
-
-
         return (
-            <Dialog aria-labelledby='dialog-title'
-               disableBackdropClick
-               disableEscapeKeyDown
-               open={this.props.isOpen}
-               onEnter={this.handlePlayerSelectionDialogEnter}
+            <Dialog
+                aria-labelledby='dialog-title'
+                disableBackdropClick
+                disableEscapeKeyDown
+                open={this.props.isOpen}
+                onEnter={this.handlePlayerSelectionDialogEnter}
             >
                 <DialogTitle id='dialog-title'>{dialogTitle}</DialogTitle>
                 <DialogContent>
@@ -326,6 +344,7 @@ export default class PlayersSelectionDialog extends Component {
                         <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'#488aaa'}/></div> :
                         this.props.matchMyTeamAvailablePlayers.length !== 0 ?
                             <div className='d-flex flex-column justify-content-center'>
+                                <div style={{alignContent: 'center'}}><p>Total Handicap: <b>{this.getTotalHandicap()}</b></p></div>
                                 { this.playerSelectBox(1, selectablePlayers) }
                                 { this.playerSelectBox(2, selectablePlayers) }
                                 { this.playerSelectBox(3, selectablePlayers) }

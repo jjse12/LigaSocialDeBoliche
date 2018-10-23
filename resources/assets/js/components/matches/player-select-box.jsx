@@ -7,6 +7,44 @@ const turnPlaceholders = [
     'Jugador abridor', 'Segundo jugador', 'Tercer Jugador', 'Jugador cerrador'
 ];
 
+const CustomOption = ({data, innerProps}) => {
+    return PlayerBox({
+        type: 'option',
+        player: data,
+        innerProps: innerProps
+    });
+};
+
+const PlayerBox = data => {
+    const {type, player, playerDeselectHandler, innerProps} = data;
+
+    let className = 'handicap-box', handicap = player.handicap;
+    if (player.id === 0) {
+        handicap = 100;
+        className = 'blind-handicap-box';
+    } else if (player.handicap === null) {
+        className = 'pending-handicap-box';
+        handicap = player.unconcluded.handicap === null ? '¿?' : player.unconcluded.handicap;
+    }
+
+    return (
+        <div {...innerProps} className={`d-flex flex-row ${type === 'selected' ? 'mb-3 mt-2' : ''}`}>
+            <div className={className}>
+                <span>{handicap}</span>
+            </div>
+            <span className={`form-control player-category-${player.category ? player.category : 'blind'}`}>
+                {player.name}
+            </span>
+            {
+                type === 'selected' ?
+                <button onClick={playerDeselectHandler} className='btn btn-sm btn-danger'>
+                    <TimesLg className='form-control'/>
+                </button> : null
+            }
+        </div>
+    );
+};
+
 export default class PlayerSelectBox extends Component {
     static propTypes = {
         player: PropTypes.object,
@@ -17,11 +55,11 @@ export default class PlayerSelectBox extends Component {
     };
 
     render() {
-        let playerBox = null;
         const { player, turnNumber, handlePlayerSelected, handlePlayerDeselect } = this.props;
         if (player === null){
-            playerBox = (
+            return  (
                 <Select
+                    components={{Option: CustomOption}}
                     className='mb-3 mt-2'
                     style={{overflow: 'auto'}}
                     placeholder={turnPlaceholders[turnNumber-1]}
@@ -30,18 +68,11 @@ export default class PlayerSelectBox extends Component {
                     options={this.props.selectablePlayers}
                 />
             );
-        } else {
-            let hdcpBoxContent = player.id === 0 ? <small><b>&nbsp;100 Pines</b></small> :
-                <small>HDCP : <b>{player.handicap === null ? '¿ ?' : player.handicap < 10 ? `\u00A0${player.handicap}\u00A0` : player.handicap}</b></small>;
-            playerBox = <div className='d-flex flex-row mb-3 mt-2'>
-                <span className='input-group-text player-selection-handicap'>{hdcpBoxContent}</span>
-                <input readOnly className={`form-control player-category-${player.category}`} value={player.name}/>
-                <button onClick={() => handlePlayerDeselect(turnNumber)} className='btn btn-sm btn-danger'>
-                    <TimesLg className='form-control'/>
-                </button>
-            </div>;
         }
-
-        return playerBox;
+        return PlayerBox({
+            type: 'selected',
+            player: player,
+            playerDeselectHandler: () => handlePlayerDeselect(turnNumber)
+        });
     }
 }

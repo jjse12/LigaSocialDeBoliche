@@ -24600,31 +24600,6 @@ main.cover {
   }
 }
 
-.player-category-AA {
-  color: white !important;
-  background: #4a4d50 !important;
-}
-
-.player-category-A {
-  color: white !important;
-  background: #116e7f !important;
-}
-
-.player-category-B {
-  color: white !important;
-  background: #119bac !important;
-}
-
-.player-category-C {
-  color: white !important;
-  background: #40c0b9 !important;
-}
-
-.player-selection-handicap {
-  background: #f7fff9 !important;
-  color: black !important;
-}
-
 div.auth-box {
   opacity: 0.5;
   filter: alpha(opacity=50);
@@ -24662,6 +24637,85 @@ div.auth-box {
 
 main.cover {
   background-color: transparent;
+}
+
+.handicap-box,
+.pending-handicap-box,
+.blind-handicap-box {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: smaller;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  color: black;
+  width: 2rem;
+  height: 2.3125rem;
+  line-height: 2.3125rem;
+}
+
+.handicap-box {
+  background: #d4ffd5;
+}
+
+.pending-handicap-box {
+  background: #fffdc1;
+}
+
+.blind-handicap-box {
+  background: ghostwhite;
+}
+
+.handicap-description,
+.pending-handicap-description {
+  border-left-width: 3px;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: start;
+  text-align: start;
+}
+
+.handicap-description {
+  border-left: #d4ffd5;
+}
+
+.pending-handicap-description {
+  border-left: #fffdc1;
+}
+
+.player-category-AA,
+.player-category-A,
+.player-category-B,
+.player-category-C,
+.player-category-blind {
+  white-space: nowrap !important;
+  overflow: auto !important;
+  cursor: default;
+  color: white !important;
+}
+
+.player-category-AA {
+  background: #4a4d50 !important;
+}
+
+.player-category-A {
+  background: #116e7f !important;
+}
+
+.player-category-B {
+  background: #119bac !important;
+}
+
+.player-category-C {
+  background: #40c0b9 !important;
+}
+
+.player-category-blind {
+  background: ghostwhite !important;
+  color: black !important;
 }
 
 div.loading-table {

@@ -89282,6 +89282,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var blind = {
     label: 'BLIND',
     value: 'BLIND',
+    name: 'BLIND',
     id: 0
 };
 
@@ -89346,7 +89347,8 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
 
             return _react2.default.createElement(
                 _Dialog2.default,
-                { 'aria-labelledby': 'dialog-title',
+                {
+                    'aria-labelledby': 'dialog-title',
                     disableBackdropClick: true,
                     disableEscapeKeyDown: true,
                     open: this.props.isOpen,
@@ -89367,6 +89369,20 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
                     ) : this.props.matchMyTeamAvailablePlayers.length !== 0 ? _react2.default.createElement(
                         'div',
                         { className: 'd-flex flex-column justify-content-center' },
+                        _react2.default.createElement(
+                            'div',
+                            { style: { alignContent: 'center' } },
+                            _react2.default.createElement(
+                                'p',
+                                null,
+                                'Total Handicap: ',
+                                _react2.default.createElement(
+                                    'b',
+                                    null,
+                                    this.getTotalHandicap()
+                                )
+                            )
+                        ),
                         this.playerSelectBox(1, selectablePlayers),
                         this.playerSelectBox(2, selectablePlayers),
                         this.playerSelectBox(3, selectablePlayers),
@@ -89457,6 +89473,7 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
     };
 
     this.validateSelectedPlayers = function () {
+        //TODO: Don't let a making handicap player abandon the game, as well as dont letting a player with no handicap enter 2nd nor 3rd game
         if (!_this2.check4PlayersSelected()) {
             return {
                 valid: false,
@@ -89506,6 +89523,7 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
                 p.label = player.fullName + ' - HDCP: ' + player.handicap;
                 if (player.handicap === null) p.label = player.fullName + ' - HDCP: Debe jugar 3 lineas';
                 p.value = player.fullName;
+                p.name = player.fullName;
                 p.id = player.id;
                 p.handicap = player.handicap;
                 p.category = player.category;
@@ -89554,6 +89572,7 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
             playerData.handicap = player.handicap;
             playerData.gender = player.gender;
             playerData.category = player.category;
+            playerData.unconcluded = player.unconcluded;
             selectedPlayers[turnNumber - 1] = playerData;
         });
 
@@ -89609,6 +89628,19 @@ var PlayersSelectionDialog = (_dec = (0, _reactRedux.connect)(function (store) {
             handlePlayerSelected: _this2.handlePlayerSelected,
             handlePlayerDeselect: _this2.handlePlayerDeselect
         });
+    };
+
+    this.getTotalHandicap = function () {
+        var handicap = 0;
+        _this2.state.selectedPlayers.map(function (p) {
+            if (p !== null && p.id !== 0) {
+                if (p.handicap !== null) handicap += Number(p.handicap);else if (p.unconcluded.handicap !== null) {
+                    handicap += Number(p.unconcluded.handicap);
+                }
+            }
+        });
+
+        return handicap;
     };
 }, _temp)) || _class);
 exports.default = PlayersSelectionDialog;
@@ -89853,6 +89885,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _class, _temp;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
@@ -89877,6 +89911,59 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var turnPlaceholders = ['Jugador abridor', 'Segundo jugador', 'Tercer Jugador', 'Jugador cerrador'];
 
+var CustomOption = function CustomOption(_ref) {
+    var data = _ref.data,
+        innerProps = _ref.innerProps;
+
+    return PlayerBox({
+        type: 'option',
+        player: data,
+        innerProps: innerProps
+    });
+};
+
+var PlayerBox = function PlayerBox(data) {
+    var type = data.type,
+        player = data.player,
+        playerDeselectHandler = data.playerDeselectHandler,
+        innerProps = data.innerProps;
+
+
+    var className = 'handicap-box',
+        handicap = player.handicap;
+    if (player.id === 0) {
+        handicap = 100;
+        className = 'blind-handicap-box';
+    } else if (player.handicap === null) {
+        className = 'pending-handicap-box';
+        handicap = player.unconcluded.handicap === null ? '¿?' : player.unconcluded.handicap;
+    }
+
+    return _react2.default.createElement(
+        'div',
+        _extends({}, innerProps, { className: 'd-flex flex-row ' + (type === 'selected' ? 'mb-3 mt-2' : '') }),
+        _react2.default.createElement(
+            'div',
+            { className: className },
+            _react2.default.createElement(
+                'span',
+                null,
+                handicap
+            )
+        ),
+        _react2.default.createElement(
+            'span',
+            { className: 'form-control player-category-' + (player.category ? player.category : 'blind') },
+            player.name
+        ),
+        type === 'selected' ? _react2.default.createElement(
+            'button',
+            { onClick: playerDeselectHandler, className: 'btn btn-sm btn-danger' },
+            _react2.default.createElement(_icons.TimesLg, { className: 'form-control' })
+        ) : null
+    );
+};
+
 var PlayerSelectBox = (_temp = _class = function (_Component) {
     _inherits(PlayerSelectBox, _Component);
 
@@ -89889,7 +89976,6 @@ var PlayerSelectBox = (_temp = _class = function (_Component) {
     _createClass(PlayerSelectBox, [{
         key: 'render',
         value: function render() {
-            var playerBox = null;
             var _props = this.props,
                 player = _props.player,
                 turnNumber = _props.turnNumber,
@@ -89897,7 +89983,8 @@ var PlayerSelectBox = (_temp = _class = function (_Component) {
                 handlePlayerDeselect = _props.handlePlayerDeselect;
 
             if (player === null) {
-                playerBox = _react2.default.createElement(_reactSelect2.default, {
+                return _react2.default.createElement(_reactSelect2.default, {
+                    components: { Option: CustomOption },
                     className: 'mb-3 mt-2',
                     style: { overflow: 'auto' },
                     placeholder: turnPlaceholders[turnNumber - 1],
@@ -89907,45 +89994,14 @@ var PlayerSelectBox = (_temp = _class = function (_Component) {
                     },
                     options: this.props.selectablePlayers
                 });
-            } else {
-                var hdcpBoxContent = player.id === 0 ? _react2.default.createElement(
-                    'small',
-                    null,
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        '\xA0100 Pines'
-                    )
-                ) : _react2.default.createElement(
-                    'small',
-                    null,
-                    'HDCP : ',
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        player.handicap === null ? '¿ ?' : player.handicap < 10 ? '\xA0' + player.handicap + '\xA0' : player.handicap
-                    )
-                );
-                playerBox = _react2.default.createElement(
-                    'div',
-                    { className: 'd-flex flex-row mb-3 mt-2' },
-                    _react2.default.createElement(
-                        'span',
-                        { className: 'input-group-text player-selection-handicap' },
-                        hdcpBoxContent
-                    ),
-                    _react2.default.createElement('input', { readOnly: true, className: 'form-control player-category-' + player.category, value: player.name }),
-                    _react2.default.createElement(
-                        'button',
-                        { onClick: function onClick() {
-                                return handlePlayerDeselect(turnNumber);
-                            }, className: 'btn btn-sm btn-danger' },
-                        _react2.default.createElement(_icons.TimesLg, { className: 'form-control' })
-                    )
-                );
             }
-
-            return playerBox;
+            return PlayerBox({
+                type: 'selected',
+                player: player,
+                playerDeselectHandler: function playerDeselectHandler() {
+                    return handlePlayerDeselect(turnNumber);
+                }
+            });
         }
     }]);
 
