@@ -20,6 +20,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- Manifest  -->
+    <link rel="manifest" href="{{asset('manifest.json')}}">
 </head>
 <body>
     <div id="react-app" data-auth="{{$auth}}"></div>

@@ -211,6 +211,7 @@ export default class PlayersSelectionDialog extends Component {
             if (notInArray && !idsArray.includes(player.id) ||
                 !notInArray && idsArray.includes(player.id)) {
                 let p = {};
+                p.label = player.fullName;
                 p.name = player.fullName;
                 p.id = player.id;
                 p.handicap = player.handicap;

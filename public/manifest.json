@@ -1,0 +1,7 @@
+{
+    "short_name": "LSDB",
+    "name": "Liga Social de Boliche de Guatemala",
+    "start_url": "index.php",
+    "display": "fullscreen",
+    "orientation": "landscape"
+}
