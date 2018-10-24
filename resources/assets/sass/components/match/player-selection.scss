@@ -19,30 +19,13 @@
 
 .pending-handicap-box {
     @extend %handicap-box;
-    background: #fffdc1;
+    background: #eeeca9;
 }
 
 .blind-handicap-box {
     @extend %handicap-box;
-    background: ghostwhite;
-}
-
-%description {
-    border-left-width: 3px;
-    -webkit-box-align: start;
-    -ms-flex-align: start;
-    align-items: start;
-    text-align: start;
-}
-
-.handicap-description {
-    @extend %description;
-    border-left: #d4ffd5;
-}
-
-.pending-handicap-description {
-    @extend %description;
-    border-left: #fffdc1;
+    background: #704525;
+    color: white !important;
 }
 
 %player-name {
@@ -76,8 +59,59 @@
 
     &-blind {
         @extend %player-name;
-        background: ghostwhite !important;
+        background: whitesmoke !important;
         color: black !important;
     }
 }
 
+div.player-selection-dialog-legend {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+
+    span {
+        white-space: nowrap;
+        overflow: auto;
+        width: 100%;
+    }
+
+    &-player-categories {
+        margin: 0;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        span {
+            width: 25%;
+            margin: 0 auto;
+        }
+    }
+
+}
+
+%description {
+    border-left: 8px solid lightgray;
+    padding-left: 0.25rem;
+}
+
+.handicap-description {
+    @extend %description;
+    border-color: #91ff98;
+}
+
+.pending-handicap-description {
+    @extend %description;
+    border-color: #eeeca9;
+}
+
+.pending-handicap-description {
+    @extend %description;
+    border-color: #eeeca9;
+}
+
+.blind-handicap-description {
+    @extend %description;
+    border-color: #704525;
+}

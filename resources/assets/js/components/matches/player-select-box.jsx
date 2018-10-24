@@ -17,7 +17,6 @@ const CustomOption = ({data, innerProps}) => {
 
 const PlayerBox = data => {
     const {type, player, playerDeselectHandler, innerProps} = data;
-
     let className = 'handicap-box', handicap = player.handicap;
     if (player.id === 0) {
         handicap = 100;

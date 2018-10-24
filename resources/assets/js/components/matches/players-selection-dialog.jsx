@@ -4,16 +4,16 @@ import { getMatchMyTeamAvailablePlayers } from '../../reducers/matches';
 import { getMatchMyTeamAvailablePlayersFromStore, getMatchMyTeamAvailablePlayersFetchingFromStore,
         createMatchNewGameScoresFetchingFromStore } from '../../reducers/getters';
 import { createMatchNewGameScores } from "../../reducers/scores";
-
+import {UnmountClosed as Collapse} from 'react-collapse';
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from '@material-ui/core/DialogContent';
-import PropTypes from 'prop-types';
 import ReactLoading from "react-loading";
-import {TimesLg} from "../../utilities/icons";
-import Select from "react-select";
+import {QuestionCircleLg, QuestionCircleSm, TimesLg} from "../../utilities/icons";
 import _ from "lodash";
 import PlayerSelectBox from "./player-select-box";
+import PropTypes from 'prop-types';
+
 
 const blind = {
     label: 'BLIND',
@@ -61,9 +61,21 @@ export default class PlayersSelectionDialog extends Component {
         ];
 
         this.state = {
-            selectedPlayers: selectedPlayers
+            selectedPlayers: selectedPlayers,
+            descriptionOpen: false,
+            playerCategoryDescriptionOpen: false
         };
     }
+
+    toggleDescriptionOpen = () => {
+        const open = this.state.descriptionOpen;
+        this.setState({descriptionOpen: !open});
+    };
+
+    togglePlayerCategoryDescriptionOpen = () => {
+        const open = this.state.playerCategoryDescriptionOpen;
+        this.setState({playerCategoryDescriptionOpen: !open});
+    };
 
     handlePlayerSelectionDialogEnter = () => {
         const { matchId, seasonTeamId, getMatchMyTeamAvailablePlayers, teamMatchPhase } = this.props;
@@ -123,7 +135,6 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     validateSelectedPlayers = () => {
-        //TODO: Don't let a making handicap player abandon the game, as well as dont letting a player with no handicap enter 2nd nor 3rd game
         if (!this.check4PlayersSelected()){
             return {
                 valid: false,
@@ -132,16 +143,36 @@ export default class PlayersSelectionDialog extends Component {
             };
         }
 
-        let valid = true;
+        let validation = {
+            valid: true,
+            failId: -1,
+            reason: '',
+        };
         let womens = 0, mens = 0;
+        let selectedPlayersId = [];
         this.state.selectedPlayers.map(player => {
-            if (player.gender){
+            if (player.id !== 0){
+                selectedPlayersId.push(player.id);
                 if (player.gender === 'M')
                     mens++;
                 else if (player.gender === 'F')
                     womens++;
+
+                if (player.handicap === null) {
+                    if (this.props.teamGamesConfirmed > player.unconcluded.gamesPlayed){
+                        const prefix = player.gender === 'M' ? 'El jugador ' : "La jugadora ";
+                        validation = {
+                            valid: false,
+                            failId: 3,
+                            reason: `¡${prefix + player.name} no puede ingresar ya que primero debe jugar una jornada completa (3 lineas) para hacer handicap!`
+                        };
+                    }
+                }
             }
         });
+
+        if (!validation.valid)
+            return validation;
 
         if (womens === 0){
             return {
@@ -158,11 +189,20 @@ export default class PlayersSelectionDialog extends Component {
             };
         }
 
-        return {
-            valid: true,
-            failId: -1,
-            reason: '',
-        };
+        this.getLastGamePlayers().map(player => {
+            if (!selectedPlayersId.includes(player.id)){
+                if (player.handicap === null){
+                    const prefix = player.gender === 'M' ? 'El jugador ' : "La jugadora ";
+                    validation = {
+                        valid: false,
+                        failId: 4,
+                        reason: `¡${prefix + player.name} no puede abandonar el juego ya que debe completar 3 lineas para hacer handicap!`
+                    };
+                }
+            }
+        });
+
+        return validation;
     };
 
     getAvailablePlayersBasedInIdsArray = (idsArray, notInArray = true) => {
@@ -171,10 +211,6 @@ export default class PlayersSelectionDialog extends Component {
             if (notInArray && !idsArray.includes(player.id) ||
                 !notInArray && idsArray.includes(player.id)) {
                 let p = {};
-                p.label = player.fullName + ' - HDCP: ' + player.handicap;
-                if (player.handicap === null)
-                    p.label = player.fullName + ' - HDCP: Debe jugar 3 lineas';
-                p.value = player.fullName;
                 p.name = player.fullName;
                 p.id = player.id;
                 p.handicap = player.handicap;
@@ -191,8 +227,7 @@ export default class PlayersSelectionDialog extends Component {
         return players;
     };
 
-    selectLastGamePlayers = () => {
-
+    getLastGamePlayersIdArray = () => {
         const gameIndex = scoreIdGameNumberIndex[this.props.teamGamesConfirmed-1];
         let lastGamePlayersIds = [];
         this.props.playersScores.map(player => {
@@ -201,8 +236,16 @@ export default class PlayersSelectionDialog extends Component {
             }
         });
 
-        let players = this.getAvailablePlayersBasedInIdsArray(lastGamePlayersIds, false);
+        return lastGamePlayersIds;
+    };
 
+    getLastGamePlayers = () => {
+        return this.getAvailablePlayersBasedInIdsArray(this.getLastGamePlayersIdArray(), false)
+    };
+
+    selectLastGamePlayers = () => {
+        const gameIndex = scoreIdGameNumberIndex[this.props.teamGamesConfirmed-1];
+        let players = this.getLastGamePlayers();
         let selectedPlayers = [null,null,null,null];
         let blindTurnNumber = '1234';
         players.map(player => {
@@ -217,11 +260,8 @@ export default class PlayersSelectionDialog extends Component {
                     }
                 }
             });
-
             let playerData = {};
-            playerData.value = player.value;
-            playerData.label = player.value;
-            playerData.name = player.value;
+            playerData.name = player.name;
             playerData.id = player.id;
             playerData.handicap = player.handicap;
             playerData.gender = player.gender;
@@ -246,9 +286,7 @@ export default class PlayersSelectionDialog extends Component {
     handlePlayerSelected = (v, a, turnNumber) => {
         if (a.action === 'select-option'){
             let playerData = {};
-            playerData.value = v.value;
-            playerData.label = v.value;
-            playerData.name = v.value;
+            playerData.name = v.name;
             playerData.id = v.id;
             playerData.handicap = v.handicap;
             playerData.gender = v.gender;
@@ -258,10 +296,8 @@ export default class PlayersSelectionDialog extends Component {
             updatedSelectedPlayers[turnNumber-1] = playerData;
             this.setState({ selectedPlayers : updatedSelectedPlayers });
             const validSelectedPlayers = this.validateSelectedPlayers();
-
             if (!validSelectedPlayers.valid){
-                if (validSelectedPlayers.failId === 1 ||
-                    validSelectedPlayers.failId === 2 ) {
+                if (validSelectedPlayers.failId !== 0) {
                     //TODO: Use pretty alert dialog
                     alert(validSelectedPlayers.reason);
                 }
@@ -303,16 +339,53 @@ export default class PlayersSelectionDialog extends Component {
         return handicap;
     };
 
-    render() {
+    pendingHandicapExplanationDialog = () => {
+        //TODO: pretty alert;
+        alert("El jugador debe de participar en los 3 juegos de una jornada para que su handicap sea calculado y asignado.")
+    };
 
+    renderDescription = () => {
+        return (
+            <div className='mb-1' style={{textAlign: 'center'}}>
+                <div onClick={this.toggleDescriptionOpen} style={{cursor: 'pointer'}}>
+                    <QuestionCircleLg style={{width: '100%', margin: '0 auto'}}/>
+                </div>
+                <Collapse
+                    style={{width: '100%', margin: '0 auto'}}
+                    isOpened={this.state.descriptionOpen}
+                    hasNestedCollapse={true}
+                >
+                    <div className='player-selection-dialog-legend'>
+                        <span className='handicap-description'>Handicap</span>
+                        <span onClick={this.pendingHandicapExplanationDialog} style={{cursor: 'pointer'}}
+                          className='pending-handicap-description'>Handicap pendiente <QuestionCircleSm/></span>
+                        <span className='blind-handicap-description'>Sin handicap, 100 pines netos</span>
+                    </div>
+                    <div>
+                    <span style={{color: 'blue', textDecoration: 'underline', width: '100%', margin: '0 auto', cursor: 'pointer'}}
+                        onClick={this.togglePlayerCategoryDescriptionOpen}> Categorías de Jugador:</span>
+                        <Collapse style={{margin: '0 auto'}} isOpened={this.state.playerCategoryDescriptionOpen}>
+                            <div className='player-selection-dialog-legend-player-categories'>
+                                <span className='player-category-AA'>AA</span>
+                                <span className='player-category-A'>A</span>
+                                <span className='player-category-B'>B</span>
+                                <span className='player-category-C'>C</span>
+                            </div>
+                        </Collapse>
+                    </div>
+                </Collapse>
+            </div>
+        );
+    };
+
+    render() {
         let button = null, selectablePlayers = null;
         if (!this.props.fetchingMatchMyTeamAvailablePlayers && !this.props.fetchingCreateMatchNewGameScores){
             let buttonEnabled = true, buttonOnClick = this.createSelectedPlayersNewGameScores, buttonStyle = {};
             if (!this.validateSelectedPlayers().valid){
                 buttonEnabled = false;
                 buttonOnClick = () => {
-                    //TODO: Use pretty alert dialog
-                    alert('¡Aún no se han ingresado los jugadores correctamente!');
+                    alert(this.validateSelectedPlayers().reason);
                 };
                 buttonStyle = {
                     opacity: '0.70'
@@ -349,6 +422,7 @@ export default class PlayersSelectionDialog extends Component {
                                 { this.playerSelectBox(2, selectablePlayers) }
                                 { this.playerSelectBox(3, selectablePlayers) }
                                 { this.playerSelectBox(4, selectablePlayers) }
+                                { this.renderDescription() }
                             </div> : null
                     }
                 </DialogContent>

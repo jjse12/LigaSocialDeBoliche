@@ -1,7 +1,8 @@
 import React from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight,
+    faQuestionCircle, faQuestion} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faTimes);
 library.add(faDesktop);
@@ -9,6 +10,8 @@ library.add(faCloud);
 library.add(faCloudDownloadAlt);
 library.add(faCloudUploadAlt);
 library.add(faArrowRight);
+library.add(faQuestion);
+library.add(faQuestionCircle);
 
 export const Times = (size) => <FontAwesomeIcon icon={'times'} size={size}/>;
 export const TimesX = size => Times(`${size}x`);
@@ -45,3 +48,15 @@ export const ArrowRightX = size => ArrowRight(`${size}x`);
 export const ArrowRightLg = () => ArrowRight('lg');
 export const ArrowRightSm = () => ArrowRight('sm');
 export const ArrowRightXs = () => ArrowRight('xs');
+
+export const Question = (size) => <FontAwesomeIcon icon={'question'} size={size}/>;
+export const QuestionX = size => Question(`${size}x`);
+export const QuestionLg = () => Question('lg');
+export const QuestionSm = () => Question('sm');
+export const QuestionXs = () => Question('xs');
+
+export const QuestionCircle = (size) => <FontAwesomeIcon icon={'question-circle'} size={size}/>;
+export const QuestionCircleX = size => QuestionCircle(`${size}x`);
+export const QuestionCircleLg = () => QuestionCircle('lg');
+export const QuestionCircleSm = () => QuestionCircle('sm');
+export const QuestionCircleXs = () => QuestionCircle('xs');
