@@ -49,7 +49,7 @@ const scoreIdGameNumberIndex = [
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
-        match: PropTypes.object.isRequired,
+        matchId: PropTypes.number.isRequired,
         loggedInPlayer: PropTypes.object.isRequired,
         matchScoreboards: PropTypes.object.isRequired,
         matchPlayerSeasonTeamId: PropTypes.number.isRequired,
@@ -103,7 +103,7 @@ export default class MatchScoreboards extends Component {
     };
 
     componentWillMount() {
-        const { matchId } = this.props.match.params;
+        const { matchId } = this.props;
         let getTeamIdPromise = null;
         if (!_.isEmpty(this.props.loggedInPlayer)){
             getTeamIdPromise = this.props.getMatchPlayerSeasonTeamId(matchId, this.props.loggedInPlayer.id);
@@ -123,7 +123,7 @@ export default class MatchScoreboards extends Component {
     }
 
     loadMatchScoreboards = () => {
-        const { matchId } = this.props.match.params;
+        const { matchId } = this.props;
         return this.props.getMatchScoreboards(matchId);
     };
 
@@ -346,7 +346,7 @@ export default class MatchScoreboards extends Component {
     };
 
     seasonTeamEndPhase = () => {
-        const { matchId } = this.props.match.params;
+        const { matchId } = this.props;
         const { matchPlayerSeasonTeamId } = this.props;
         this.props.matchSeasonTeamEndPhase(matchId, matchPlayerSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed())
             .then(() => {
@@ -430,7 +430,7 @@ export default class MatchScoreboards extends Component {
             </div>);
         }
 
-        const { matchId } = this.props.match.params;
+        const { matchId } = this.props;
         const { matchScoreboards } = this.props;
         const team1Data = matchScoreboards.team1.data;
         const team2Data = matchScoreboards.team2.data;

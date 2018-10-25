@@ -58,9 +58,11 @@ export default class PlayerSelectBox extends Component {
         if (player === null){
             return  (
                 <Select
+                    menuPosition={'fixed'}
+                    minMenuHeight={80}
+                    maxMenuHeight={170}
                     components={{Option: CustomOption}}
                     className='mb-3 mt-2'
-                    style={{overflow: 'auto'}}
                     placeholder={turnPlaceholders[turnNumber-1]}
                     value={player}
                     onChange={(value, action) => handlePlayerSelected(value, action, turnNumber)}

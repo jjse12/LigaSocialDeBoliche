@@ -9,7 +9,7 @@ const uris = {
     web: {
         home: '/home',
         login: '/login',
-        matchScoreboards: id => `/match/${id}/scoreboards`,
+        match: id => `/match/${id}`,
         matchSeasonTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/scoreboard/team/${seasonTeamId}`,
         error: '/error',
     },
