@@ -1,0 +1,120 @@
+
+.match-results {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+    max-width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    box-sizing: border-box;
+    position: relative;
+    background: linear-gradient(
+            rgba($c-app-accent, 0.75),
+            rgba($c-app-secondary, 0.75)
+    );
+    border-radius: 15px;
+    border: 3px solid whitesmoke;
+
+    
+}
+
+.match-show-results-icon {
+    cursor: pointer;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.teams-scores {
+    margin: 0.5rem 1.25rem;
+
+    &-team-points {
+        color: black;
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-align: center;
+        background: white;
+        border-width: 3px;
+        border-color: ghostwhite;
+        border-style: dashed;
+        border-radius: 0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    &-team-pins {
+        color: black;
+        font-weight: bold;
+        font-size: 1.2rem;
+        text-align: center;
+        background: white;
+        border-width: 3px;
+        border-color: ghostwhite;
+        border-style: dashed;
+        border-radius: 0.5rem;
+        padding: 0 0.5rem;
+        width: 80px;
+    }
+}
+
+%match-results-status {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    box-sizing: border-box;
+    position: relative;
+    border: 4px solid whitesmoke;
+    border-radius: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    background: whitesmoke;
+    border-color: rgba(gray, 1);
+}
+
+.match-results-status-not-started {
+    @extend %match-results-status;
+}
+
+.match-results-status-concluded {
+    @extend %match-results-status;
+    background: #41464b !important;
+    color: #8cf659 !important;
+    border-color: #41464b !important;
+}
+
+.match-results-status-warming {
+    @extend %match-results-status;
+    animation: match-status-warming 3s infinite;
+    -moz-animation: match-status-warming 3s infinite;
+    -webkit-animation: match-status-warming 3s infinite;
+}
+
+.match-results-status-active {
+    @extend %match-results-status;
+    animation: match-status-active 3s infinite;
+    -moz-animation: match-status-active 3s infinite;
+    -webkit-animation: match-status-active 3s infinite;
+}
+
+@-moz-keyframes match-status-warming {
+    0% {border-color: rgba(whitesmoke, 1);}
+    50% {border-color: rgba(gold, 0.70);}
+    100% {border-color: rgba(whitesmoke, 1);}
+}
+
+@-webkit-keyframes match-status-warming {
+    0% {border-color: rgba(whitesmoke, 1);}
+    50% {border-color: rgba(gold, 0.70);}
+    100% {border-color: rgba(whitesmoke, 1);}
+}
+
+@-moz-keyframes match-status-active {
+    0% {border-color: rgba(whitesmoke, 1);}
+    50% {border-color: rgba(limegreen, 0.70);}
+    100% {border-color: rgba(whitesmoke, 1);}
+}
+
+@-webkit-keyframes match-status-active {
+    0% {border-color: rgba(whitesmoke, 1);}
+    50% {border-color: rgba(limegreen, 0.70);}
+    100% {border-color: rgba(whitesmoke, 1);}
+}

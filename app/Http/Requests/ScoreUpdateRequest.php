@@ -24,9 +24,9 @@ class ScoreUpdateRequest extends FormRequest
         $msg = 'Ocurrió un error inesperado';
         if ($score !== null){
             $status = $score->match()->statusData()['status'];
-            if ($status === 'En Progreso')
+            if ($status === 'active')
                 return $score->seasonPlayer()->seasonTeam()->hasPlayer(Auth::id());
-            else if ($status === 'Sin Comenzar')
+            else if ($status === 'inactive')
                 $msg = '¡El juego aún no ha comenzado!';
             else if ($status)
                 $msg = '¡El juego ya ha terminado!';

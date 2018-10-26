@@ -21,14 +21,14 @@ class CreateNewGameScoresRequest extends FormRequest
         if (Match::where('id', $this->matchId)->exists()){
             $match = Match::find($this->matchId)->first();
             $status = $match->statusData()['status'];
-            if ($status === 'En Progreso'){
+            if ($status === 'active'){
                 $team = $match->getTeamById($this->seasonTeamId);
                 if ($team !== null)
                     return $team->hasPlayer(Auth::id());
 
                 $msg = '¡El equipo no es participante de este juego!';
             }
-            else if ($status === 'Sin Comenzar')
+            else if ($status === 'inactive')
                 $msg = '¡El juego aún no ha comenzado!';
             else if ($status)
                 $msg = '¡El juego ya ha terminado!';

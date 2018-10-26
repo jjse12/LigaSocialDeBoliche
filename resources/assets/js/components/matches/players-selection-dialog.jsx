@@ -9,7 +9,7 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from "@material-ui/core/DialogTitle/DialogTitle";
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";
-import {QuestionCircleLg, QuestionCircleSm, TimesLg} from "../../utilities/icons";
+import {IconQuestionCircleLg, IconQuestionCircleSm} from "../../utilities/icons";
 import _ from "lodash";
 import PlayerSelectBox from "./player-select-box";
 import PropTypes from 'prop-types';
@@ -349,7 +349,7 @@ export default class PlayersSelectionDialog extends Component {
         return (
             <div className='mb-1' style={{textAlign: 'center'}}>
                 <div onClick={this.toggleDescriptionOpen} style={{cursor: 'pointer'}}>
-                    <QuestionCircleLg style={{width: '100%', margin: '0 auto'}}/>
+                    <IconQuestionCircleLg style={{width: '100%', margin: '0 auto'}}/>
                 </div>
                 <Collapse
                     style={{width: '100%', margin: '0 auto'}}
@@ -359,7 +359,7 @@ export default class PlayersSelectionDialog extends Component {
                     <div className='player-selection-dialog-legend'>
                         <span className='handicap-description'>Handicap</span>
                         <span onClick={this.pendingHandicapExplanationDialog} style={{cursor: 'pointer'}}
-                          className='pending-handicap-description'>Handicap pendiente <QuestionCircleSm/></span>
+                          className='pending-handicap-description'>Handicap pendiente <IconQuestionCircleSm/></span>
                         <span className='blind-handicap-description'>Sin handicap, 100 pines netos</span>
                     </div>
                     <div>

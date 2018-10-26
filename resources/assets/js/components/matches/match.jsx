@@ -18,8 +18,8 @@ import _ from 'lodash';
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
 import {
-    CloudLg,
-    DesktopLg} from "../../utilities/icons";
+    IconCloudLg,
+    IconDesktopLg} from "../../utilities/icons";
 
 import NewGameDialog from "./new-game-dialog";
 import PlayersSelectionDialog from "./players-selection-dialog";
@@ -87,7 +87,7 @@ export default class Match extends Component {
         let promise = new Promise(resolve => setTimeout(() => {resolve('Done')}, this.state.pollingTime * 1000));
         if (await promise === 'Done'){
             this.loadMatchScoreboardsWithCallbacks(() => {
-                if (this.matchStatus() === 'En Progreso'){
+                if (this.matchStatus() === 'active'){
                     this.setNewGameDialogOpenAsRequired();
                     this.matchScoreboardsPoller();
                 }
@@ -106,7 +106,7 @@ export default class Match extends Component {
         }
 
         this.loadMatchScoreboardsWithCallbacks(() => {
-            if (this.matchStatus() === 'En Progreso'){
+            if (this.matchStatus() === 'active'){
                 // Poller for updating match scoreboards every `this.state.pollingTime` seconds
                 // this.matchScoreboardsPoller();
 
@@ -222,14 +222,14 @@ export default class Match extends Component {
     };
 
     matchPhase = () => {
-        if (this.matchStatus() === 'En Progreso'){
+        if (this.matchStatus() === 'active'){
             return this.props.matchScoreboards.statusData.phase;
         }
         return null;
     };
 
     matchPhaseByMyTeamGamesConfirmed = () => {
-        if (this.isMatchPlayer() && this.matchStatus() === 'En Progreso'){
+        if (this.isMatchPlayer() && this.matchStatus() === 'active'){
             if (this.getMatchMyTeam().data.gamesConfirmed === null)
                 return 'warming';
 
@@ -263,7 +263,7 @@ export default class Match extends Component {
     render() {
         const {id} = this.props.match.params;
         return (
-            <div>
+            <div style={{alignItems: 'center', alignContent: 'center'}} className={'mr-2 ml-2 mt-2 mb-2'}>
                 <MatchResults/>
                 <MatchScoreboards
                     matchId={Number(id)}

@@ -18,8 +18,7 @@ import _ from 'lodash';
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
 import {
-    CloudLg,
-    DesktopLg} from "../../utilities/icons";
+    IconCloudLg, IconDesktopLg} from "../../utilities/icons";
 
 import NewGameDialog from "./new-game-dialog";
 import PlayersSelectionDialog from "./players-selection-dialog";
@@ -92,7 +91,7 @@ export default class MatchScoreboards extends Component {
         let promise = new Promise(resolve => setTimeout(() => {resolve('Done')}, this.state.pollingTime * 1000));
         if (await promise === 'Done'){
             this.loadMatchScoreboardsWithCallbacks(() => {
-                if (this.matchStatus() === 'En Progreso'){
+                if (this.matchStatus() === 'active'){
                     this.setNewGameDialogOpenAsRequired();
                     this.matchScoreboardsPoller();
                 }
@@ -110,7 +109,7 @@ export default class MatchScoreboards extends Component {
         }
 
         this.loadMatchScoreboardsWithCallbacks(() => {
-            if (this.matchStatus() === 'En Progreso'){
+            if (this.matchStatus() === 'active'){
                 // Poller for updating match scoreboards every `this.state.pollingTime` seconds
                 // this.matchScoreboardsPoller();
 
@@ -319,14 +318,14 @@ export default class MatchScoreboards extends Component {
     };
 
     matchPhase = () => {
-        if (this.matchStatus() === 'En Progreso'){
+        if (this.matchStatus() === 'active'){
             return this.props.matchScoreboards.statusData.phase;
         }
         return null;
     };
 
     matchPhaseByMyTeamGamesConfirmed = () => {
-        if (this.isMatchPlayer() && this.matchStatus() === 'En Progreso'){
+        if (this.isMatchPlayer() && this.matchStatus() === 'active'){
             if (this.getMatchMyTeam().data.gamesConfirmed === null)
                 return 'warming';
 
@@ -399,10 +398,10 @@ export default class MatchScoreboards extends Component {
         else {
             toggler = () => {this.toggleUsingRivalTeamOfflineScoreboard()};
             if (this.state.usingRivalTeamOfflineScoreboard) {
-                icon = DesktopLg();
+                icon = IconDesktopLg();
                 className = 'btn-info';
             } else {
-                icon = CloudLg();
+                icon = IconCloudLg();
                 className = 'btn-success';
             }
         }
@@ -418,16 +417,16 @@ export default class MatchScoreboards extends Component {
 
     render() {
         if (_.isEmpty(this.props.matchScoreboards)){
-            return (<div className={'container mt-3 mb-3'}>
-                <div className={'match-scoreboards-container'}>
-                    <div className={'mr-3'}>
+            return (
+                <div className={'match-scoreboards'}>
+                    <div className={'mr-2'}>
                         {this.renderEmptyTableLoading()}
                     </div>
-                    <div className={'ml-3'}>
+                    <div className={'ml-2'}>
                         {this.renderEmptyTableLoading()}
                     </div>
                 </div>
-            </div>);
+            );
         }
 
         const { matchId } = this.props;
@@ -451,75 +450,73 @@ export default class MatchScoreboards extends Component {
         }
 
         return (
-            <div className={'container mt-3 mb-3'}>
-                <div className={'match-scoreboards-container'}>
-                    <div className={'mr-3'}>
-                        <div className={'d-flex bg-semi-transparent-gradient-primary'}>
-                            <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
-                                <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
-                                <h5 className={'text-light'}>{team1Data.name}</h5>
-                            </div>
-                            { this.matchStatus() === 'En Progreso' && this.isMatchPlayer() ?
-                              this.renderTeamActions(matchScoreboards.team1) : null }
+            <div className={'match-scoreboards'}>
+                <div className='mr-2'>
+                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                        <div style={{textAlign: 'start'}} className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                            <h5 className={'text-light'}>Pista: #{team1Data.laneNumber}</h5>
+                            <h5 className={'text-light'}>{team1Data.name}</h5>
                         </div>
-                        <div className={'match-scoreboard-table-container'}>
-                            <ReactTable
-                                className={'match-scoreboard-table -striped -highlight'}
-                                getNoDataProps={() => {return {style: {display: 'none'}}}}
-                                data={ team1Scoreboard.playersScores}
-                                columns={matchScoreboardScoresColumns(this)}
-                                getProps={() => {return {style: {color: 'white'}}}}
-                                showPagination={false}
-                                showPageSizeOptions={false}
-                                minRows={0}
-                                pageSize={team1Scoreboard.playersScores.length}
-                            />
-                            <ReactTable
-                                className={'match-scoreboard-table -striped -highlight'}
-                                data={team1Scoreboard.gamesTotals}
-                                columns={matchScoreboardTotalsColumns(team1Scoreboard.playersScores.length === 0)}
-                                getProps={() => {return {style: {color: 'white'}}}}
-                                getTheadThProps={() => {return {style:{display: 'none'}}}}
-                                showPagination={false}
-                                showPageSizeOptions={false}
-                                minRows={0}
-                                pageSize={3}
-                            />
-                        </div>
+                        { this.matchStatus() === 'active' && this.isMatchPlayer() ?
+                          this.renderTeamActions(matchScoreboards.team1) : null }
                     </div>
-                    <div className={'ml-3'}>
-                        <div className={'d-flex bg-semi-transparent-gradient-primary'}>
-                            <div className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
-                                <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
-                                <h5 className={'text-light'}>{team2Data.name}</h5>
-                            </div>
-                            { this.matchStatus() === 'En Progreso' && this.isMatchPlayer() ?
-                              this.renderTeamActions(matchScoreboards.team2) : null }
+                    <div className={'match-scoreboard-table-container'}>
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            getNoDataProps={() => {return {style: {display: 'none'}}}}
+                            data={ team1Scoreboard.playersScores}
+                            columns={matchScoreboardScoresColumns(this)}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={team1Scoreboard.playersScores.length}
+                        />
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team1Scoreboard.gamesTotals}
+                            columns={matchScoreboardTotalsColumns(team1Scoreboard.playersScores.length === 0)}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            getTheadThProps={() => {return {style:{display: 'none'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={3}
+                        />
+                    </div>
+                </div>
+                <div className='ml-2'>
+                    <div className={'d-flex bg-semi-transparent-gradient-primary'}>
+                        <div style={{textAlign: 'start'}} className={'ml-1 d-flex mr-auto flex-column justify-content-center'}>
+                            <h5 className={'text-light'}>Pista: #{team2Data.laneNumber}</h5>
+                            <h5 className={'text-light'}>{team2Data.name}</h5>
                         </div>
-                        <div className={'match-scoreboard-table-container'}>
-                            <ReactTable
-                                className={'match-scoreboard-table -striped -highlight'}
-                                getNoDataProps={() => {return {style: {display: 'none'}}}}
-                                data={team2Scoreboard.playersScores}
-                                columns={matchScoreboardScoresColumns(this)}
-                                getProps={() => {return {style: {color: 'white'}}}}
-                                showPagination={false}
-                                showPageSizeOptions={false}
-                                minRows={0}
-                                pageSize={team2Scoreboard.playersScores.length}
-                            />
-                            <ReactTable
-                                className={'match-scoreboard-table -striped -highlight'}
-                                data={team2Scoreboard.gamesTotals}
-                                columns={matchScoreboardTotalsColumns(team2Scoreboard.playersScores.length === 0)}
-                                getTheadThProps={() => {return {style:{display: 'none'}}}}
-                                getProps={() => {return {style: {color: 'white'}}}}
-                                showPagination={false}
-                                showPageSizeOptions={false}
-                                minRows={0}
-                                pageSize={3}
-                            />
-                        </div>
+                        { this.matchStatus() === 'active' && this.isMatchPlayer() ?
+                          this.renderTeamActions(matchScoreboards.team2) : null }
+                    </div>
+                    <div className={'match-scoreboard-table-container'}>
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            getNoDataProps={() => {return {style: {display: 'none'}}}}
+                            data={team2Scoreboard.playersScores}
+                            columns={matchScoreboardScoresColumns(this)}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={team2Scoreboard.playersScores.length}
+                        />
+                        <ReactTable
+                            className={'match-scoreboard-table -striped -highlight'}
+                            data={team2Scoreboard.gamesTotals}
+                            columns={matchScoreboardTotalsColumns(team2Scoreboard.playersScores.length === 0)}
+                            getTheadThProps={() => {return {style:{display: 'none'}}}}
+                            getProps={() => {return {style: {color: 'white'}}}}
+                            showPagination={false}
+                            showPageSizeOptions={false}
+                            minRows={0}
+                            pageSize={3}
+                        />
                     </div>
                 </div>
                 {

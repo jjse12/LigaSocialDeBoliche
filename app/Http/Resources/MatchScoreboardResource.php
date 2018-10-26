@@ -17,12 +17,11 @@ class MatchScoreboardResource extends JsonResource
     {
         $team1 = $this->team1();
         $team2 = $this->team2();
-        $date = Carbon::createFromTimeString($this->matchday()->date);
         $statusData = $this->statusData();
 
         return [
             'statusData' => $statusData,
-            'date' => $date->format('d/M/Y'),
+            'date' => $this->matchday()->date,
             'matchdayNumber' => $this->matchday()->number,
             'redPin' => $this->matchday()->red_pin,
             'virtual' => $this->matchday()->virtual,

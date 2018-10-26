@@ -48,7 +48,9 @@ class Match extends Model
         $minutesDiff = $today->diffInMinutes($date, false);
         $statusData = [];
         if ($minutesDiff > 0){
-            $statusData['status'] = 'Sin Comenzar';
+            $statusData['status'] = 'inactive';
+            $date->setLocale('es');
+            $statusData['diffForHumans'] = $date->diffForHumans();
             if ($minutesDiff >= 60){
                 $hoursDiff = $today->diffInHours($date, false);
                 if ($hoursDiff >= 24) {
@@ -70,11 +72,11 @@ class Match extends Model
         } else if ($this->team1_games_confirmed == 3 &&
             $this->team2_games_confirmed == 3) {
             $statusData = [
-                'status' => 'Finalizado'
+                'status' => 'concluded'
             ];
         } else {
             $statusData = [
-                'status' => 'En Progreso',
+                'status' => 'active',
                 'phase' => $this->matchPhase(),
             ];
         }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
-import {TimesLg} from "../../utilities/icons";
+import {IconTimesLg} from "../../utilities/icons";
 
 const turnPlaceholders = [
     'Jugador abridor', 'Segundo jugador', 'Tercer Jugador', 'Jugador cerrador'
@@ -37,7 +37,7 @@ const PlayerBox = data => {
             {
                 type === 'selected' ?
                 <button onClick={playerDeselectHandler} className='btn btn-sm btn-danger'>
-                    <TimesLg className='form-control'/>
+                    <IconTimesLg className='form-control'/>
                 </button> : null
             }
         </div>
