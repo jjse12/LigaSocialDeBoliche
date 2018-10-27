@@ -12,8 +12,6 @@
     position: relative;
 }
 
-
-
 div.loading-table {
     margin-left: 40%;
     padding-top: 10%;
@@ -25,6 +23,7 @@ div.loading-table {
 }
 
 div.match-scoreboard-table-container {
+    cursor: default;
     border-radius: 15px;
     border: 3px solid whitesmoke;
     background: linear-gradient(
@@ -35,6 +34,10 @@ div.match-scoreboard-table-container {
 
 .match-scoreboard-table {
     width: 500px;
+}
+
+div.score-editable {
+    cursor: pointer;
 }
 
 div.score-focus {

@@ -24796,6 +24796,7 @@ div.loading-table {
 }
 
 div.match-scoreboard-table-container {
+  cursor: default;
   border-radius: 15px;
   border: 3px solid whitesmoke;
   background: -webkit-gradient(linear, left top, left bottom, from(rgba(24, 83, 111, 0.75)), to(rgba(52, 58, 58, 0.75)));
@@ -24804,6 +24805,10 @@ div.match-scoreboard-table-container {
 
 .match-scoreboard-table {
   width: 500px;
+}
+
+div.score-editable {
+  cursor: pointer;
 }
 
 div.score-focus {

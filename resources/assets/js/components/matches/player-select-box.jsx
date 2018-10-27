@@ -37,7 +37,7 @@ const PlayerBox = data => {
             {
                 type === 'selected' ?
                 <button onClick={playerDeselectHandler} className='btn btn-sm btn-danger'>
-                    <IconTimesLg className='form-control'/>
+                    <IconTimesLg/>
                 </button> : null
             }
         </div>

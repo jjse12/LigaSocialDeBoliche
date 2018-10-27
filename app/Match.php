@@ -96,9 +96,13 @@ class Match extends Model
                 return 'thirdGame';
             if ($this->team1_games_confirmed === 3)
                 return 'concluded';
-        } else if ($this->team1_games_confirmed + $this->team2_games_confirmed > -2) {
-            $minorGameConfirmed = $this->team1_games_confirmed < $this->team2_games_confirmed ? 
+        } else if ($this->team1_games_confirmed + $this->team2_games_confirmed > 0) {
+            $minorGameConfirmed =
+                $this->team1_games_confirmed === null ? $this->team1_games_confirmed :
+                $this->team2_games_confirmed === null ? $this->team2_games_confirmed :
+                $this->team1_games_confirmed < $this->team2_games_confirmed ?
                 $this->team1_games_confirmed : $this->team2_games_confirmed;
+
             if ($minorGameConfirmed === null)
                 return 'warming';
             if ($minorGameConfirmed === 0)
@@ -180,26 +184,36 @@ class Match extends Model
     }
 
     public function team1Points(): int {
+        $team1Points = 0;
+        $phase = $this->matchPhase();
+        if ($phase === null || $phase === 'warming' || $phase === 'firstGame')
+            return $team1Points;
+
         $team1 = $this->team1();
         $team2 = $this->team2();
         $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
-        $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
-        $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
-        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, 0);
         $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
-        $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
-        $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
-        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, 0);
-
-        $team1Points = 0;
         if ($team1FirstGameScore > $team2FirstGameScore)
             $team1Points += 2;
         else if ($team1FirstGameScore == $team2FirstGameScore)
             $team1Points++;
+        if ($phase === 'secondGame')
+            return $team1Points;
+
+        $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
+        $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
         if ($team1SecondGameScore > $team2SecondGameScore)
             $team1Points += 2;
         else if ($team1SecondGameScore == $team2SecondGameScore)
             $team1Points++;
+        if ($phase === 'thirdGame')
+            return $team1Points;
+
+        $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
+        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, 0);
+        $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
+        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, 0);
+
         if ($team1ThirdGameScore > $team2ThirdGameScore)
             $team1Points += 2;
         else if ($team1ThirdGameScore == $team2ThirdGameScore)
@@ -213,35 +227,15 @@ class Match extends Model
     }
 
     public function team2Points(): int {
-        $team1 = $this->team1();
-        $team2 = $this->team2();
-        $team1FirstGameScore = $team1->matchGameTeamScore($this->id, 1);
-        $team1SecondGameScore = $team1->matchGameTeamScore($this->id, 2);
-        $team1ThirdGameScore = $team1->matchGameTeamScore($this->id, 3);
-        $team1TotalGameScore = $team1->matchGameTeamScore($this->id, 0);
-        $team2FirstGameScore = $team2->matchGameTeamScore($this->id, 1);
-        $team2SecondGameScore = $team2->matchGameTeamScore($this->id, 2);
-        $team2ThirdGameScore = $team2->matchGameTeamScore($this->id, 3);
-        $team2TotalGameScore = $team2->matchGameTeamScore($this->id, 0);
+        $points = [
+            '' => 0,
+            'warming' => 0,
+            'firstGame' => 0,
+            'secondGame' => 2,
+            'thirdGame' => 4,
+            'concluded' => 8
+        ];
 
-        $team2Points = 0;
-        if ($team2FirstGameScore < $team2FirstGameScore)
-            $team2Points += 2;
-        else if ($team1FirstGameScore == $team2FirstGameScore)
-            $team2Points++;
-        if ($team1SecondGameScore < $team2SecondGameScore)
-            $team2Points += 2;
-        else if ($team1SecondGameScore == $team2SecondGameScore)
-            $team2Points++;
-        if ($team1ThirdGameScore < $team2ThirdGameScore)
-            $team2Points += 2;
-        else if ($team1ThirdGameScore == $team2ThirdGameScore)
-            $team2Points++;
-        if ($team1TotalGameScore < $team2TotalGameScore)
-            $team2Points += 2;
-        else if ($team1TotalGameScore == $team2TotalGameScore)
-            $team2Points++;
-
-        return $team2Points;
+        return $points[$this->matchPhase()] - $this->team1Points();
     }
 }

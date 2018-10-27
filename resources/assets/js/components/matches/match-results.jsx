@@ -13,13 +13,7 @@ import ReactLoading from "react-loading";
 import moment from 'moment';
 import {Collapse} from "react-collapse";
 import {IconAngleDownLg, IconAngleDownXs, IconAngleUpLg, IconAngleUpXs} from "../../utilities/icons";
-
-const gameNumberStrings = {
-    warming: 'Calentamiento',
-    firstGame: 'Primera Linea',
-    secondGame: 'Segunda Linea',
-    thirdGame: 'Tercera Linea'
-};
+import {gameNumberStrings} from "./match";
 
 @connect(
     store => ({
@@ -58,10 +52,15 @@ export default class MatchResults extends Component {
                 break;
             case 'active':
                 statusClass = 'match-results-status-active';
-                if (phase === 'warming'){
-                    statusClass = 'match-results-status-warming';
+                if (phase === null){
+                    statusClass = 'match-results-status-not-started';
+                    statusStr = 'ERROR';
+                } else {
+                    if (phase === 'warming'){
+                        statusClass = 'match-results-status-warming';
+                    }
+                    statusStr = gameNumberStrings[phase];
                 }
-                statusStr = gameNumberStrings[phase];
                 break;
             case 'concluded':
                 statusClass = 'match-results-status-concluded';

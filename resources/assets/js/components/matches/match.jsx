@@ -15,39 +15,33 @@ import {
     getMatchRivalTeamOfflineScoreboardFromStore,
 } from "../../reducers/getters";
 import _ from 'lodash';
-import ReactTable from "react-table";
-import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
-import {
-    IconCloudLg,
-    IconDesktopLg} from "../../utilities/icons";
-
 import NewGameDialog from "./new-game-dialog";
 import PlayersSelectionDialog from "./players-selection-dialog";
 import MatchScoreboards from "./match-scoreboards";
 import MatchResults from "./match-results";
 
 
-
-const scoreIdGameNumberIndex = [
+export const scoreIdGameNumberIndex = [
     'firstGame',
     'secondGame',
     'thirdGame',
 ];
 
-
+export const gameNumberStrings = {
+    warming: 'Calentamiento',
+    firstGame: 'Primera Linea',
+    secondGame: 'Segunda Linea',
+    thirdGame: 'Tercera Linea'
+};
 
 @connect(
     store => ({
         loggedInPlayer: getLoggedInPlayerFromStore(store),
         matchScoreboards: getMatchScoreboardsFromStore(store),
         matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
-        matchMyTeamOfflineScoreboard: getMatchMyTeamOfflineScoreboardFromStore(store),
-        matchRivalTeamOfflineScoreboard: getMatchRivalTeamOfflineScoreboardFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
-        fetchingUpdateScore: updateScoreFetchingFromStore(store),
     }),
-    { getMatchScoreboards, getMatchPlayerSeasonTeamId, updateScore, matchSeasonTeamEndPhase,
-        setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard }
+    { getMatchScoreboards, getMatchPlayerSeasonTeamId, matchSeasonTeamEndPhase }
 )
 export default class Match extends Component {
     static propTypes = {
@@ -55,22 +49,14 @@ export default class Match extends Component {
         loggedInPlayer: PropTypes.object.isRequired,
         matchScoreboards: PropTypes.object.isRequired,
         matchPlayerSeasonTeamId: PropTypes.number.isRequired,
-        matchMyTeamAvailablePlayers: PropTypes.array,
-        matchMyTeamOfflineScoreboard: PropTypes.object,
-        matchRivalTeamOfflineScoreboard: PropTypes.object,
-        fetchingMatchScoreboards: PropTypes.bool,
-        fetchingUpdateScore: PropTypes.bool,
+        fetchingMatchScoreboards: PropTypes.bool.isRequired,
         getMatchScoreboards: PropTypes.func.isRequired,
-        getMatchPlayerSeasonTeamId: PropTypes.func,
-        updateScore: PropTypes.func,
-        matchSeasonTeamEndPhase: PropTypes.func,
-        setMatchMyTeamOfflineScoreboard: PropTypes.func,
-        setMatchRivalTeamOfflineScoreboard: PropTypes.func,
+        getMatchPlayerSeasonTeamId: PropTypes.func.isRequired,
+        matchSeasonTeamEndPhase: PropTypes.func.isRequired,
     };
 
     constructor(props) {
         super(props);
-
         this.state = {
             newGameDialogOpen: false,
             playerSelectionDialogOpen: false,
@@ -98,7 +84,6 @@ export default class Match extends Component {
     };
 
     componentWillMount() {
-        /*
         const { id } = this.props.match.params;
         let getTeamIdPromise = null;
         if (!_.isEmpty(this.props.loggedInPlayer)){
@@ -116,7 +101,6 @@ export default class Match extends Component {
                 }
             }
         });
-        */
     }
 
     loadMatchScoreboards = () => {
@@ -190,7 +174,7 @@ export default class Match extends Component {
     };
 
     getMatchMyTeam = () => {
-        if (!this.isMatchPlayer())
+        if (!this.isMatchPlayer() || _.isEmpty(this.props.matchScoreboards))
             return null;
 
         if (this.props.matchPlayerSeasonTeamId === this.props.matchScoreboards.team1.data.id)
@@ -203,7 +187,7 @@ export default class Match extends Component {
     };
 
     getMatchRivalTeam = () => {
-        if (!this.isMatchPlayer())
+        if (!this.isMatchPlayer() || _.isEmpty(this.props.matchScoreboards))
             return null;
 
         if (this.props.matchPlayerSeasonTeamId !== this.props.matchScoreboards.team1.data.id)
@@ -229,7 +213,10 @@ export default class Match extends Component {
     };
 
     matchPhaseByMyTeamGamesConfirmed = () => {
-        if (this.isMatchPlayer() && this.matchStatus() === 'active'){
+        if (!this.isMatchPlayer())
+            return null;
+
+        if (this.matchStatus() === 'active'){
             if (this.getMatchMyTeam().data.gamesConfirmed === null)
                 return 'warming';
 
@@ -245,19 +232,18 @@ export default class Match extends Component {
             }
         }
 
-        return null;
+        return this.matchStatus();
     };
 
     seasonTeamEndPhase = () => {
         const { id } = this.props.match.params;
         const { matchPlayerSeasonTeamId } = this.props;
-        this.props.matchSeasonTeamEndPhase(id, matchPlayerSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed())
-            .then(() => {
+        let promise = this.props.matchSeasonTeamEndPhase(id, matchPlayerSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed());
+        promise.then(() => {
                 this.loadMatchScoreboardsWithCallbacks(this.setNewGameDialogOpenAsRequired);
-            })
-            .catch(() => {
+            });
 
-            })
+        return promise;
     };
 
     render() {
@@ -268,10 +254,42 @@ export default class Match extends Component {
                 <MatchScoreboards
                     matchId={Number(id)}
                     matchScoreboards={this.props.matchScoreboards}
+                    loadMatchScoreboards={this.loadMatchScoreboardsWithCallbacks}
+                    fetchingMatchScoreboards={this.props.fetchingMatchScoreboards}
+                    seasonTeamEndPhase={this.seasonTeamEndPhase}
                     isMatchPlayer={this.isMatchPlayer()}
                     matchPlayerSeasonTeamId={this.props.matchPlayerSeasonTeamId}
+                    matchStatus={this.matchStatus()}
+                    matchPhase={this.matchPhase()}
+                    matchMyTeam={this.getMatchMyTeam()}
+                    matchRivalTeam={this.getMatchRivalTeam()}
+                    matchMyTeamGameScoresCount={this.matchMyTeamGameScoresCount}
                     matchPhaseByMyTeamGamesConfirmed={this.matchPhaseByMyTeamGamesConfirmed()}
-                    matchStatus={this.matchStatus()}/>
+                    playerSelectionDialogOpen={this.state.playerSelectionDialogOpen}
+                />
+                {
+                    this.getMatchMyTeam() !== null ?
+                        <React.Fragment>
+                            <PlayersSelectionDialog
+                                isOpen={this.state.playerSelectionDialogOpen}
+                                setPlayerSelectionDialogOpen={this.setPlayerSelectionDialogOpen}
+                                matchId={Number(id)}
+                                seasonTeamId={this.props.matchPlayerSeasonTeamId}
+                                teamMatchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
+                                teamGamesConfirmed={this.getMatchMyTeam().data.gamesConfirmed}
+                                playersScores={this.getMatchMyTeam().results.playersScores}
+                                loadMatchScoreboards={this.loadMatchScoreboards}
+                            />
+                            <NewGameDialog
+                                isOpen={this.state.newGameDialogOpen}
+                                setNewGameDialogOpen={this.setNewGameDialogOpen}
+                                matchId={Number(id)}
+                                seasonTeamId={this.props.matchPlayerSeasonTeamId}
+                                loadMatchScoreboards={this.loadMatchScoreboards}
+                                setPlayerSelectionDialogOpen={this.setPlayerSelectionDialogOpen}
+                            />
+                        </React.Fragment> : null
+                }
             </div>
         );
     }

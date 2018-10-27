@@ -2,7 +2,7 @@ import React from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBowlingBall, faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight,
-  faQuestionCircle, faQuestion, faAngleDown, faAngleUp} from '@fortawesome/free-solid-svg-icons';
+  faQuestionCircle, faQuestion, faAngleDown, faAngleUp, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faBowlingBall);
 library.add(faTimes);
@@ -15,6 +15,7 @@ library.add(faQuestion);
 library.add(faQuestionCircle);
 library.add(faAngleDown);
 library.add(faAngleUp);
+library.add(faEllipsisV);
 
 export const FAIcon = (icon, size, props) => <FontAwesomeIcon icon={icon} size={size} {...props}/>;
 
@@ -83,3 +84,9 @@ export const IconAngleUpX = (size, props) => IconAngleUp(`${size}x`, props);
 export const IconAngleUpLg = (props) => IconAngleUp('lg', props);
 export const IconAngleUpSm = (props) => IconAngleUp('sm', props);
 export const IconAngleUpXs = (props) => IconAngleUp('xs', props);
+
+export const IconEllipsisV = (size, props) => FAIcon('ellipsis-v', size, props);
+export const IconEllipsisVX = (size, props) => IconEllipsisV(`${size}x`, props);
+export const IconEllipsisVLg = (props) => IconEllipsisV('lg', props);
+export const IconEllipsisVSm = (props) => IconEllipsisV('sm', props);
+export const IconEllipsisVXs = (props) => IconEllipsisV('xs', props);
