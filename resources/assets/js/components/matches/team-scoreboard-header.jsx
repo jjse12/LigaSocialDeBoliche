@@ -1,7 +1,14 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import {IconCloudDownloadLg, IconCloudLg, IconDesktopLg, IconEllipsisVLg, IconEllipsisVSm} from "../../utilities/icons";
+import {
+    IconCloudDownloadLg,
+    IconCloudDownloadSm,
+    IconCloudLg,
+    IconDesktopLg,
+    IconEllipsisVLg,
+    IconEllipsisVSm
+} from "../../utilities/icons";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
@@ -16,7 +23,8 @@ export default class TeamScoreboardHeader extends Component {
         isPlayerTeam: PropTypes.bool,
         usingOfflineScoreboard: PropTypes.bool,
         offlineScoreboardToggler: PropTypes.func,
-        seasonTeamEndPhase: PropTypes.func,
+        requestEndPhase: PropTypes.func,
+        updateLocalScoreboard: PropTypes.func,
         teamMatchPhase: PropTypes.string,
         playerSelectionDialogOpen: PropTypes.bool,
         loadMatchScoreboards: PropTypes.func,
@@ -44,9 +52,20 @@ export default class TeamScoreboardHeader extends Component {
         const endPhaseOption = (
             <MenuItem
                 onClick={() => {
-                    this.props.seasonTeamEndPhase().then(this.closeMenu);
+                    this.props.requestEndPhase();
+                    this.closeMenu();
                 }}>
                 Terminar Linea
+            </MenuItem>
+        );
+
+        const updateLocalOption = (
+            <MenuItem
+                onClick={() => {
+                    this.props.updateLocalScoreboard();
+                    this.closeMenu();
+                }}>
+                <IconCloudDownloadSm/>
             </MenuItem>
         );
 
@@ -76,6 +95,7 @@ export default class TeamScoreboardHeader extends Component {
                     }
                 >
                     {endPhaseOption}
+                    {updateLocalOption}
                 </Menu>
             </div>
         );
@@ -91,17 +111,16 @@ export default class TeamScoreboardHeader extends Component {
         }
         if (this.props.data.gamesConfirmed === null){
             if (this.props.isPlayerTeam)
-                return <button className={`btn btn-md btn-success`} onClick={this.props.seasonTeamEndPhase}>Terminar calentamiento</button>;
+                return <button className={`btn btn-md btn-success`} onClick={this.props.requestEndPhase}>Terminar calentamiento</button>;
             return null;
         }
 
 
 
         let teamActions;
-        let
-            buttonProps = {
+        let buttonProps = {
             onClick: this.props.offlineScoreboardToggler,
-            className: 'mr-2 btn btn-sm'
+            className: 'mr-2 btn btn-sm d-flex flex-column align-items-center'
         };
 
         if (!this.props.usingOfflineScoreboard){
@@ -112,12 +131,19 @@ export default class TeamScoreboardHeader extends Component {
         }
 
         return (
-            <div className='d-flex flex-row align-self-center'>
+            <div className='d-flex flex-row align-items-center'>
                 <button {...buttonProps} >
-                    {
-                        this.props.usingOfflineScoreboard ?
-                        <IconDesktopLg/> : <IconCloudLg/>
-                    }
+                        {
+                            this.props.usingOfflineScoreboard ?
+                            <Fragment>
+                                <IconDesktopLg/>
+                                <small style={{fontSize: '0.80rem'}}>Offline</small>
+                            </Fragment> :
+                            <Fragment>
+                                <IconCloudLg/>
+                                <small style={{fontSize: '0.80rem'}}>Online</small>
+                            </Fragment>
+                        }
                 </button>
                 {this.renderDropDownMenu()}
             </div>

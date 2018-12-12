@@ -15,10 +15,11 @@ import {
     getMatchRivalTeamOfflineScoreboardFromStore,
 } from "../../reducers/getters";
 import _ from 'lodash';
-import NewGameDialog from "./new-game-dialog";
-import PlayersSelectionDialog from "./players-selection-dialog";
+import NewGameDialog from "./dialogs/new-game-dialog";
+import PlayersSelectionDialog from "./dialogs/players-selection-dialog";
 import MatchScoreboards from "./match-scoreboards";
 import MatchResults from "./match-results";
+import EndPhaseDialog from "./dialogs/end-phase-dialog";
 
 
 export const scoreIdGameNumberIndex = [
@@ -58,8 +59,10 @@ export default class Match extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            newGameDialogOpen: false,
             playerSelectionDialogOpen: false,
+            endPhaseDialogOpen: false,
+            newGameDialogOpen: false,
+            fillOfflineScoreboardDialogOpen: false,
             pollingTime: 30,
         };
         this.setPlayerSelectionDialogOpen = this.setPlayerSelectionDialogOpen.bind(this);
@@ -97,7 +100,7 @@ export default class Match extends Component {
 
                 // Check if player's team is in 'select game players phase', and if so, open dialog for players selection
                 if (getTeamIdPromise !== null){
-                    getTeamIdPromise.then(() => this.setNewGameDialogOpenAsRequired());
+                    getTeamIdPromise.then(this.setNewGameDialogOpenAsRequired);
                 }
             }
         });
@@ -120,12 +123,27 @@ export default class Match extends Component {
             promise.finally(response => finallyCallback(response));
     };
 
+    setPlayerSelectionDialogOpen = (open = false) => {
+        this.setState({playerSelectionDialogOpen : open});
+    };
+
+    requestEndPhase = () => {
+        if (this.getMatchMyTeam().gamesConfirmed === 0)
+            this.seasonTeamEndPhase();
+        else
+            this.setEndPhaseDialogOpen(true);
+    };
+
+    setEndPhaseDialogOpen = (open = false) => {
+        this.setState({endPhaseDialogOpen: open});
+    };
+
     setNewGameDialogOpen = (open = false) => {
         this.setState({newGameDialogOpen: open});
     };
 
-    setPlayerSelectionDialogOpen = (open = false) => {
-        this.setState({playerSelectionDialogOpen : open});
+    setFillOfflineScoreboardDialogOpen = (open = false) => {
+        this.setState({fillOfflineScoreboardDialog: open});
     };
 
     matchMyTeamGameScoresCount = gameNumber => {
@@ -256,7 +274,7 @@ export default class Match extends Component {
                     matchScoreboards={this.props.matchScoreboards}
                     loadMatchScoreboards={this.loadMatchScoreboardsWithCallbacks}
                     fetchingMatchScoreboards={this.props.fetchingMatchScoreboards}
-                    seasonTeamEndPhase={this.seasonTeamEndPhase}
+                    requestEndPhase={this.requestEndPhase}
                     isMatchPlayer={this.isMatchPlayer()}
                     matchPlayerSeasonTeamId={this.props.matchPlayerSeasonTeamId}
                     matchStatus={this.matchStatus()}
@@ -284,9 +302,16 @@ export default class Match extends Component {
                                 isOpen={this.state.newGameDialogOpen}
                                 setNewGameDialogOpen={this.setNewGameDialogOpen}
                                 matchId={Number(id)}
+                                matchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
                                 seasonTeamId={this.props.matchPlayerSeasonTeamId}
                                 loadMatchScoreboards={this.loadMatchScoreboards}
                                 setPlayerSelectionDialogOpen={this.setPlayerSelectionDialogOpen}
+                            />
+                            <EndPhaseDialog
+                                isOpen={this.state.endPhaseDialogOpen}
+                                setEndPhaseDialogOpen={this.setEndPhaseDialogOpen}
+                                matchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
+                                endPhaseCallback={this.seasonTeamEndPhase}
                             />
                         </React.Fragment> : null
                 }

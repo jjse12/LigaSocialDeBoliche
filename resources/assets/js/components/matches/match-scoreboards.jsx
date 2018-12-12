@@ -27,7 +27,7 @@ export default class MatchScoreboards extends Component {
         matchRivalTeam: PropTypes.object,
         matchPhaseByMyTeamGamesConfirmed: PropTypes.string,
         matchMyTeamGameScoresCount: PropTypes.func.isRequired,
-        seasonTeamEndPhase: PropTypes.func,
+        requestEndPhase: PropTypes.func,
         fetchingMatchScoreboards: PropTypes.bool.isRequired,
         playerSelectionDialogOpen: PropTypes.bool.isRequired,
 
@@ -46,17 +46,20 @@ export default class MatchScoreboards extends Component {
     }
 
     toggleUsingMyTeamOfflineScoreboard = () => {
-        const current = this.state.usingMyTeamOfflineScoreboard;
-        this.setState({ usingMyTeamOfflineScoreboard: !current });
+        const toggled = !this.state.usingMyTeamOfflineScoreboard;
+        if (toggled && _.isEmpty(this.props.matchMyTeamOfflineScoreboard.playersScores)){
+            this.updateMyTeamScoreboardFromCloud();
+        }
+        this.setState({ usingMyTeamOfflineScoreboard: toggled });
     };
 
     toggleUsingRivalTeamOfflineScoreboard = () => {
-        const current = this.state.usingRivalTeamOfflineScoreboard;
-        this.setState({ usingRivalTeamOfflineScoreboard: !current });
+        const toggled = !this.state.usingRivalTeamOfflineScoreboard;
+        this.setState({ usingRivalTeamOfflineScoreboard: toggled });
     };
 
     updateMyTeamScoreboardFromCloud = () => {
-        if (thisthis.props.matchMy !== null)
+        if (this.props.matchMyTeam !== null)
             this.props.setMatchMyTeamOfflineScoreboard(this.props.matchMyTeam.results);
     };
 
@@ -93,6 +96,8 @@ export default class MatchScoreboards extends Component {
                     team1.isScoreboardEditable = true;
                     team1.toggleOfflineScoreboard = this.toggleUsingMyTeamOfflineScoreboard;
                     team2.toggleOfflineScoreboard = this.toggleUsingRivalTeamOfflineScoreboard;
+                    team1.updateLocalScoreboard = this.updateMyTeamScoreboardFromCloud;
+                    team2.updateLocalScoreboard = this.updateRivalTeamScoreboardFromCloud;
                     if (this.state.usingMyTeamOfflineScoreboard){
                         team1.results = this.props.matchMyTeamOfflineScoreboard;
                         team1.usingOfflineScoreboard = true;
@@ -108,6 +113,8 @@ export default class MatchScoreboards extends Component {
                     team2.isScoreboardEditable = true;
                     team2.toggleOfflineScoreboard = this.toggleUsingMyTeamOfflineScoreboard;
                     team1.toggleOfflineScoreboard = this.toggleUsingRivalTeamOfflineScoreboard;
+                    team2.updateLocalScoreboard = this.updateMyTeamScoreboardFromCloud;
+                    team1.updateLocalScoreboard = this.updateRivalTeamScoreboardFromCloud;
                     if (this.state.usingMyTeamOfflineScoreboard){
                         team2.results = this.props.matchMyTeamOfflineScoreboard;
                         team2.usingOfflineScoreboard = true;
@@ -138,7 +145,8 @@ export default class MatchScoreboards extends Component {
                         playerSelectionDialogOpen={this.props.playerSelectionDialogOpen}
                         teamMatchPhase={this.props.matchPhaseByMyTeamGamesConfirmed}
                         matchStatus={this.props.matchStatus}
-                        seasonTeamEndPhase={this.props.seasonTeamEndPhase}
+                        requestEndPhase={this.props.requestEndPhase}
+                        updateLocalScoreboard={team1.updateLocalScoreboard}
                         loadMatchScoreboards={this.props.loadMatchScoreboards}
                     />
                     <TeamScoreboard
@@ -158,7 +166,8 @@ export default class MatchScoreboards extends Component {
                         playerSelectionDialogOpen={this.props.playerSelectionDialogOpen}
                         teamMatchPhase={this.props.matchPhaseByMyTeamGamesConfirmed}
                         matchStatus={this.props.matchStatus}
-                        seasonTeamEndPhase={this.props.seasonTeamEndPhase}
+                        requestEndPhase={this.props.requestEndPhase}
+                        updateLocalScoreboard={team2.updateLocalScoreboard}
                         loadMatchScoreboards={this.props.loadMatchScoreboards}
                     />
                     <TeamScoreboard
