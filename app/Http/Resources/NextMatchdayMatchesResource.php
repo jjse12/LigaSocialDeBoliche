@@ -15,11 +15,9 @@ class NextMatchdayMatchesResource extends JsonResource
     public function toArray($request)
     {
         $result = [];
-        $i = 0;
         foreach ($this->matches()->sortBy('team1_lane') as $match) {
-            $result[$i++] = new NextMatchCardResource($match);
+            $result[] = new NextMatchCardResource($match);
         }
-
         return $result;
     }
 }

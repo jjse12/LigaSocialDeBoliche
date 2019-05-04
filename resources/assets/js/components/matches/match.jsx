@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import {
     getMatchPlayerSeasonTeamId, getMatchScoreboards, setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard, matchSeasonTeamEndPhase, totalsObject
 } from "../../reducers/matches";
+import { getMatchInfo } from "../../reducers/match";
 import { updateScore} from "../../reducers/scores";
 import {
     getLoggedInPlayerFromStore,
@@ -42,7 +43,7 @@ export const gameNumberStrings = {
         matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
         fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
     }),
-    { getMatchScoreboards, getMatchPlayerSeasonTeamId, matchSeasonTeamEndPhase }
+    { getMatchInfo, getMatchScoreboards, getMatchPlayerSeasonTeamId, matchSeasonTeamEndPhase }
 )
 export default class Match extends Component {
     static propTypes = {
@@ -88,6 +89,7 @@ export default class Match extends Component {
 
     componentWillMount() {
         const { id } = this.props.match.params;
+        this.props.getMatchInfo(id);
         let getTeamIdPromise = null;
         if (!_.isEmpty(this.props.loggedInPlayer)){
             getTeamIdPromise = this.props.getMatchPlayerSeasonTeamId(id, this.props.loggedInPlayer.id);

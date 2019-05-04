@@ -28,6 +28,7 @@ const uris = {
         teamPlayers: id => `/season-team/${id}/players`,
 
         // Matches data:
+        matchInfo: id => `/match/${id}/info`,
         matchResults: id => `/match/${id}/results`,
         matchScoreboards: id => `/match/${id}/scoreboards`,
         matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player/${playerId}/season-team-id`,

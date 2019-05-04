@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MatchSeasonTeamEndPhaseRequest;
+use App\Http\Resources\MatchInfoResource;
 use App\Http\Resources\MatchResultsSummaryResource;
 use App\Http\Resources\MatchScoreboardResource;
 use App\Http\Resources\MatchTeamAvailablePlayersResource;
@@ -13,7 +14,6 @@ use App\Player;
 use App\SeasonTeam;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class MatchController extends Controller
@@ -22,6 +22,10 @@ class MatchController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api')->only('seasonTeamEndPhase');
+    }
+
+    public function info(Match $match): JsonResponse {
+        return response()->json(new MatchInfoResource($match));
     }
 
     public function results(Match $match): JsonResponse {

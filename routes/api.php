@@ -56,6 +56,7 @@ Route::group(['prefix' => 'team'], function() {
 
 Route::group(['prefix' => 'match'], function() {
     Route::group(['prefix' => '/{match}'], function() {
+        Route::get('/info', 'MatchController@info');
         Route::get('/results', 'MatchController@results');
         Route::get('/scoreboards', 'MatchController@scoreboards');
         Route::get('/scores', 'MatchController@scores');

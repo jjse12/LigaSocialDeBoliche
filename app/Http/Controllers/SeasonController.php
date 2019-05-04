@@ -33,7 +33,8 @@ class SeasonController extends Controller
 
     public function nextMatchday(): JsonResponse {
         //TODO: check if current season is still active and with matches to play
-        return response()->json(new MatchdayResource(Season::currentSeason()->nextMatchday()));
+        $matchday = Season::currentSeason()->nextMatchday();
+        return response()->json($matchday ? new MatchdayResource($matchday) : null);
     }
 
     public function nextMatchdayMatches(): JsonResponse {

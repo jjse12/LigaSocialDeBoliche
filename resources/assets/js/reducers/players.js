@@ -1,17 +1,12 @@
 import uri from "../services/uri";
+import { createReducer, actionCreatorHandler } from '../utilities/reducerUtils';
 import {ajaxGet} from "../utilities/action-creators";
 
-export const LOGGED_IN_PLAYER = "get_logged_in_player";
-
-const initialState = {};
+export const LOGGED_IN_PLAYER = "USER";
 
 export const getLoggedInPlayer = () => dispatch =>
     dispatch(ajaxGet(LOGGED_IN_PLAYER, uri.api.loggedInPlayer));
 
-export function loggedInPlayerReducer(state = initialState, action) {
-    switch (action.type) {
-        case LOGGED_IN_PLAYER:
-            return action.data;
-    }
-    return state;
-}
+export default createReducer({}, {
+    [LOGGED_IN_PLAYER]: actionCreatorHandler
+});

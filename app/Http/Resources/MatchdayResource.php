@@ -15,11 +15,15 @@ class MatchdayResource extends JsonResource
      */
     public function toArray($request)
     {
+        $matches = new NextMatchdayMatchesResource($this);
         return [
-            'number' => $this->number,
-            'date' => Carbon::createFromTimeString($this->date)->format('d/m/Y'),
-            'redPin' => $this->red_pin == 1,
-            'virtual' => $this->virtual == 1
+            'info' => [
+                'number' => $this->number,
+                'date' => Carbon::createFromTimeString($this->date)->format('d/m/Y'),
+                'isRedPinGame' => $this->red_pin == 1,
+                'isVirtualGame' => $this->virtual == 1,
+            ],
+            'matches' => $matches
         ];
 
     }

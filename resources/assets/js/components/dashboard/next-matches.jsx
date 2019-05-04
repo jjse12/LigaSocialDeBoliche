@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {Carousel} from 'react-responsive-carousel';
 import { withStyles } from 'material-ui/styles';
 import { getNextMatchdayFromStore, getNextMatchdayMatchesFromStore} from "../../reducers/getters";
-import { getNextMatchday, getNextMatchdayMatches } from "../../reducers/current-season";
+import { getNextMatchday, getNextMatchdayMatches } from "../../reducers/currentSeason";
 
 @connect(
     store => ({

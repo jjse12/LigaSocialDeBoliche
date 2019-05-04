@@ -3,9 +3,9 @@ import uri from "../services/uri";
 
 export const CREATE_MATCH_NEW_GAME_SCORES = 'create_match_new_game_scores';
 export const CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS = 'create_match_new_game_scores_for_last_game_players';
-export const CREATE_SCORE = 'create_score';
-export const UPDATE_SCORE = 'update_score';
-export const DELETE_SCORE = 'delete_score';
+export const CREATE_SCORE = 'CREATE_SCORE';
+export const UPDATE_SCORE = 'UPDATE_SCORE';
+export const DELETE_SCORE = 'DELETE_SCORE';
 
 export const createMatchNewGameScores = (matchId, seasonTeamId, scoresData) => dispatch => {
     const data = {
