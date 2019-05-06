@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NextMatchdayMatchesResource extends JsonResource
+class MatchesResources extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,8 @@ class NextMatchdayMatchesResource extends JsonResource
     public function toArray($request)
     {
         $result = [];
-        foreach ($this->matches()->sortBy('team1_lane') as $match) {
-            $result[] = new NextMatchCardResource($match);
+        foreach ($this->matches() as $match) {
+            $result[] = new IncomingMatchResource($match);
         }
         return $result;
     }

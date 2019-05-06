@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { getMatchMyTeamAvailablePlayers } from '../../../reducers/matches';
 import { getMatchMyTeamAvailablePlayersFromStore, getMatchMyTeamAvailablePlayersFetchingFromStore,
-        createMatchNewGameScoresFetchingFromStore } from '../../../reducers/getters';
+        createMatchNewGameScoresFetchingFromStore } from '../../../reducers/selectors';
 import { createMatchNewGameScores } from "../../../reducers/scores";
 import {UnmountClosed as Collapse} from 'react-collapse';
 import DialogContent from '@material-ui/core/DialogContent';

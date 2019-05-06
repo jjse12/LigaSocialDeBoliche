@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import {getLoggedInPlayer} from "../reducers/players";
+import { getUser } from "../reducers/user";
 import routes from './routes';
 
 @connect(
-    null, { getLoggedInPlayer }
+    null, { getUser }
 )
 export default class Main extends Component {
     static propTypes = {
         auth: PropTypes.bool.isRequired,
-        getLoggedInPlayer: PropTypes.func
+        getUser: PropTypes.func
     };
 
     constructor(props) {
@@ -22,7 +22,7 @@ export default class Main extends Component {
 
     componentWillMount() {
         if (this.props.auth){
-            this.props.getLoggedInPlayer()
+            this.props.getUser()
                 .then(() => {
                     this.setState({authChecked: true})
                 });

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { totalsObject } from "../../reducers/matches";
 import { updateScore } from "../../reducers/scores";
-import { updateScoreFetchingFromStore } from "../../reducers/getters";
+import { updateScoreFetchingFromStore } from "../../reducers/selectors";
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";
 import {scoreIdGameNumberIndex} from "./match";

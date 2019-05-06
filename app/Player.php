@@ -20,7 +20,7 @@ class Player extends Authenticatable
     }
 
     public function currentSeasonPlayer(): ?SeasonPlayer {
-        return $this->seasonPlayer(Season::find(Season::count())->id);
+        return $this->seasonPlayer(Season::currentSeason()->id);
     }
 
     public function allSeasonPlayers(): Collection {
@@ -49,5 +49,64 @@ class Player extends Authenticatable
         }
 
         return $scores;
+    }
+
+    public function info(): array {
+        return [
+            'id' => $this->id,
+            'gender' => $this->gender,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'birthday' => $this->birthday,
+            'created_at' => $this->created_at
+        ];
+    }
+
+    public function currentSeasonData(): array {
+        /** @var SeasonPlayer $seasonPlayer*/
+        $seasonPlayer = $this->currentSeasonPlayer();
+        if ($seasonPlayer !== null){
+            $currentSeasonAverage = $seasonPlayer->average();
+            $currentSeasonCategory = $seasonPlayer->categoryName();
+            $currentSeasonGamesPlayed = $seasonPlayer->gamesPlayed();
+            $currentSeasonPinTotal = $seasonPlayer->pinTotal();
+            $currentSeasonHandicap = $seasonPlayer->handicap();
+
+            /** @var SeasonTeam $seasonTeam */
+            $seasonTeam = $this->currentSeasonPlayer()->seasonTeam();
+            $seasonTeamId = $seasonTeam->id;
+            $seasonTeamName = $seasonTeam->name();
+
+            return [
+                'category' => $currentSeasonCategory,
+                'gamesPlayed' => $currentSeasonGamesPlayed,
+                'pinTotal' => $currentSeasonPinTotal,
+                'average' => $currentSeasonAverage,
+                'handicap' => $currentSeasonHandicap,
+                'team' => [
+                    'id' => $seasonTeamId,
+                    'name' => $seasonTeamName,
+                ]
+            ];
+        }
+        return [];
+    }
+
+    public function allSeasonsData(): array {
+        $allScores = $this->scores();
+        $seasonsPlayed = $this->allSeasonPlayers()->count();
+        $gamesPlayed = $allScores->count();
+        $pinTotal = $allScores->sum('score');
+        $average = $allScores->average('score');
+        $highestScore = $allScores->max('score');
+        return [
+            'seasonsPlayed' => $seasonsPlayed,
+            'gamesPlayed' => $gamesPlayed,
+            'pinTotal' => $pinTotal,
+            'average' => $average,
+            'highestScore' => $highestScore,
+        ];
     }
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { createMatchNewGameScoresForLastGamePlayers } from '../../../reducers/scores';
-import { createMatchNewGameScoresForLastGamePlayersFetchingFromStore } from '../../../reducers/getters';
+import { createMatchNewGameScoresForLastGamePlayersFetchingFromStore } from '../../../reducers/selectors';
 import PropTypes from 'prop-types';
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";

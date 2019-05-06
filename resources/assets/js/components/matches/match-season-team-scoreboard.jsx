@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import { getMatchSeasonTeamScoreboard} from "../../reducers/matches";
-import {getMatchSeasonTeamScoreboardFetchingFromStore, getMatchSeasonTeamScoreboardFromStore} from "../../reducers/getters";
+import {getMatchSeasonTeamScoreboardFetchingFromStore, getMatchSeasonTeamScoreboardFromStore} from "../../reducers/selectors";
 import ReactLoading from 'react-loading';
 import ReactTable from 'react-table';
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";

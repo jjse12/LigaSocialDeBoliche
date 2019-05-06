@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Matchday extends Model
 {
     public function matches(): Collection {
-        return $this->hasMany(Match::class, 'matchday_id', 'id')->get();
+        return $this->hasMany(Match::class, 'matchday_id', 'id')->get()->sortBy('team1_lane');
     }
 
     public function gameWinnerPlayers(int $game_number): Collection {
@@ -32,6 +32,8 @@ class Matchday extends Model
     }
     
     public function season(): Season {
-        return $this->belongsTo(Season::class, 'season_id', 'id')->first();
+        /* @var Season $season */
+        $season = $this->belongsTo(Season::class, 'season_id', 'id')->first();
+        return $season;
     }
 }

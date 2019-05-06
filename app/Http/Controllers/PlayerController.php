@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PlayerResource;
 use App\Player;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,10 @@ class PlayerController extends Controller
     }
 
     public function authenticatedPlayer(): JsonResponse {
-        return response()->json(Auth::user());
+        return response()->json(new PlayerResource(Auth::user()));
     }
 
     public function show(Player $player): JsonResponse {
-        return response()->json($player);
+        return response()->json(new PlayerResource($player));
     }
 }

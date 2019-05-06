@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types';
 import {Carousel} from 'react-responsive-carousel';
 import { withStyles } from 'material-ui/styles';
-import { getNextMatchdayFromStore, getNextMatchdayMatchesFromStore} from "../../reducers/getters";
+import { getNextMatchdayFromStore, getNextMatchdayMatchesFromStore} from "../../reducers/selectors";
 import { getNextMatchday, getNextMatchdayMatches } from "../../reducers/currentSeason";
 
 @connect(

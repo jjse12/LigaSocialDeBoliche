@@ -14,27 +14,31 @@ const uris = {
         error: '/error',
     },
     api: {
-        // Current logged in player
-        loggedInPlayer: '/player/auth-player',
+        // Current logged in user (a player)
+        user: '/player/auth-player',
 
         // Seasons data:
         seasons: '/season/index',
         currentSeason: '/season/current',
-        seasonMatchdays: id => `/season/${id}/matchdays`,
-        nextMatchday: '/season/next-matchday',
-        nextMatchdayMatches: '/season/next-matchday-matches',
+        currentSeasonMatchdays: '/season/current/matchdays',
+        currentSeasonNextMatchday: '/season/current/next-matchday',
+        currentSeasonNextMatchdayMatches: '/season/current/next-matchday-matches',
 
-        // Teams data:
-        teamPlayers: id => `/season-team/${id}/players`,
+        // Season Teams data:
+        seasonTeamInfo: id => `/season-team/${id}/`,
+        seasonTeamPlayers: id => `/season-team/${id}/players`,
 
         // Matches data:
+        // TODO: remove next url
+        matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player/${playerId}/season-team-id`,
         matchInfo: id => `/match/${id}/info`,
         matchResults: id => `/match/${id}/results`,
         matchScoreboards: id => `/match/${id}/scoreboards`,
-        matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player/${playerId}/season-team-id`,
-        matchSeasonTeamScoreboard: (matchId, seasonTeamId) => `/match/${matchId}/season-team/${seasonTeamId}/scoreboard`,
-        matchMyTeamAvailablePlayers: (matchId, seasonTeamId) => `/match/${matchId}/season-team/${seasonTeamId}/available-players`,
-        matchSeasonTeamEndPhase: '/match/season-team-end-phase',
+        matchTeamAvailablePlayers: (matchId, seasonTeamId) =>
+            `/match/${matchId}/season-team/${seasonTeamId}/available-players`,
+        matchSeasonTeamScoreboard: (matchId, seasonTeamId) =>
+            `/match/${matchId}/season-team/${seasonTeamId}/scoreboard`,
+        matchTeamEndPhase: '/match/team-end-phase',
 
         // Scores
         createMatchNewGameScores: '/score/match-new-game-scores',

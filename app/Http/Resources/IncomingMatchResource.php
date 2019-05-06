@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NextMatchCardResource extends JsonResource
+class IncomingMatchResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

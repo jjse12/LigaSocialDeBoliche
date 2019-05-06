@@ -6,7 +6,7 @@ const initialState = {};
 
 export const MATCH_INFO = 'MATCH_INFO';
 
-export const getMatchInfo = (id) => dispatch => dispatch(ajaxGet(MATCH_INFO, uri.api.matchInfo(id)));
+export const getMatchInfo = id => dispatch => dispatch(ajaxGet(MATCH_INFO, uri.api.matchInfo(id)));
 
 export default createReducer(initialState, {
     [MATCH_INFO]: actionCreatorHandler

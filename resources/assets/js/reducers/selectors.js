@@ -8,10 +8,10 @@ import {
     DELETE_SCORE,
     UPDATE_SCORE
 } from "./scores";
-import {SEASON_TEAM_PLAYERS} from "./teams";
+import { SEASON_TEAM_PLAYERS } from "./seasonTeam";
 
 // Logged in player
-export const getLoggedInPlayerFromStore = store => store.loggedInPlayer;
+export const getLoggedInPlayerFromStore = store => store.user;
 
 // Season
 export const getCurrentSeasonFromStore = store => store.currentSeason;
@@ -19,7 +19,7 @@ export const getNextMatchdayFromStore = store => store.nextMatchday;
 export const getNextMatchdayMatchesFromStore = store => store.nextMatchdayMatches;
 
 // Teams
-export const getSeasonTeamPlayersFromStore = store => store.teamPlayers;
+export const getSeasonTeamPlayersFromStore = store => store.seasonTeam.players;
 export const getSeasonTeamPlayersFetchingFromStore = store => isFetchingFromStore(store, SEASON_TEAM_PLAYERS);
 
 // Matches
@@ -41,3 +41,10 @@ export const createMatchNewGameScoresForLastGamePlayersFetchingFromStore =
 export const createScoreFetchingFromStore = store => isFetchingFromStore(store, CREATE_SCORE);
 export const updateScoreFetchingFromStore = store => isFetchingFromStore(store, UPDATE_SCORE);
 export const deleteScoreFetchingFromStore = store => isFetchingFromStore(store, DELETE_SCORE);
+
+
+const selectors = {
+    user: store => store.user,
+};
+
+export default selectors;

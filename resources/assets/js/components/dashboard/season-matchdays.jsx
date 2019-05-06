@@ -2,23 +2,24 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import { getSeasonMatchdaysFromStore } from "../../reducers/getters";
-import { getSeasonMatchdays } from "../../reducers/season-matchdays";
+import { getSeasonMatchdaysFromStore } from "../../reducers/selectors";
+import { getCurrentSeasonMatchdays } from "../../reducers/currentSeason";
 
 @connect(
     store => ({
         matchdays: getSeasonMatchdaysFromStore(store)
     }),
-    { getSeasonMatchdays }
+    { getCurrentSeasonMatchdays }
 )
 export default class SeasonMatchdays extends Component {
     static propTypes = {
         // currentSeason: PropTypes.array.isRequired || PropTypes.object,
         // matchdays: PropTypes.func,
+        getCurrentSeasonMatchdays: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
-        this.props.getSeasonMatchdays(this.props.currentSeason.id);
+        this.props.getCurrentSeasonMatchdays();
     }
 
     renderMatchdays() {

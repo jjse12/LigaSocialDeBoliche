@@ -23,8 +23,8 @@ class MatchScoreboardResource extends JsonResource
             'statusData' => $statusData,
             'date' => $this->matchday()->date,
             'matchdayNumber' => $this->matchday()->number,
-            'redPin' => $this->matchday()->red_pin,
-            'virtual' => $this->matchday()->virtual,
+            'isRedPinGame' => $this->matchday()->red_pin,
+            'isVirtualGame' => $this->matchday()->virtual,
             'team1' => [
                 'data' => [
                     'id' => $team1->id,

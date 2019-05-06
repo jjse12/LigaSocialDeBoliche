@@ -19,7 +19,7 @@ class Season extends Model
     public function nextMatchday(): ?Matchday {
         $now = Carbon::now();
         return $this->matchdays()->filter(function ($item) use ($now) {
-            return (new \DateTime($item->date) > new \DateTime($now));
+            return (new \DateTime($item->date) < new \DateTime($now));
         })->first();
     }
 

@@ -9,10 +9,10 @@ class SeasonTeamPlayersResource extends JsonResource
 {
     private $withUnconcludedData;
 
-    public function __construct(SeasonTeam $SeasonTeam, bool $withUnconcludedData = false)
+    public function __construct(SeasonTeam $seasonTeam, bool $withUnconcludedData = false)
     {
         $this->withUnconcludedData = $withUnconcludedData;
-        parent::__construct($SeasonTeam);
+        parent::__construct($seasonTeam);
     }
     
     /**

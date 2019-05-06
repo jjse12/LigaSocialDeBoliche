@@ -27,9 +27,9 @@ class SeasonCategoryTeamsScoreboardResource extends JsonResource
         $result = [];
         $teamPoints = [];
         $teamPins = [];
-        foreach ($this->categoryTeams($this->categoryId) as $categoryTeam) {
-            $teamPoints[$categoryTeam->name()] = $categoryTeam->point_score + rand(2,12);
-            $teamPins[$categoryTeam->name()] = $categoryTeam->pin_score + rand(600, 12);
+        foreach ($this->categorySeasonTeams($this->categoryId) as $categoryTeam) {
+            $teamPoints[$categoryTeam->name()] = $categoryTeam->point_score ;//+ rand(2,12);
+            $teamPins[$categoryTeam->name()] = $categoryTeam->pin_score;// + rand(600, 12);
         }
 
         arsort($teamPoints);;

@@ -4,7 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import { connect } from "react-redux";
 import { getCurrentSeason } from "../../reducers/currentSeason";
 import { getMatchResults} from "../../reducers/matches";
-import { getCurrentSeasonFromStore} from "../../reducers/getters";
+import { getCurrentSeasonFromStore} from "../../reducers/selectors";
 
 @connect(
     store => ({

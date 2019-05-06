@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MatchdayResource;
-use App\Http\Resources\NextMatchdayMatchesResource;
+use App\Http\Resources\MatchesResources;
 use App\Http\Resources\SeasonCategoryTeamsScoreboardResource;
 use App\Http\Resources\SeasonsResource;
 use App\Season;
@@ -23,23 +23,34 @@ class SeasonController extends Controller
         return response()->json(Season::currentSeason());
     }
 
+    public function currentSeasonMatchdays(Request $request): JsonResponse {
+        $currentSeason = Season::currentSeason();
+        $withMatches = $request->get('withMatches') === 'true';
+        $matchdays = [];
+        foreach ($currentSeason->matchdays() as $matchday) {
+            $matchdays[$matchday->number] = new MatchdayResource($matchday, $withMatches);
+        }
+        return response()->json($matchdays);
+    }
+
+    public function currentSeasonNextMatchday(): JsonResponse {
+        //TODO: check if current season is still active and with matches to play
+        $matchday = Season::currentSeason()->nextMatchday();
+        return response()->json($matchday ? new MatchdayResource($matchday) : null);
+    }
+
+    public function currentSeasonNextMatchdayMatches(): JsonResponse {
+        //TODO: check if current season is still active and with matches to play
+        $matchday = Season::currentSeason()->nextMatchday();
+        return response()->json($matchday ? new MatchesResources($matchday) : null);
+    }
+
     public function matchdays(Season $season): JsonResponse {
         $matchdays = [];
         foreach ($season->matchdays() as $matchday) {
             $matchdays[$matchday->number] = new MatchdayResource($matchday);
         }
         return response()->json($matchdays);
-    }
-
-    public function nextMatchday(): JsonResponse {
-        //TODO: check if current season is still active and with matches to play
-        $matchday = Season::currentSeason()->nextMatchday();
-        return response()->json($matchday ? new MatchdayResource($matchday) : null);
-    }
-
-    public function nextMatchdayMatches(): JsonResponse {
-        //TODO: check if current season is still active and with matches to play
-        return response()->json(new NextMatchdayMatchesResource(Season::currentSeason()->nextMatchday()));
     }
 
     public function categoryScoreboard(Season $season, int $categoryId): JsonResponse{

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { getMatchScoreboardsFromStore } from '../../reducers/getters';
+import { getMatchScoreboardsFromStore } from '../../reducers/selectors';
 import PropTypes from 'prop-types';
 import ReactLoading from "react-loading";
 import moment from 'moment';

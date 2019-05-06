@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard} from "../../reducers/matches";
-import { getMatchMyTeamOfflineScoreboardFromStore, getMatchRivalTeamOfflineScoreboardFromStore } from "../../reducers/getters";
+import { getMatchMyTeamOfflineScoreboardFromStore, getMatchRivalTeamOfflineScoreboardFromStore } from "../../reducers/selectors";
 import _ from 'lodash';
 import TeamScoreboard from "./team-scoreboard";
 import TeamScoreboardHeader from "./team-scoreboard-header";
