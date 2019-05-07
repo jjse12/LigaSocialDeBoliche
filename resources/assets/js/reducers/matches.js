@@ -31,7 +31,7 @@ const offlineScoreboardInitialState = {
 };
 
 export const getMatchResults = (id) => dispatch =>
-    dispatch(ajaxGet(MATCH_RESULTS, uri.api.matchResults(id)));
+    dispatch(ajaxGet(MATCH_RESULTS, uri.api.matchScoreboards(id)));
 
 export const getMatchScoreboards = (id) => dispatch =>
     dispatch(ajaxGet(MATCH_SCOREBOARDS, uri.api.matchScoreboards(id)));
