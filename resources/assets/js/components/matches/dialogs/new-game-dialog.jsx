@@ -13,7 +13,7 @@ import {gameNumberStrings} from "../match";
     store => ({
         isOpen: selectors.matchNewGame(store).isDialogOpen,
         matchId: selectors.matchSummary(store).id,
-        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
         loadingCreateScoresForLastGamePlayers: selectors.loadingCreateMatchNewGameScoresForLastGamePlayers(store)
     }),
     {

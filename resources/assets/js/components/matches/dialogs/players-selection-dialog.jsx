@@ -29,7 +29,7 @@ const scoreIdGameNumberIndex = [
     store => ({
         isOpen: selectors.matchPlayerSelection(store).isDialogOpen,
         matchId: selectors.matchSummary(store).id,
-        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
         availablePlayers: selectors.matchPlayerSelection(store).availablePlayers,
         isLoadingMatchTeamAvailablePlayers: selectors.loadingMatchTeamAvailablePlayers(store),
         isLoadingCreateMatchNewGameScores: selectors.loadingCreateMatchNewGameScores(store),

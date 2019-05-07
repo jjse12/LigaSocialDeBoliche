@@ -42,11 +42,20 @@ export const updateScoreFetchingFromStore = store => isFetchingFromStore(store, 
 export const deleteScoreFetchingFromStore = store => isFetchingFromStore(store, MATCH_DELETE_SCORE);
 
 const getUser = store => store.user;
-const userInfo = store => getUser(store).info;
-const userCurrentSeason = store => getUser(store).currentSeason;
+const isGuestUser = store => _.isEmpty(getUser(store));
+const userInfo = store => {
+    if (isGuestUser(store))
+        return {};
+    return getUser(store).info;
+};
+const userCurrentSeasonTeamId = store => {
+    if (isGuestUser(store))
+        return 0;
+    return getUser(store).currentSeason.team.id;
+};
 const getMatch = store => store.match;
 const matchSummary = store => getMatch(store).summary;
-const matchResults = store => getMatch(store).results;
+const matchStatus = store => getMatch(store).summary.statusData.status;
 const matchScoreboards = store => getMatch(store).scoreboards;
 const matchEdition = store => getMatch(store).edition;
 const matchNewGame = store => matchEdition(store).newGame;
@@ -62,11 +71,23 @@ const loadingCreateMatchNewGameScores = store => isFetchingFromStore(store, MATC
 const loadingCreateMatchNewGameScoresForLastGamePlayers = store =>
     isFetchingFromStore(store, MATCH_CREATE_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS);
 
+const matchPhase = store => {
+    const {
+        statusData: {
+            status,
+            phase
+        }
+    } = matchSummary(store);
+    return status === 'active' ? phase : null;
+};
+
 const selectors = {
+    isGuestUser,
     userInfo,
-    userCurrentSeason,
+    userCurrentSeasonTeamId,
     matchSummary,
-    matchResults,
+    matchStatus,
+    matchPhase,
     matchScoreboards,
     matchNewGame,
     matchPlayerSelection,

@@ -46,7 +46,9 @@ class Match extends Model
         $date = Carbon::createFromTimeString($this->matchday()->date);
         $today = Carbon::now();
         $minutesDiff = $today->diffInMinutes($date, false);
-        $statusData = [];
+        $statusData = [
+            'status' => '',
+        ];
         if ($minutesDiff > 0){
             $statusData['status'] = 'inactive';
             $date->setLocale('es');

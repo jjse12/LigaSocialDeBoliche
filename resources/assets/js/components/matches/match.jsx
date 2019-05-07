@@ -34,8 +34,10 @@ export const gameNumberStrings = {
 @connect(
     store => ({
         id: selectors.matchSummary(store).id,
+        matchStatus: selectors.matchStatus(store),
+        matchPhase: selectors.matchPhase(store),
         matchScoreboards: selectors.matchScoreboards(store),
-        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
         fetchingMatchScoreboards: selectors.loadingMatchScoreboards(store),
         isPlayerSelectionDialogOpen: selectors.matchPlayerSelection(store).isDialogOpen,
         isNewGameDialogOpen: selectors.matchNewGame(store).isDialogOpen,
@@ -59,6 +61,8 @@ export default class Match extends Component {
         }).isRequired,
 
         id: PropTypes.number.isRequired,
+        matchStatus: PropTypes.string.isRequired,
+        matchPhase: PropTypes.string,
         matchScoreboards: PropTypes.object.isRequired,
         userSeasonTeamId: PropTypes.number.isRequired,
         fetchingMatchScoreboards: PropTypes.bool.isRequired,
@@ -87,7 +91,8 @@ export default class Match extends Component {
         let promise = new Promise(resolve => setTimeout(() => {resolve('Done')}, this.state.pollingTime * 1000));
         if (await promise === 'Done'){
             this.loadMatchScoreboardsWithCallbacks(() => {
-                if (this.matchStatus() === 'active'){
+                const { matchStatus } = this.props;
+                if (matchStatus === 'active'){
                     this.setNewGameDialogOpenAsRequired();
                     this.matchScoreboardsPoller();
                 }
@@ -101,8 +106,10 @@ export default class Match extends Component {
         const id = this.props.match.params.id;
         const { getMatchSummary } = this.props;
         await getMatchSummary(id);
+
         this.loadMatchScoreboardsWithCallbacks(() => {
-            if (this.matchStatus() === 'active'){
+            const { matchStatus } = this.props;
+            if (matchStatus === 'active'){
                 // Poller for updating match scoreboards every `this.state.pollingTime` seconds
                 // this.matchScoreboardsPoller();
                 this.setNewGameDialogOpenAsRequired();
@@ -220,21 +227,14 @@ export default class Match extends Component {
         return null;
     };
 
-    matchStatus = () => {
-        const { matchScoreboards: { statusData }} = this.props;
-        return statusData ? statusData.status : '';
-    };
-
-    matchPhase = () => {
-        const { matchScoreboards: { statusData } } = this.props;
-        return this.matchStatus() === 'active' ? statusData.phase : null;
-    };
-
     matchPhaseByMyTeamGamesConfirmed = () => {
         if (!this.isMatchPlayer()) return null;
 
-        if (this.matchStatus() === 'active'){
-            const { data: { gamesConfirmed } } = this.getMatchMyTeam();
+        const { matchStatus } = this.props;
+        if (matchStatus === 'active'){
+            const myTeam = this.getMatchMyTeam();
+            if (myTeam === null) return null;
+            const { data: { gamesConfirmed } } = myTeam;
             if (gamesConfirmed === null)
                 return 'warming';
             switch (gamesConfirmed) {
@@ -248,7 +248,7 @@ export default class Match extends Component {
                     return 'concluded';
             }
         }
-        return this.matchStatus();
+        return matchStatus;
     };
 
     seasonTeamEndPhase = () => {
@@ -262,7 +262,7 @@ export default class Match extends Component {
     };
 
     render() {
-        const { id, userSeasonTeamId, isPlayerSelectionDialogOpen } = this.props;
+        const { id, userSeasonTeamId, isPlayerSelectionDialogOpen, matchStatus, matchPhase } = this.props;
         return (
             <div style={{alignItems: 'center', alignContent: 'center'}} className={'mr-2 ml-2 mt-2 mb-2'}>
                 <MatchSummary/>
@@ -274,8 +274,8 @@ export default class Match extends Component {
                     requestEndPhase={this.requestEndPhase}
                     isMatchPlayer={this.isMatchPlayer()}
                     matchPlayerSeasonTeamId={userSeasonTeamId}
-                    matchStatus={this.matchStatus()}
-                    matchPhase={this.matchPhase()}
+                    matchStatus={matchStatus}
+                    matchPhase={matchPhase}
                     matchMyTeam={this.getMatchMyTeam()}
                     matchRivalTeam={this.getMatchRivalTeam()}
                     matchMyTeamGameScoresCount={this.matchMyTeamGameScoresCount}
