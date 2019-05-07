@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { totalsObject } from "../../reducers/matches";
-import { updateScore } from "../../reducers/scores";
+import { updateScore } from "../../reducers/match/edition/scores";
 import { updateScoreFetchingFromStore } from "../../reducers/selectors";
 import ReactTable from "react-table";
 import {matchScoreboardScoresColumns, matchScoreboardTotalsColumns} from "../../utilities/table-columns";

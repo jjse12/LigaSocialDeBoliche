@@ -1,27 +1,22 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { shape } from 'prop-types';
 import { connect } from "react-redux";
 import {
-    getMatchPlayerSeasonTeamId, getMatchScoreboards, setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard, matchSeasonTeamEndPhase, totalsObject
-} from "../../reducers/matches";
-import { getMatchInfo } from "../../reducers/match";
-import { updateScore} from "../../reducers/scores";
-import selectors, {
-    getLoggedInPlayerFromStore,
-    getMatchScoreboardsFetchingFromStore,
-    getMatchScoreboardsFromStore,
-    updateScoreFetchingFromStore,
-    getMatchPlayerSeasonTeamIdFromStore,
-    getMatchMyTeamOfflineScoreboardFromStore,
-    getMatchRivalTeamOfflineScoreboardFromStore,
-} from "../../reducers/selectors";
+    getMatchSummary,
+    getMatchScoreboards,
+    setPlayerSelectionDialogOpen,
+    setNewGameDialogOpen,
+    setEndPhaseDialogOpen,
+    matchTeamEndPhase,
+} from "../../reducers/match";
+import { updateScore} from "../../reducers/match/edition/scores";
+import selectors from "../../reducers/selectors";
 import _ from 'lodash';
 import NewGameDialog from "./dialogs/new-game-dialog";
 import PlayersSelectionDialog from "./dialogs/players-selection-dialog";
 import MatchScoreboards from "./match-scoreboards";
-import MatchResults from "./match-results";
+import MatchSummary from "./match-summary";
 import EndPhaseDialog from "./dialogs/end-phase-dialog";
-
 
 export const scoreIdGameNumberIndex = [
     'firstGame',
@@ -38,36 +33,51 @@ export const gameNumberStrings = {
 
 @connect(
     store => ({
-        user: selectors.user(store),
-        matchScoreboards: getMatchScoreboardsFromStore(store),
-        matchPlayerSeasonTeamId: getMatchPlayerSeasonTeamIdFromStore(store),
-        fetchingMatchScoreboards: getMatchScoreboardsFetchingFromStore(store),
+        id: selectors.matchSummary(store).id,
+        matchScoreboards: selectors.matchScoreboards(store),
+        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        fetchingMatchScoreboards: selectors.loadingMatchScoreboards(store),
+        isPlayerSelectionDialogOpen: selectors.matchPlayerSelection(store).isDialogOpen,
+        isNewGameDialogOpen: selectors.matchNewGame(store).isDialogOpen,
+        isEndPhaseDialogOpen: selectors.matchEndPhase(store).isDialogOpen,
     }),
-    { getMatchInfo, getMatchScoreboards, getMatchPlayerSeasonTeamId, matchSeasonTeamEndPhase }
+    {
+        getMatchSummary,
+        getMatchScoreboards,
+        setPlayerSelectionDialogOpen,
+        setNewGameDialogOpen,
+        setEndPhaseDialogOpen,
+        matchTeamEndPhase,
+    }
 )
 export default class Match extends Component {
     static propTypes = {
-        match: PropTypes.object.isRequired,
-        user: PropTypes.object.isRequired,
+        match: shape({
+            params: shape({
+                id: PropTypes.string.isRequired
+            })
+        }).isRequired,
+
+        id: PropTypes.number.isRequired,
         matchScoreboards: PropTypes.object.isRequired,
-        matchPlayerSeasonTeamId: PropTypes.number.isRequired,
+        userSeasonTeamId: PropTypes.number.isRequired,
         fetchingMatchScoreboards: PropTypes.bool.isRequired,
+        isPlayerSelectionDialogOpen: PropTypes.bool.isRequired,
+        isNewGameDialogOpen: PropTypes.bool.isRequired,
+        isEndPhaseDialogOpen: PropTypes.bool.isRequired,
+
+        getMatchSummary: PropTypes.func.isRequired,
         getMatchScoreboards: PropTypes.func.isRequired,
-        getMatchPlayerSeasonTeamId: PropTypes.func.isRequired,
-        matchSeasonTeamEndPhase: PropTypes.func.isRequired,
+        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
+        setNewGameDialogOpen: PropTypes.func.isRequired,
+        setEndPhaseDialogOpen: PropTypes.func.isRequired,
+        matchTeamEndPhase: PropTypes.func.isRequired,
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            playerSelectionDialogOpen: false,
-            endPhaseDialogOpen: false,
-            newGameDialogOpen: false,
-            fillOfflineScoreboardDialogOpen: false,
-            pollingTime: 30,
-        };
-        this.setPlayerSelectionDialogOpen = this.setPlayerSelectionDialogOpen.bind(this);
-    }
+    state = {
+        fillOfflineScoreboardDialogOpen: false,
+        pollingTime: 30,
+    };
 
     setMatchPollingTime = time => {
         this.setState({pollingTime : time});
@@ -87,31 +97,21 @@ export default class Match extends Component {
         }
     };
 
-    componentWillMount() {
-        const { id } = this.props.match.params;
-        const { getMatchInfo, user, getMatchPlayerSeasonTeamId } = this.props;
-        getMatchInfo(id);
-        let getTeamIdPromise = null;
-        if (!_.isEmpty(user)){
-            getTeamIdPromise = getMatchPlayerSeasonTeamId(id, user.id);
-        }
-
+    componentWillMount = async () => {
+        const id = this.props.match.params.id;
+        const { getMatchSummary } = this.props;
+        await getMatchSummary(id);
         this.loadMatchScoreboardsWithCallbacks(() => {
             if (this.matchStatus() === 'active'){
                 // Poller for updating match scoreboards every `this.state.pollingTime` seconds
                 // this.matchScoreboardsPoller();
-
-                // Check if player's team is in 'select game players phase', and if so, open dialog for players selection
-                if (getTeamIdPromise !== null){
-                    getTeamIdPromise.then(this.setNewGameDialogOpenAsRequired);
-                }
+                this.setNewGameDialogOpenAsRequired();
             }
         });
-    }
+    };
 
     loadMatchScoreboards = () => {
-        const { id } = this.props.match.params;
-        const { getMatchScoreboards } = this.props;
+        const { id, getMatchScoreboards } = this.props;
         return getMatchScoreboards(id);
     };
 
@@ -127,23 +127,13 @@ export default class Match extends Component {
             promise.finally(response => finallyCallback(response));
     };
 
-    setPlayerSelectionDialogOpen = (open = false) => {
-        this.setState({playerSelectionDialogOpen : open});
-    };
-
     requestEndPhase = () => {
         if (this.getMatchMyTeam().gamesConfirmed === 0)
             this.seasonTeamEndPhase();
-        else
-            this.setEndPhaseDialogOpen(true);
-    };
-
-    setEndPhaseDialogOpen = (open = false) => {
-        this.setState({endPhaseDialogOpen: open});
-    };
-
-    setNewGameDialogOpen = (open = false) => {
-        this.setState({newGameDialogOpen: open});
+        else{
+            const { setEndPhaseDialogOpen } = this.props;
+            setEndPhaseDialogOpen(true);
+        }
     };
 
     setFillOfflineScoreboardDialogOpen = (open = false) => {
@@ -165,60 +155,66 @@ export default class Match extends Component {
     };
 
     setNewGameDialogOpenAsRequired = () => {
+        const {
+            isPlayerSelectionDialogOpen,
+            setPlayerSelectionDialogOpen,
+            isNewGameDialogOpen,
+            setNewGameDialogOpen,
+        } = this.props;
         if (this.isMatchPlayer()){
             if (this.matchPhaseByMyTeamGamesConfirmed().includes('Game')) {
                 if ( this.matchMyTeamGameScoresCount(this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
-                    if (this.state.playerSelectionDialogOpen)
+                    if (isPlayerSelectionDialogOpen)
                         return;
 
                     if (this.matchPhaseByMyTeamGamesConfirmed() === 'firstGame'){
                         // For first game there are no players to keep, open the players selection dialog immediately
-                        if (!this.state.playerSelectionDialogOpen)
-                            this.setPlayerSelectionDialogOpen(true);
+                        if (!isPlayerSelectionDialogOpen)
+                            setPlayerSelectionDialogOpen(true);
                     }
                     else {
-                        if (!this.state.newGameDialogOpen)
-                            this.setNewGameDialogOpen(true);
+                        if (!isNewGameDialogOpen)
+                            setNewGameDialogOpen(true);
                     }
                     return ;
                 }
             }
         }
 
-        if (this.state.playerSelectionDialogOpen)
-            this.setPlayerSelectionDialogOpen(false);
-        if (this.state.newGameDialogOpen)
-            this.setNewGameDialogOpen(false);
+        if (isPlayerSelectionDialogOpen)
+            setPlayerSelectionDialogOpen(false);
+        if (isNewGameDialogOpen)
+            setNewGameDialogOpen(false);
     };
 
     isMatchPlayer = () => {
-        const { matchPlayerSeasonTeamId } = this.props;
-        return matchPlayerSeasonTeamId !== 0;
+        const { userSeasonTeamId } = this.props;
+        return userSeasonTeamId !== 0;
     };
 
     getMatchMyTeam = () => {
-        const { matchScoreboards, matchPlayerSeasonTeamId } = this.props;
+        const { matchScoreboards, userSeasonTeamId } = this.props;
         if (!this.isMatchPlayer() || _.isEmpty(matchScoreboards))
             return null;
 
-        if (matchPlayerSeasonTeamId === matchScoreboards.team1.data.id)
+        if (userSeasonTeamId === matchScoreboards.team1.data.id)
             return matchScoreboards.team1;
 
-        if (matchPlayerSeasonTeamId === matchScoreboards.team2.data.id)
+        if (userSeasonTeamId === matchScoreboards.team2.data.id)
             return matchScoreboards.team2;
         
         return null;
     };
 
     getMatchRivalTeam = () => {
-        const { matchScoreboards, matchPlayerSeasonTeamId } = this.props;
+        const { matchScoreboards, userSeasonTeamId } = this.props;
         if (!this.isMatchPlayer() || _.isEmpty(matchScoreboards))
             return null;
 
-        if (matchPlayerSeasonTeamId !== matchScoreboards.team1.data.id)
+        if (userSeasonTeamId !== matchScoreboards.team1.data.id)
             return matchScoreboards.team1;
 
-        if (matchPlayerSeasonTeamId !== matchScoreboards.team2.data.id)
+        if (userSeasonTeamId !== matchScoreboards.team2.data.id)
             return matchScoreboards.team2;
 
         return null;
@@ -256,9 +252,8 @@ export default class Match extends Component {
     };
 
     seasonTeamEndPhase = () => {
-        const { id } = this.props.match.params;
-        const { matchSeasonTeamEndPhase, matchPlayerSeasonTeamId } = this.props;
-        let promise = matchSeasonTeamEndPhase(id, matchPlayerSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed());
+        const { id, matchTeamEndPhase, userSeasonTeamId } = this.props;
+        let promise = matchTeamEndPhase(id, userSeasonTeamId, this.matchPhaseByMyTeamGamesConfirmed());
         promise.then(() => {
                 this.loadMatchScoreboardsWithCallbacks(this.setNewGameDialogOpenAsRequired);
             });
@@ -267,10 +262,10 @@ export default class Match extends Component {
     };
 
     render() {
-        const {id} = this.props.match.params;
+        const { id, userSeasonTeamId, isPlayerSelectionDialogOpen } = this.props;
         return (
             <div style={{alignItems: 'center', alignContent: 'center'}} className={'mr-2 ml-2 mt-2 mb-2'}>
-                <MatchResults/>
+                <MatchSummary/>
                 <MatchScoreboards
                     matchId={Number(id)}
                     matchScoreboards={this.props.matchScoreboards}
@@ -278,44 +273,34 @@ export default class Match extends Component {
                     fetchingMatchScoreboards={this.props.fetchingMatchScoreboards}
                     requestEndPhase={this.requestEndPhase}
                     isMatchPlayer={this.isMatchPlayer()}
-                    matchPlayerSeasonTeamId={this.props.matchPlayerSeasonTeamId}
+                    matchPlayerSeasonTeamId={userSeasonTeamId}
                     matchStatus={this.matchStatus()}
                     matchPhase={this.matchPhase()}
                     matchMyTeam={this.getMatchMyTeam()}
                     matchRivalTeam={this.getMatchRivalTeam()}
                     matchMyTeamGameScoresCount={this.matchMyTeamGameScoresCount}
                     matchPhaseByMyTeamGamesConfirmed={this.matchPhaseByMyTeamGamesConfirmed()}
-                    playerSelectionDialogOpen={this.state.playerSelectionDialogOpen}
+                    playerSelectionDialogOpen={isPlayerSelectionDialogOpen}
                 />
                 {
-                    this.getMatchMyTeam() !== null ?
+                    this.getMatchMyTeam() !== null && (
                         <React.Fragment>
                             <PlayersSelectionDialog
-                                isOpen={this.state.playerSelectionDialogOpen}
-                                setPlayerSelectionDialogOpen={this.setPlayerSelectionDialogOpen}
-                                matchId={Number(id)}
-                                seasonTeamId={this.props.matchPlayerSeasonTeamId}
                                 teamMatchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
                                 teamGamesConfirmed={this.getMatchMyTeam().data.gamesConfirmed}
                                 playersScores={this.getMatchMyTeam().results.playersScores}
                                 loadMatchScoreboards={this.loadMatchScoreboards}
                             />
                             <NewGameDialog
-                                isOpen={this.state.newGameDialogOpen}
-                                setNewGameDialogOpen={this.setNewGameDialogOpen}
-                                matchId={Number(id)}
                                 matchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
-                                seasonTeamId={this.props.matchPlayerSeasonTeamId}
                                 loadMatchScoreboards={this.loadMatchScoreboards}
-                                setPlayerSelectionDialogOpen={this.setPlayerSelectionDialogOpen}
                             />
                             <EndPhaseDialog
-                                isOpen={this.state.endPhaseDialogOpen}
-                                setEndPhaseDialogOpen={this.setEndPhaseDialogOpen}
                                 matchPhase={this.matchPhaseByMyTeamGamesConfirmed()}
                                 endPhaseCallback={this.seasonTeamEndPhase}
                             />
-                        </React.Fragment> : null
+                        </React.Fragment>
+                    )
                 }
             </div>
         );

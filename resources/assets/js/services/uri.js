@@ -29,9 +29,7 @@ const uris = {
         seasonTeamPlayers: id => `/season-team/${id}/players`,
 
         // Matches data:
-        // TODO: remove next url
-        matchPlayerSeasonTeamId: (matchId, playerId) => `/match/${matchId}/player/${playerId}/season-team-id`,
-        matchInfo: id => `/match/${id}/info`,
+        matchSummary: id => `/match/${id}/summary`,
         matchResults: id => `/match/${id}/results`,
         matchScoreboards: id => `/match/${id}/scoreboards`,
         matchTeamAvailablePlayers: (matchId, seasonTeamId) =>

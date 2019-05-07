@@ -7,7 +7,6 @@ import seasonTeam from "./seasonTeam";
 import match from './match';
 import { matchResultsReducer, matchScoreboardsReducer, matchSeasonTeamScoreboardReducer, matchMyTeamAvailablePlayersReducer,
     matchPlayerSeasonTeamIdReducer, matchMyTeamOfflineScoreboardReducer, matchRivalTeamOfflineScoreboardReducer} from "./matches";
-import { scoreCreateReducer, scoreUpdateReducer, scoreDeleteReducer } from "./scores";
 
 export const reducers = {
     routing: routerReducer,
@@ -20,9 +19,6 @@ export const reducers = {
     matchResults: matchResultsReducer,
     matchScoreboards: matchScoreboardsReducer,
     matchSeasonTeamScoreboard: matchSeasonTeamScoreboardReducer,
-    createScore: scoreCreateReducer,
-    updateScore: scoreUpdateReducer,
-    deleteScore: scoreDeleteReducer,
     seasonTeam,
     match,
     isFetching,

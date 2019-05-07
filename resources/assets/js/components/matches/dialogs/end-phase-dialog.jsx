@@ -2,7 +2,20 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ActionsDialog from "../../utils/actions-dialog";
 import {gameNumberStrings} from "../match";
+import {connect} from "react-redux";
+import selectors from "../../../reducers/selectors";
+import {
+    setEndPhaseDialogOpen,
+} from "../../../reducers/match";
 
+@connect(
+    store => ({
+        isOpen: selectors.matchEndPhase(store).isDialogOpen,
+    }),
+    {
+        setEndPhaseDialogOpen
+    }
+)
 export default class EndPhaseDialog extends Component {
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
@@ -11,14 +24,25 @@ export default class EndPhaseDialog extends Component {
         endPhaseCallback: PropTypes.func.isRequired
     };
 
-    render() {
+    handleDialogClose = () => {
+        const { setEndPhaseDialogOpen } = this.props;
+        setEndPhaseDialogOpen(false);
+    };
+
+    getDialogComponents = () => {
+        const {
+            matchPhase,
+            setEndPhaseDialogOpen,
+            endPhaseCallback
+        } = this.props;
+
         const dialogTitle = 'Terminar Linea';
-        const dialogDescription = `Estás por terminar la ${gameNumberStrings[this.props.matchPhase].toLowerCase()} del juego... `;
+        const dialogDescription = `Estás por terminar la ${gameNumberStrings[matchPhase].toLowerCase()} del juego... `;
         const dialogActions = [
             {
                 text: 'Cancelar',
                 props: {
-                    onClick: () => this.props.setEndPhaseDialogOpen(false),
+                    onClick: () => setEndPhaseDialogOpen(false),
                     color: 'primary'
                 }
             },
@@ -26,8 +50,8 @@ export default class EndPhaseDialog extends Component {
                 text: 'Continuar',
                 props: {
                     onClick: () => {
-                        this.props.setEndPhaseDialogOpen(false);
-                        this.props.endPhaseCallback();
+                        setEndPhaseDialogOpen(false);
+                        endPhaseCallback();
                     },
                     color: 'primary',
                     autoFocus: true
@@ -35,9 +59,23 @@ export default class EndPhaseDialog extends Component {
             }
         ];
 
+        return {
+            dialogTitle,
+            dialogDescription,
+            dialogActions
+        };
+    };
+
+    render() {
+        const { isOpen } = this.props;
+        const {
+            dialogTitle,
+            dialogDescription,
+            dialogActions
+        } = this.getDialogComponents();
         return <ActionsDialog
-            isOpen={this.props.isOpen}
-            onClose={() => {this.props.setEndPhaseDialogOpen(false);}}
+            isOpen={isOpen}
+            onClose={this.handleDialogClose}
             easyDisposable={true}
             title={dialogTitle}
             description={dialogDescription}

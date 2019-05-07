@@ -20,12 +20,10 @@ export default class Main extends Component {
         }
     }
 
-    componentWillMount() {
+    async componentWillMount() {
         if (this.props.auth){
-            this.props.getUser()
-                .then(() => {
-                    this.setState({authChecked: true})
-                });
+            await this.props.getUser();
+            this.setState({authChecked: true});
         }
     }
 

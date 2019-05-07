@@ -1,14 +1,16 @@
-
-import {isFetchingFromStore} from "../utilities/action-creators";
-import {MATCH_MY_TEAM_AVAILABLE_PLAYERS, MATCH_SCOREBOARDS, MATCH_TEAM_SCOREBOARD} from "./matches";
-import {
-    CREATE_MATCH_NEW_GAME_SCORES,
-    CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS,
-    CREATE_SCORE,
-    DELETE_SCORE,
-    UPDATE_SCORE
-} from "./scores";
+import { isFetchingFromStore } from "../utilities/action-creators";
+import  {MATCH_MY_TEAM_AVAILABLE_PLAYERS, MATCH_TEAM_SCOREBOARD } from "./matches";
 import { SEASON_TEAM_PLAYERS } from "./seasonTeam";
+import {
+    MATCH_SUMMARY,
+    MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS,
+    MATCH_SCOREBOARDS,
+    MATCH_CREATE_NEW_GAME_SCORES,
+    MATCH_CREATE_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS,
+    MATCH_CREATE_SCORE,
+    MATCH_UPDATE_SCORE,
+    MATCH_DELETE_SCORE
+} from "./match";
 
 // Logged in player
 export const getLoggedInPlayerFromStore = store => store.user;
@@ -35,16 +37,48 @@ export const getMatchMyTeamOfflineScoreboardFromStore = store => store.matchMyTe
 export const getMatchRivalTeamOfflineScoreboardFromStore = store => store.matchRivalTeamOfflineScoreboard;
 
 // Scores
-export const createMatchNewGameScoresFetchingFromStore = store => isFetchingFromStore(store, CREATE_MATCH_NEW_GAME_SCORES);
-export const createMatchNewGameScoresForLastGamePlayersFetchingFromStore =
-    store => isFetchingFromStore(store, CREATE_MATCH_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS);
-export const createScoreFetchingFromStore = store => isFetchingFromStore(store, CREATE_SCORE);
-export const updateScoreFetchingFromStore = store => isFetchingFromStore(store, UPDATE_SCORE);
-export const deleteScoreFetchingFromStore = store => isFetchingFromStore(store, DELETE_SCORE);
+export const createScoreFetchingFromStore = store => isFetchingFromStore(store, MATCH_CREATE_SCORE);
+export const updateScoreFetchingFromStore = store => isFetchingFromStore(store, MATCH_UPDATE_SCORE);
+export const deleteScoreFetchingFromStore = store => isFetchingFromStore(store, MATCH_DELETE_SCORE);
 
+const getUser = store => store.user;
+const userInfo = store => getUser(store).info;
+const userCurrentSeason = store => getUser(store).currentSeason;
+const getMatch = store => store.match;
+const matchSummary = store => getMatch(store).summary;
+const matchResults = store => getMatch(store).results;
+const matchScoreboards = store => getMatch(store).scoreboards;
+const matchEdition = store => getMatch(store).edition;
+const matchNewGame = store => matchEdition(store).newGame;
+const matchPlayerSelection = store => matchEdition(store).playerSelection;
+const matchEndPhase= store => matchEdition(store).endPhase;
+const matchOfflineScoreboards = store => matchEdition(store).offlineScoreboards;
+
+const loadingMatchSummary = store => isFetchingFromStore(store, MATCH_SUMMARY);
+const loadingMatchScoreboards = store => isFetchingFromStore(store, MATCH_SCOREBOARDS);
+const loadingMatchTeamAvailablePlayers = store => isFetchingFromStore(store, MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS);
+
+const loadingCreateMatchNewGameScores = store => isFetchingFromStore(store, MATCH_CREATE_NEW_GAME_SCORES);
+const loadingCreateMatchNewGameScoresForLastGamePlayers = store =>
+    isFetchingFromStore(store, MATCH_CREATE_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS);
 
 const selectors = {
-    user: store => store.user,
+    userInfo,
+    userCurrentSeason,
+    matchSummary,
+    matchResults,
+    matchScoreboards,
+    matchNewGame,
+    matchPlayerSelection,
+    matchEndPhase,
+    matchOfflineScoreboards,
+
+    // Store fetching data:
+    loadingMatchSummary,
+    loadingMatchScoreboards,
+    loadingMatchTeamAvailablePlayers,
+    loadingCreateMatchNewGameScores,
+    loadingCreateMatchNewGameScoresForLastGamePlayers,
 };
 
 export default selectors;

@@ -61,7 +61,7 @@ class SeasonTeam extends Model
         return $this->matches()->where('id', "$matchId")->first();
     }
 
-    public function hasPlayer(int $player_id): bool {
+    public function hasPlayer(?int $player_id): bool {
         foreach ($this->seasonPlayers() as $player) {
             if ($player->playerId() == $player_id)
                 return true;

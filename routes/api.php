@@ -59,12 +59,9 @@ Route::group(['prefix' => 'team'], function() {
 
 Route::group(['prefix' => 'match'], function() {
     Route::group(['prefix' => '/{match}'], function() {
-        Route::get('/info', 'MatchController@info');
-        Route::get('/results', 'MatchController@results');
+        Route::get('/summary', 'MatchController@summary');
         Route::get('/scoreboards', 'MatchController@scoreboards');
         Route::get('/scores', 'MatchController@scores');
-
-        Route::get('/player/{player}/season-team-id', 'MatchController@loggedInPlayerSeasonTeamId');
 
         Route::group(['prefix' => '/season-team/{seasonTeam}'], function() {
             Route::get('/scoreboard', 'MatchController@seasonTeamScoreboard');
@@ -72,7 +69,7 @@ Route::group(['prefix' => 'match'], function() {
             Route::get('/create-scores', 'MatchController@seasonTeamAvailablePlayers');
         });
     });
-    Route::post('season-team-end-phase', 'MatchController@seasonTeamEndPhase');
+    Route::post('team-end-phase', 'MatchController@teamEndPhase');
 });
 
 

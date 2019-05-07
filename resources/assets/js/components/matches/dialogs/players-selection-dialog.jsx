@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { getMatchMyTeamAvailablePlayers } from '../../../reducers/matches';
-import { getMatchMyTeamAvailablePlayersFromStore, getMatchMyTeamAvailablePlayersFetchingFromStore,
-        createMatchNewGameScoresFetchingFromStore } from '../../../reducers/selectors';
-import { createMatchNewGameScores } from "../../../reducers/scores";
+import selectors from '../../../reducers/selectors';
+import { createMatchNewGameScores } from "../../../reducers/match/edition/scores";
 import {UnmountClosed as Collapse} from 'react-collapse';
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";
@@ -12,6 +10,7 @@ import _ from "lodash";
 import PlayerSelectBox from "./player-select-box";
 import PropTypes from 'prop-types';
 import ActionsDialog from "../../utils/actions-dialog";
+import {getMatchTeamAvailablePlayers, setPlayerSelectionDialogOpen} from "../../../reducers/match";
 
 const blind = {
     label: 'BLIND',
@@ -28,71 +27,73 @@ const scoreIdGameNumberIndex = [
 
 @connect(
     store => ({
-        matchMyTeamAvailablePlayers: getMatchMyTeamAvailablePlayersFromStore(store),
-        fetchingMatchMyTeamAvailablePlayers: getMatchMyTeamAvailablePlayersFetchingFromStore(store),
-        fetchingCreateMatchNewGameScores: createMatchNewGameScoresFetchingFromStore(store),
+        isOpen: selectors.matchPlayerSelection(store).isDialogOpen,
+        matchId: selectors.matchSummary(store).id,
+        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        availablePlayers: selectors.matchPlayerSelection(store).availablePlayers,
+        isLoadingMatchTeamAvailablePlayers: selectors.loadingMatchTeamAvailablePlayers(store),
+        isLoadingCreateMatchNewGameScores: selectors.loadingCreateMatchNewGameScores(store),
     }),
-    { getMatchMyTeamAvailablePlayers, createMatchNewGameScores }
+    { setPlayerSelectionDialogOpen, getMatchTeamAvailablePlayers, createMatchNewGameScores }
 )
 export default class PlayersSelectionDialog extends Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        matchId: PropTypes.number.isRequired,
-        seasonTeamId: PropTypes.number.isRequired,
         teamMatchPhase: PropTypes.string.isRequired,
         teamGamesConfirmed: PropTypes.number,
         playersScores: PropTypes.array.isRequired,
-        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
         loadMatchScoreboards: PropTypes.func.isRequired,
 
-        getMatchMyTeamAvailablePlayers: PropTypes.func.isRequired,
-        fetchingMatchMyTeamAvailablePlayers: PropTypes.bool.isRequired,
-        matchMyTeamAvailablePlayers: PropTypes.array.isRequired,
+        isOpen: PropTypes.bool.isRequired,
+        matchId: PropTypes.number.isRequired,
+        userSeasonTeamId: PropTypes.number.isRequired,
+        availablePlayers: PropTypes.array.isRequired,
+        isLoadingMatchTeamAvailablePlayers: PropTypes.bool.isRequired,
+        isLoadingCreateMatchNewGameScores: PropTypes.bool.isRequired,
+
+        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
+        getMatchTeamAvailablePlayers: PropTypes.func.isRequired,
         createMatchNewGameScores: PropTypes.func.isRequired,
-        fetchingCreateMatchNewGameScores: PropTypes.bool.isRequired,
     };
 
-    constructor(props) {
-        super(props);
-        const selectedPlayers = [
-            null, null, null, null
-        ];
-
-        this.state = {
-            selectedPlayers: selectedPlayers,
-            descriptionOpen: false,
-            playerCategoryDescriptionOpen: false
-        };
-    }
+    state = {
+        selectedPlayers: [null, null, null, null],
+        descriptionOpen: false,
+        playerCategoryDescriptionOpen: false
+    };
 
     toggleDescriptionOpen = () => {
-        const open = this.state.descriptionOpen;
-        this.setState({descriptionOpen: !open});
+        const { descriptionOpen: open} = this.state;
+        this.setState({ descriptionOpen: !open });
     };
 
     togglePlayerCategoryDescriptionOpen = () => {
-        const open = this.state.playerCategoryDescriptionOpen;
-        this.setState({playerCategoryDescriptionOpen: !open});
+        const { playerCategoryDescriptionOpen: open} = this.state;
+        this.setState({ playerCategoryDescriptionOpen: !open });
     };
 
-    handlePlayerSelectionDialogEnter = () => {
-        const { matchId, seasonTeamId, getMatchMyTeamAvailablePlayers, teamMatchPhase } = this.props;
-        getMatchMyTeamAvailablePlayers(matchId, seasonTeamId)
-            .then(() => {
-                if (teamMatchPhase !== 'firstGame')
-                    this.selectLastGamePlayers();
-            });
+    handlePlayerSelectionDialogEnter = async () => {
+        const {
+            matchId,
+            userSeasonTeamId,
+            getMatchTeamAvailablePlayers,
+            teamMatchPhase
+        } = this.props;
+        await getMatchTeamAvailablePlayers(matchId, userSeasonTeamId);
+        if (teamMatchPhase !== 'firstGame') {
+            this.selectLastGamePlayers();
+        }
     };
 
     prepareScoreDataForSelectedPlayers = () => {
-        if (this.props.teamGamesConfirmed === null)
+        const { teamGamesConfirmed, matchId } = this.props;
+        if (teamGamesConfirmed === null)
             return ;
 
-        const { matchId } = this.props;
-        const newGameNumber = this.props.teamGamesConfirmed + 1;
+        const newGameNumber = teamGamesConfirmed + 1;
         let scoresData = [];
         let turnNumber = 1;
-        this.state.selectedPlayers.map(player => {
+        const { selectedPlayers } = this.state;
+        selectedPlayers.map(player => {
             let scoreData = {
                 season_player_id: player.id === 0 ? null : player.id,
                 match_id: matchId,
@@ -101,7 +102,6 @@ export default class PlayersSelectionDialog extends Component {
                 score: 0,
                 handicap: player.handicap,
             };
-
             scoresData.push(scoreData);
         });
 
@@ -109,13 +109,18 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     createSelectedPlayersNewGameScores = () => {
-        const { matchId } = this.props;
-        const { seasonTeamId } = this.props;
+        const {
+            matchId,
+            userSeasonTeamId,
+            createMatchNewGameScores,
+            setPlayerSelectionDialogOpen,
+            loadMatchScoreboards
+        } = this.props;
         const scoresData = this.prepareScoreDataForSelectedPlayers();
-        this.props.createMatchNewGameScores(matchId, seasonTeamId, scoresData)
+        createMatchNewGameScores(matchId, userSeasonTeamId, scoresData)
             .then(() => {
-                this.props.setPlayerSelectionDialogOpen(false);
-                this.props.loadMatchScoreboards();
+                setPlayerSelectionDialogOpen(false);
+                loadMatchScoreboards();
             })
             .catch(jqXHR => {
                 alert('Error: No fue posible crear los marcadores y comenzar la linea.');
@@ -148,7 +153,8 @@ export default class PlayersSelectionDialog extends Component {
         };
         let womens = 0, mens = 0;
         let selectedPlayersId = [];
-        this.state.selectedPlayers.map(player => {
+        const { selectedPlayers } = this.state;
+        selectedPlayers.map(player => {
             if (player.id !== 0){
                 selectedPlayersId.push(player.id);
                 if (player.gender === 'M')
@@ -157,7 +163,8 @@ export default class PlayersSelectionDialog extends Component {
                     womens++;
 
                 if (player.handicap === null) {
-                    if (this.props.teamGamesConfirmed > player.unconcluded.gamesPlayed){
+                    const { teamGamesConfirmed } = this.props;
+                    if (teamGamesConfirmed > player.unconcluded.gamesPlayed){
                         const prefix = player.gender === 'M' ? 'El jugador ' : "La jugadora ";
                         validation = {
                             valid: false,
@@ -204,8 +211,9 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     getAvailablePlayersBasedInIdsArray = (idsArray, notInArray = true) => {
+        const { availablePlayers } = this.props;
         let players = [];
-        this.props.matchMyTeamAvailablePlayers.map(player => {
+        availablePlayers.map(player => {
             if (notInArray && !idsArray.includes(player.id) ||
                 !notInArray && idsArray.includes(player.id)) {
                 let p = {};
@@ -227,9 +235,10 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     getLastGamePlayersIdArray = () => {
-        const gameIndex = scoreIdGameNumberIndex[this.props.teamGamesConfirmed-1];
+        const { teamGamesConfirmed, playersScores } = this.props;
+        const gameIndex = scoreIdGameNumberIndex[teamGamesConfirmed-1];
         let lastGamePlayersIds = [];
-        this.props.playersScores.map(player => {
+        playersScores.map(player => {
             if (player[gameIndex] !== undefined){
                 lastGamePlayersIds.push(player.seasonPlayerId);
             }
@@ -243,13 +252,14 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     selectLastGamePlayers = () => {
-        const gameIndex = scoreIdGameNumberIndex[this.props.teamGamesConfirmed-1];
+        const { teamGamesConfirmed, playersScores } = this.props;
+        const gameIndex = scoreIdGameNumberIndex[teamGamesConfirmed-1];
         let players = this.getLastGamePlayers();
         let selectedPlayers = [null,null,null,null];
         let blindTurnNumber = '1234';
         players.map(player => {
             let turnNumber = 0;
-            this.props.playersScores.map(p => {
+            playersScores.map(p => {
                 if (player.id === p.seasonPlayerId){
                     if (player.id !== 0){
                         turnNumber = p[gameIndex].turnNumber;
@@ -274,12 +284,12 @@ export default class PlayersSelectionDialog extends Component {
 
     selectablePlayers = () => {
         let selectedPlayersId = [];
-        this.state.selectedPlayers.map(player => {
+        const { selectedPlayers } = this.state;
+        selectedPlayers.map(player => {
             if (player !== null)
                 selectedPlayersId.push(player.id);
         });
-        let players = this.getAvailablePlayersBasedInIdsArray(selectedPlayersId);
-        return players;
+        return this.getAvailablePlayersBasedInIdsArray(selectedPlayersId);
     };
 
     handlePlayerSelected = (v, a, turnNumber) => {
@@ -291,7 +301,8 @@ export default class PlayersSelectionDialog extends Component {
             playerData.gender = v.gender;
             playerData.category = v.category;
             playerData.unconcluded = v.unconcluded;
-            let updatedSelectedPlayers = this.state.selectedPlayers;
+            const { selectedPlayers } = this.state;
+            let updatedSelectedPlayers = selectedPlayers;
             updatedSelectedPlayers[turnNumber-1] = playerData;
             this.setState({ selectedPlayers : updatedSelectedPlayers });
             const validSelectedPlayers = this.validateSelectedPlayers();
@@ -305,13 +316,15 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     handlePlayerDeselect = turnNumber => {
-        let updatedSelectedPlayers = this.state.selectedPlayers;
+        const { selectedPlayers } = this.state;
+        let updatedSelectedPlayers = selectedPlayers;
         updatedSelectedPlayers[turnNumber-1] = null;
         this.setState({ selectedPlayers : updatedSelectedPlayers })
     };
 
     playerSelectBox = (turnNumber, selectablePlayers) => {
-        const player = this.state.selectedPlayers[(turnNumber-1)];
+        const { selectedPlayers } = this.state;
+        const player = selectedPlayers[(turnNumber-1)];
         return (
             <PlayerSelectBox
                 player={player}
@@ -325,7 +338,8 @@ export default class PlayersSelectionDialog extends Component {
 
     getTotalHandicap = () => {
         let handicap = 0;
-        this.state.selectedPlayers.map(p => {
+        const { selectedPlayers } = this.state;
+        selectedPlayers.map(p => {
             if (p !== null && p.id !== 0){
                 if (p.handicap !== null)
                     handicap += Number(p.handicap);
@@ -344,6 +358,7 @@ export default class PlayersSelectionDialog extends Component {
     };
 
     renderDescription = () => {
+        const { descriptionOpen, playerCategoryDescriptionOpen } = this.state;
         return (
             <div className='mb-1' style={{textAlign: 'center'}}>
                 <div onClick={this.toggleDescriptionOpen} style={{cursor: 'pointer'}}>
@@ -351,7 +366,7 @@ export default class PlayersSelectionDialog extends Component {
                 </div>
                 <Collapse
                     style={{width: '100%', margin: '0 auto'}}
-                    isOpened={this.state.descriptionOpen}
+                    isOpened={descriptionOpen}
                     hasNestedCollapse={true}
                 >
                     <div className='player-selection-dialog-legend'>
@@ -363,7 +378,7 @@ export default class PlayersSelectionDialog extends Component {
                     <div>
                     <span style={{color: 'blue', textDecoration: 'underline', width: '100%', margin: '0 auto', cursor: 'pointer'}}
                         onClick={this.togglePlayerCategoryDescriptionOpen}> Categorías de Jugador:</span>
-                        <Collapse style={{margin: '0 auto'}} isOpened={this.state.playerCategoryDescriptionOpen}>
+                        <Collapse style={{margin: '0 auto'}} isOpened={playerCategoryDescriptionOpen}>
                             <div className='player-selection-dialog-legend-player-categories'>
                                 <span className='player-category-AA'>AA</span>
                                 <span className='player-category-A'>A</span>
@@ -377,11 +392,21 @@ export default class PlayersSelectionDialog extends Component {
         );
     };
 
-    render() {
-        let button = null, selectablePlayers = null;
+    getDialogComponents = () => {
+        const {
+            availablePlayers,
+            isLoadingMatchTeamAvailablePlayers,
+            isLoadingCreateMatchNewGameScores
+        } = this.props;
+
+        const dialogTitle = isLoadingMatchTeamAvailablePlayers ?
+            'Cargando Jugadores...' :
+            isLoadingCreateMatchNewGameScores ?
+                'Creando Marcadores...' :
+                'Ingreso de Jugadores';
         let dialogContent = <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'#488aaa'}/></div>;
         let dialogAction = null;
-        if (!this.props.fetchingMatchMyTeamAvailablePlayers && !this.props.fetchingCreateMatchNewGameScores){
+        if (!isLoadingMatchTeamAvailablePlayers && !isLoadingCreateMatchNewGameScores){
             let buttonEnabled = true, buttonOnClick = this.createSelectedPlayersNewGameScores, buttonStyle = {};
             if (!this.validateSelectedPlayers().valid){
                 buttonEnabled = false;
@@ -392,10 +417,10 @@ export default class PlayersSelectionDialog extends Component {
                     opacity: '0.70'
                 };
             }
-            selectablePlayers = this.selectablePlayers();
-            dialogContent =
+            const selectablePlayers = this.selectablePlayers();
+            dialogContent = (
                 <DialogContent>
-                    {this.props.matchMyTeamAvailablePlayers.length !== 0 ?
+                    {availablePlayers.length !== 0 ?
                         <div className='d-flex flex-column justify-content-center'>
                             <div style={{alignContent: 'center'}}><p>Total Handicap: <b>{this.getTotalHandicap()}</b>
                             </p></div>
@@ -406,16 +431,27 @@ export default class PlayersSelectionDialog extends Component {
                             {this.renderDescription()}
                         </div> : null // Render "No available players" message in dialog
                     }
-                </DialogContent>;
-            dialogAction = <button className={`btn btn-lg ${buttonEnabled ? 'btn-success' : 'btn-danger'}`}
-                style={buttonStyle} onClick={buttonOnClick}>Aceptar</button>;
+                </DialogContent>
+            );
+            dialogAction = (
+                <button
+                    className={`btn btn-lg ${buttonEnabled ? 'btn-success' : 'btn-danger'}`}
+                    style={buttonStyle}
+                    onClick={buttonOnClick}
+                >
+                    Aceptar
+                </button>
+            );
         }
 
-        let dialogTitle = this.props.fetchingMatchMyTeamAvailablePlayers ? 'Cargando Jugadores...' :
-            this.props.fetchingCreateMatchNewGameScores ? 'Creando Marcadores...' : 'Ingreso de Jugadores';
+        return { dialogTitle, dialogContent, dialogAction };
+    };
 
+    render() {
+        const { isOpen } = this.props;
+        const { dialogTitle, dialogContent, dialogAction } = this.getDialogComponents();
         return <ActionsDialog
-            isOpen={this.props.isOpen}
+            isOpen={isOpen}
             onEnter={this.handlePlayerSelectionDialogEnter}
             easyDisposable={false}
             title={dialogTitle}

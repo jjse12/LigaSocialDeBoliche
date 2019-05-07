@@ -40,11 +40,11 @@ export const getMatchSeasonTeamScoreboard = (matchId, seasonTeamId) => dispatch 
     dispatch(ajaxGet(MATCH_TEAM_SCOREBOARD, uri.api.matchSeasonTeamScoreboard(matchId, seasonTeamId)));
 
 export const getMatchPlayerSeasonTeamId = (matchId, playerId) => dispatch => {
-    return dispatch(ajaxGet(MATCH_PLAYER_SEASON_TEAM_ID, uri.api.matchPlayerSeasonTeamId(matchId, playerId)));
+    return dispatch(ajaxGet(MATCH_PLAYER_SEASON_TEAM_ID, uri.api.matchSeasonTeamScoreboard(matchId, playerId)));
 };
 
 export const getMatchMyTeamAvailablePlayers = (matchId, seasonTeamId) => dispatch => {
-    return dispatch(ajaxGet(MATCH_MY_TEAM_AVAILABLE_PLAYERS, uri.api.matchMyTeamAvailablePlayers(matchId, seasonTeamId)));
+    return dispatch(ajaxGet(MATCH_MY_TEAM_AVAILABLE_PLAYERS, uri.api.matchTeamAvailablePlayers(matchId, seasonTeamId)));
 };
 
 export const setMatchMyTeamOfflineScoreboard = scoreboard => dispatch =>

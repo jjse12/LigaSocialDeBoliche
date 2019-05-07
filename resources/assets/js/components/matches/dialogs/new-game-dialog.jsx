@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { createMatchNewGameScoresForLastGamePlayers } from '../../../reducers/scores';
-import { createMatchNewGameScoresForLastGamePlayersFetchingFromStore } from '../../../reducers/selectors';
+import { setNewGameDialogOpen } from "../../../reducers/match/edition";
+import { setPlayerSelectionDialogOpen, createMatchNewGameScoresForLastGamePlayers } from "../../../reducers/match";
+import selectors from '../../../reducers/selectors';
 import PropTypes from 'prop-types';
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";
@@ -10,50 +11,72 @@ import {gameNumberStrings} from "../match";
 
 @connect(
     store => ({
-        fetchingCreateMatchNewGameScoresForLastGamePlayers: createMatchNewGameScoresForLastGamePlayersFetchingFromStore(store)
+        isOpen: selectors.matchNewGame(store).isDialogOpen,
+        matchId: selectors.matchSummary(store).id,
+        userSeasonTeamId: selectors.userCurrentSeason(store).team.id,
+        loadingCreateScoresForLastGamePlayers: selectors.loadingCreateMatchNewGameScoresForLastGamePlayers(store)
     }),
-    { createMatchNewGameScoresForLastGamePlayers }
+    {
+        setNewGameDialogOpen,
+        createMatchNewGameScoresForLastGamePlayers,
+        setPlayerSelectionDialogOpen
+    }
 )
 export default class NewGameDialog extends Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        matchId: PropTypes.number.isRequired,
         matchPhase: PropTypes.string.isRequired,
-        seasonTeamId: PropTypes.number.isRequired,
-        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
-        setNewGameDialogOpen: PropTypes.func.isRequired,
         loadMatchScoreboards: PropTypes.func.isRequired,
 
+        isOpen: PropTypes.bool.isRequired,
+        matchId: PropTypes.number.isRequired,
+        userSeasonTeamId: PropTypes.number.isRequired,
+        loadingCreateScoresForLastGamePlayers: PropTypes.bool.isRequired,
+
+        setNewGameDialogOpen: PropTypes.func.isRequired,
         createMatchNewGameScoresForLastGamePlayers: PropTypes.func.isRequired,
-        fetchingCreateMatchNewGameScoresForLastGamePlayers: PropTypes.bool.isRequired
+        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
     };
 
     handleChangePlayers= () => {
-        this.props.setPlayerSelectionDialogOpen(true);
-        this.props.setNewGameDialogOpen(false);
+        const { setPlayerSelectionDialogOpen, setNewGameDialogOpen } = this.props;
+        setPlayerSelectionDialogOpen(true);
+        setNewGameDialogOpen(false);
     };
 
     handleKeepPlayers = () => {
-        const { matchId, seasonTeamId } = this.props;
-        this.props.createMatchNewGameScoresForLastGamePlayers(matchId, seasonTeamId)
+        const {
+            matchId,
+            userSeasonTeamId,
+            createMatchNewGameScoresForLastGamePlayers,
+            setNewGameDialogOpen,
+            loadMatchScoreboards
+        } = this.props;
+        createMatchNewGameScoresForLastGamePlayers(matchId, userSeasonTeamId)
             .then(() => {
-                this.props.setNewGameDialogOpen(false);
-                this.props.loadMatchScoreboards();
+                setNewGameDialogOpen(false);
+                loadMatchScoreboards();
             })
             .catch(() => {
             });
     };
 
-    render() {
+    getDialogComponents = () => {
+        const {
+            matchPhase,
+            loadingCreateScoresForLastGamePlayers
+        } = this.props;
         let dialogTitle = 'Nueva Linea';
+        const dialogDescription = `Se iniciará la ${gameNumberStrings[matchPhase].toLowerCase()}, ¿continuarán con los mismos jugadores?`;
         let dialogActions = null;
         let loadingComponent = null;
 
-        if (this.props.fetchingCreateMatchNewGameScoresForLastGamePlayers){
+        if (loadingCreateScoresForLastGamePlayers){
             dialogTitle = "Creando Marcadores...";
-            loadingComponent = <DialogContent>
-                <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'#488aaa'}/></div>
-            </DialogContent>;
+            loadingComponent = (
+                <DialogContent>
+                    <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'#488aaa'}/></div>
+                </DialogContent>
+            );
         }
         else {
             dialogActions = [
@@ -75,12 +98,28 @@ export default class NewGameDialog extends Component {
             ];
         }
 
+        return {
+            dialogTitle,
+            dialogDescription,
+            dialogContent: loadingComponent,
+            dialogActions
+        };
+    };
+
+    render() {
+        const { isOpen } = this.props;
+        const {
+            dialogTitle,
+            dialogDescription,
+            dialogContent,
+            dialogActions
+        } = this.getDialogComponents();
         return <ActionsDialog
-            isOpen={this.props.isOpen}
+            isOpen={isOpen}
             easyDisposable={false}
             title={dialogTitle}
-            description={`Se iniciará la ${gameNumberStrings[this.props.matchPhase].toLowerCase()}, ¿continuarán con los mismos jugadores?`}
-            customContentComponent={loadingComponent}
+            description={dialogDescription}
+            customContentComponent={dialogContent}
             actions={dialogActions}
         />;
     }

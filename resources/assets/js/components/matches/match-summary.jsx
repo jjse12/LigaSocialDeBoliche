@@ -1,40 +1,80 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { getMatchScoreboardsFromStore } from '../../reducers/selectors';
+import { Collapse } from "react-collapse";
+import { IconAngleDownLg, IconAngleUpLg } from "../../utilities/icons";
+import { gameNumberStrings } from "./match";
+import selectors from '../../reducers/selectors';
 import PropTypes from 'prop-types';
 import ReactLoading from "react-loading";
 import moment from 'moment';
-import {Collapse} from "react-collapse";
-import { IconAngleDownLg, IconAngleUpLg } from "../../utilities/icons";
-import { gameNumberStrings } from "./match";
 
 @connect(
     store => ({
-        matchScoreboards: getMatchScoreboardsFromStore(store),
+        matchSummary: selectors.matchSummary(store),
+        loadingMatchSummary: selectors.loadingMatchSummary(store),
     }),
     { }
 )
-export default class MatchResults extends Component {
+export default class MatchSummary extends Component {
     static propTypes = {
-        matchScoreboards: PropTypes.object.isRequired
+        matchSummary: PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            statusData: PropTypes.shape({
+                status: PropTypes.string,
+                phase: PropTypes.string,
+                diffForHumans: PropTypes.string
+            }).isRequired,
+            date: PropTypes.string.isRequired,
+            matchdayNumber: PropTypes.number.isRequired,
+            isRedPinGame: PropTypes.bool.isRequired,
+            isVirtualGame: PropTypes.bool.isRequired,
+            results: PropTypes.shape({
+                team1: PropTypes.shape({
+                    points: PropTypes.number.isRequired,
+                    pins: PropTypes.number.isRequired
+                }).isRequired,
+                team2: PropTypes.shape({
+                    points: PropTypes.number.isRequired,
+                    pins: PropTypes.number.isRequired
+                }).isRequired
+            }).isRequired
+        }).isRequired,
+        loadingMatchSummary: PropTypes.bool.isRequired,
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            showResults: false
-        }
-    }
+    state = {
+        showResults: false
+    };
 
     toggleShowResults = () => {
         const { showResults } = this.state;
-        this.setState({showResults: !showResults});
+        this.setState({ showResults: !showResults });
     };
 
     renderContent = () => {
-        const { matchScoreboards } = this.props;
-        const {statusData, date, matchdayNumber, virtual, redPin, team1, team2} = matchScoreboards;
-        const {status, phase, diffForHumans} = statusData;
+        const {
+            statusData: {
+                status,
+                phase,
+                diffForHumans
+            },
+            results: {
+                team1,
+                team2,
+            },
+            date,
+            matchdayNumber,
+        } = this.props.matchSummary;
+        const {
+            points: team1Points,
+            pins: team1Pins,
+        } = team1;
+        const {
+            points: team2Points,
+            pins: team2Pins
+        } = team2;
+        const { showResults } = this.state;
+
         moment.locale('es');
         const formattedDate = moment(date).format('D [de] MMMM [de] YYYY');
         let statusClass = '', statusStr = '';
@@ -63,12 +103,12 @@ export default class MatchResults extends Component {
         return (
             <div className='d-flex flex-column justify-content-center'>
                 {
-                    this.state.showResults ?
+                    showResults ?
                     <IconAngleUpLg onClick={this.toggleShowResults} className='text-white match-show-results-icon'/> :
                     <IconAngleDownLg onClick={this.toggleShowResults} className='text-white match-show-results-icon'/>
                 }
 
-                <Collapse isOpened={this.state.showResults}>
+                <Collapse isOpened={showResults}>
                     <div  className='mb-1 ml-2 mr-2 d-flex flex-column text-white' style={{fontSize: '1.4rem'}}>
                         <span>Jornada #{matchdayNumber}</span>
                         <small style={{fontSize: '65%'}}>{formattedDate}</small>
@@ -81,14 +121,14 @@ export default class MatchResults extends Component {
                     </div>
                     */}
                     <div className='teams-scores d-flex flex-row align-items-center justify-content-center'>
-                        <span className='teams-scores-team-points'>{team1.data.points}</span>
+                        <span className='teams-scores-team-points'>{team1Points}</span>
                         <span className='ml-4 mr-4 text-white'>PUNTOS</span>
-                        <span className='teams-scores-team-points'>{team2.data.points}</span>
+                        <span className='teams-scores-team-points'>{team2Points}</span>
                     </div>
                     <div className='teams-scores d-flex flex-row align-items-center justify-content-center'>
-                        <span className='teams-scores-team-pins'>{team1.results.gamesTotals[2].total}</span>
+                        <span className='teams-scores-team-pins'>{team1Pins}</span>
                         <span className='ml-4 mr-4 text-white'>&nbsp;&nbsp;PINES&nbsp;&nbsp;</span>
-                        <span className='teams-scores-team-pins'>{team2.results.gamesTotals[2].total}</span>
+                        <span className='teams-scores-team-pins'>{team2Pins}</span>
                     </div>
                     <div className={`${statusClass} mt-2 mb-2`}>
                         <span>{statusStr}</span>
@@ -99,13 +139,12 @@ export default class MatchResults extends Component {
     };
 
     render() {
-
+        const { loadingMatchSummary } = this.props;
         return (
             <div className='match-results mb-2'>
-            {
-                _.isEmpty(this.props.matchScoreboards) ?
-                    <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'white'}/></div> :
-                    this.renderContent()
+            { loadingMatchSummary ?
+                <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'white'}/></div> :
+                this.renderContent()
             }
             </div>
         );

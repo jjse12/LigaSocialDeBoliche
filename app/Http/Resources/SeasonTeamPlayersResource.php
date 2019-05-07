@@ -25,8 +25,7 @@ class SeasonTeamPlayersResource extends JsonResource
     {
         $result = [];
         foreach ($this->seasonPlayers() as $player) {
-            array_push($result,
-                (new SeasonPlayerResource($player, $this->withUnconcludedData))->toArray(null));
+            $result[] = (new SeasonPlayerResource($player, $this->withUnconcludedData))->toArray(null);
         }
         return $result;
     }
