@@ -2,10 +2,10 @@ import {Redirect, Route, Switch} from "react-router-dom";
 import {webBaseUrl} from "../services/uri";
 import uri from "../services/uri";
 import Dashboard from "./dashboard";
-import MatchSeasonTeamScoreboard from "./matches/match-season-team-scoreboard";
+import MatchSeasonTeamScoreboard from "./match/match-season-team-scoreboard";
 import NotFound from "./errors/not-found";
 import React from "react";
-import Match from "./matches/match";
+import Match from "./match/match";
 
 const routes = (
     <Switch>
