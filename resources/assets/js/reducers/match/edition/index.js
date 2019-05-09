@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 
 import newGame from './newGame';
-import playerSelection from './playerSelection';
+import playersSelection from './playersSelection';
 import scores from './scores';
 import endPhase from './endPhase';
 import offlineScoreboards from './offlineScoreboards';
@@ -12,9 +12,11 @@ export {
 
 export {
     MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS,
+    MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS,
     getMatchTeamAvailablePlayers,
+    getMatchTeamLastGamePlayers,
     setPlayerSelectionDialogOpen,
-} from './playerSelection';
+} from './playersSelection';
 
 export {
     MATCH_CREATE_NEW_GAME_SCORES,
@@ -41,7 +43,7 @@ export {
 
 export default combineReducers({
     newGame,
-    playerSelection,
+    playersSelection,
     scores,
     endPhase,
     offlineScoreboards,

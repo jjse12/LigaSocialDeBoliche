@@ -33,6 +33,8 @@ const uris = {
         matchScoreboards: id => `/match/${id}/scoreboards`,
         matchTeamAvailablePlayers: (matchId, seasonTeamId) =>
             `/match/${matchId}/season-team/${seasonTeamId}/available-players`,
+        matchTeamLastGamePlayers: (matchId, seasonTeamId) =>
+            `/match/${matchId}/season-team/${seasonTeamId}/last-game-players`,
         matchSeasonTeamScoreboard: (matchId, seasonTeamId) =>
             `/match/${matchId}/season-team/${seasonTeamId}/scoreboard`,
         matchTeamEndPhase: '/match/team-end-phase',

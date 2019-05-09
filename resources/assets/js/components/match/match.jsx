@@ -39,7 +39,7 @@ export const gameNumberStrings = {
         matchScoreboards: selectors.matchScoreboards(store),
         userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
         fetchingMatchScoreboards: selectors.loadingMatchScoreboards(store),
-        isPlayerSelectionDialogOpen: selectors.matchPlayerSelection(store).isDialogOpen,
+        isPlayerSelectionDialogOpen: selectors.matchPlayersSelection(store).isDialogOpen,
         isNewGameDialogOpen: selectors.matchNewGame(store).isDialogOpen,
         isEndPhaseDialogOpen: selectors.matchEndPhase(store).isDialogOpen,
     }),

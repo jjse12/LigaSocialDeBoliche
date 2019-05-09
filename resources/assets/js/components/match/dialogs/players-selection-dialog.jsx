@@ -6,16 +6,19 @@ import {UnmountClosed as Collapse} from 'react-collapse';
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";
 import {IconQuestionCircleLg, IconQuestionCircleSm} from "../../../utilities/icons";
+import { number, array, string, bool, func } from "prop-types";
 import _ from "lodash";
 import PlayerSelectBox from "./player-select-box";
-import PropTypes from 'prop-types';
 import ActionsDialog from "../../utils/actions-dialog";
-import {getMatchTeamAvailablePlayers, setPlayerSelectionDialogOpen} from "../../../reducers/match";
+import {
+    getMatchTeamAvailablePlayers,
+    getMatchTeamLastGamePlayers,
+    setPlayerSelectionDialogOpen
+} from "../../../reducers/match";
 
 const blind = {
-    label: 'BLIND',
+    fullName: 'BLIND',
     value: 'BLIND',
-    name: 'BLIND',
     id : 0
 };
 
@@ -27,32 +30,42 @@ const scoreIdGameNumberIndex = [
 
 @connect(
     store => ({
-        isOpen: selectors.matchPlayerSelection(store).isDialogOpen,
+        isOpen: selectors.matchPlayersSelection(store).isDialogOpen,
         matchId: selectors.matchSummary(store).id,
         userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
-        availablePlayers: selectors.matchPlayerSelection(store).availablePlayers,
+        availablePlayers: selectors.matchPlayersSelection(store).availablePlayers,
+        lastGamePlayers: selectors.matchPlayersSelection(store).lastGamePlayers,
         isLoadingMatchTeamAvailablePlayers: selectors.loadingMatchTeamAvailablePlayers(store),
+        isLoadingMatchLastGamePlayers: selectors.loadingMatchTeamLastGamePlayers(store),
         isLoadingCreateMatchNewGameScores: selectors.loadingCreateMatchNewGameScores(store),
     }),
-    { setPlayerSelectionDialogOpen, getMatchTeamAvailablePlayers, createMatchNewGameScores }
+    {
+        setPlayerSelectionDialogOpen,
+        getMatchTeamAvailablePlayers,
+        getMatchTeamLastGamePlayers,
+        createMatchNewGameScores
+    }
 )
 export default class PlayersSelectionDialog extends Component {
     static propTypes = {
-        teamMatchPhase: PropTypes.string.isRequired,
-        teamGamesConfirmed: PropTypes.number,
-        playersScores: PropTypes.array.isRequired,
-        loadMatchScoreboards: PropTypes.func.isRequired,
+        teamMatchPhase: string.isRequired,
+        teamGamesConfirmed: number,
+        playersScores: array.isRequired,
+        loadMatchScoreboards: func.isRequired,
 
-        isOpen: PropTypes.bool.isRequired,
-        matchId: PropTypes.number.isRequired,
-        userSeasonTeamId: PropTypes.number.isRequired,
-        availablePlayers: PropTypes.array.isRequired,
-        isLoadingMatchTeamAvailablePlayers: PropTypes.bool.isRequired,
-        isLoadingCreateMatchNewGameScores: PropTypes.bool.isRequired,
+        isOpen: bool.isRequired,
+        matchId: number.isRequired,
+        userSeasonTeamId: number.isRequired,
+        availablePlayers: array.isRequired,
+        lastGamePlayers: array.isRequired,
+        isLoadingMatchTeamAvailablePlayers: bool.isRequired,
+        isLoadingMatchLastGamePlayers: bool.isRequired,
+        isLoadingCreateMatchNewGameScores: bool.isRequired,
 
-        setPlayerSelectionDialogOpen: PropTypes.func.isRequired,
-        getMatchTeamAvailablePlayers: PropTypes.func.isRequired,
-        createMatchNewGameScores: PropTypes.func.isRequired,
+        setPlayerSelectionDialogOpen: func.isRequired,
+        getMatchTeamAvailablePlayers: func.isRequired,
+        getMatchTeamLastGamePlayers: func.isRequired,
+        createMatchNewGameScores: func.isRequired,
     };
 
     state = {
@@ -76,9 +89,11 @@ export default class PlayersSelectionDialog extends Component {
             matchId,
             userSeasonTeamId,
             getMatchTeamAvailablePlayers,
+            getMatchTeamLastGamePlayers,
             teamMatchPhase
         } = this.props;
         await getMatchTeamAvailablePlayers(matchId, userSeasonTeamId);
+        await getMatchTeamLastGamePlayers(matchId, userSeasonTeamId);
         if (teamMatchPhase !== 'firstGame') {
             this.selectLastGamePlayers();
         }
@@ -169,7 +184,7 @@ export default class PlayersSelectionDialog extends Component {
                         validation = {
                             valid: false,
                             failId: 3,
-                            reason: `¡${prefix + player.name} no puede ingresar ya que primero debe jugar una jornada completa (3 lineas) para hacer handicap!`
+                            reason: `¡${prefix + player.fullName} no puede ingresar ya que primero debe jugar una jornada completa (3 lineas) para hacer handicap!`
                         };
                     }
                 }
@@ -194,14 +209,15 @@ export default class PlayersSelectionDialog extends Component {
             };
         }
 
-        this.getLastGamePlayers().map(player => {
+        const { lastGamePlayers } = this.props;
+        lastGamePlayers.map(player => {
             if (!selectedPlayersId.includes(player.id)){
                 if (player.handicap === null){
                     const prefix = player.gender === 'M' ? 'El jugador ' : "La jugadora ";
                     validation = {
                         valid: false,
                         failId: 4,
-                        reason: `¡${prefix + player.name} no puede abandonar el juego ya que debe completar 3 lineas para hacer handicap!`
+                        reason: `¡${prefix + player.fullName} no puede abandonar el juego ya que debe completar 3 lineas para hacer handicap!`
                     };
                 }
             }
@@ -210,51 +226,10 @@ export default class PlayersSelectionDialog extends Component {
         return validation;
     };
 
-    getAvailablePlayersBasedInIdsArray = (idsArray, notInArray = true) => {
-        const { availablePlayers } = this.props;
-        let players = [];
-        availablePlayers.map(player => {
-            if (notInArray && !idsArray.includes(player.id) ||
-                !notInArray && idsArray.includes(player.id)) {
-                let p = {};
-                p.label = player.fullName;
-                p.name = player.fullName;
-                p.id = player.id;
-                p.handicap = player.handicap;
-                p.category = player.category;
-                p.gender = player.gender;
-                p.unconcluded = player.unconcluded;
-                players.push(p);
-            }
-        });
-        if (notInArray && !idsArray.includes(0) ||
-            !notInArray && idsArray.includes(0))
-            players.push(blind);
-
-        return players;
-    };
-
-    getLastGamePlayersIdArray = () => {
-        const { teamGamesConfirmed, playersScores } = this.props;
-        const gameIndex = scoreIdGameNumberIndex[teamGamesConfirmed-1];
-        let lastGamePlayersIds = [];
-        playersScores.map(player => {
-            if (player[gameIndex] !== undefined){
-                lastGamePlayersIds.push(player.seasonPlayerId);
-            }
-        });
-
-        return lastGamePlayersIds;
-    };
-
-    getLastGamePlayers = () => {
-        return this.getAvailablePlayersBasedInIdsArray(this.getLastGamePlayersIdArray(), false)
-    };
-
     selectLastGamePlayers = () => {
-        const { teamGamesConfirmed, playersScores } = this.props;
+        const { teamGamesConfirmed, playersScores, lastGamePlayers } = this.props;
         const gameIndex = scoreIdGameNumberIndex[teamGamesConfirmed-1];
-        let players = this.getLastGamePlayers();
+        let players = lastGamePlayers;
         let selectedPlayers = [null,null,null,null];
         let blindTurnNumber = '1234';
         players.map(player => {
@@ -269,14 +244,7 @@ export default class PlayersSelectionDialog extends Component {
                     }
                 }
             });
-            let playerData = {};
-            playerData.name = player.name;
-            playerData.id = player.id;
-            playerData.handicap = player.handicap;
-            playerData.gender = player.gender;
-            playerData.category = player.category;
-            playerData.unconcluded = player.unconcluded;
-            selectedPlayers[turnNumber - 1] = playerData;
+            selectedPlayers[turnNumber - 1] = player;
         });
 
         this.setState({ selectedPlayers : selectedPlayers });
@@ -285,22 +253,28 @@ export default class PlayersSelectionDialog extends Component {
     selectablePlayers = () => {
         let selectedPlayersId = [];
         const { selectedPlayers } = this.state;
-        selectedPlayers.map(player => {
+        selectedPlayers.forEach(player => {
             if (player !== null)
                 selectedPlayersId.push(player.id);
         });
-        return this.getAvailablePlayersBasedInIdsArray(selectedPlayersId);
+
+        const { availablePlayers } = this.props;
+        let players = [];
+        availablePlayers.forEach(player => {
+            if (!selectedPlayersId.includes(player.id)) {
+                players.push(player);
+            }
+        });
+        if (!selectedPlayersId.includes(0)){
+            players.push(blind);
+        }
+
+        return players;
     };
 
     handlePlayerSelected = (v, a, turnNumber) => {
         if (a.action === 'select-option'){
-            let playerData = {};
-            playerData.name = v.name;
-            playerData.id = v.id;
-            playerData.handicap = v.handicap;
-            playerData.gender = v.gender;
-            playerData.category = v.category;
-            playerData.unconcluded = v.unconcluded;
+            const { label, name, ...playerData } = v;
             const { selectedPlayers } = this.state;
             let updatedSelectedPlayers = selectedPlayers;
             updatedSelectedPlayers[turnNumber-1] = playerData;
@@ -339,7 +313,7 @@ export default class PlayersSelectionDialog extends Component {
     getTotalHandicap = () => {
         let handicap = 0;
         const { selectedPlayers } = this.state;
-        selectedPlayers.map(p => {
+        selectedPlayers.forEach(p => {
             if (p !== null && p.id !== 0){
                 if (p.handicap !== null)
                     handicap += Number(p.handicap);
@@ -396,17 +370,21 @@ export default class PlayersSelectionDialog extends Component {
         const {
             availablePlayers,
             isLoadingMatchTeamAvailablePlayers,
+            isLoadingMatchLastGamePlayers,
             isLoadingCreateMatchNewGameScores
         } = this.props;
 
-        const dialogTitle = isLoadingMatchTeamAvailablePlayers ?
+        const dialogTitle = isLoadingMatchTeamAvailablePlayers || isLoadingMatchLastGamePlayers ?
             'Cargando Jugadores...' :
             isLoadingCreateMatchNewGameScores ?
                 'Creando Marcadores...' :
                 'Ingreso de Jugadores';
         let dialogContent = <div className='d-flex justify-content-center mb-3'><ReactLoading type={'spin'} color={'#488aaa'}/></div>;
         let dialogAction = null;
-        if (!isLoadingMatchTeamAvailablePlayers && !isLoadingCreateMatchNewGameScores){
+        if (!isLoadingMatchTeamAvailablePlayers &&
+            !isLoadingMatchLastGamePlayers &&
+            !isLoadingCreateMatchNewGameScores
+        ) {
             let buttonEnabled = true, buttonOnClick = this.createSelectedPlayersNewGameScores, buttonStyle = {};
             if (!this.validateSelectedPlayers().valid){
                 buttonEnabled = false;

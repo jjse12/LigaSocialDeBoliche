@@ -4,6 +4,7 @@ import { SEASON_TEAM_PLAYERS } from "./seasonTeam";
 import {
     MATCH_SUMMARY,
     MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS,
+    MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS,
     MATCH_SCOREBOARDS,
     MATCH_CREATE_NEW_GAME_SCORES,
     MATCH_CREATE_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS,
@@ -59,13 +60,14 @@ const matchStatus = store => getMatch(store).summary.statusData.status;
 const matchScoreboards = store => getMatch(store).scoreboards;
 const matchEdition = store => getMatch(store).edition;
 const matchNewGame = store => matchEdition(store).newGame;
-const matchPlayerSelection = store => matchEdition(store).playerSelection;
+const matchPlayersSelection = store => matchEdition(store).playersSelection;
 const matchEndPhase= store => matchEdition(store).endPhase;
 const matchOfflineScoreboards = store => matchEdition(store).offlineScoreboards;
 
 const loadingMatchSummary = store => isFetchingFromStore(store, MATCH_SUMMARY);
 const loadingMatchScoreboards = store => isFetchingFromStore(store, MATCH_SCOREBOARDS);
 const loadingMatchTeamAvailablePlayers = store => isFetchingFromStore(store, MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS);
+const loadingMatchTeamLastGamePlayers = store => isFetchingFromStore(store, MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS);
 
 const loadingCreateMatchNewGameScores = store => isFetchingFromStore(store, MATCH_CREATE_NEW_GAME_SCORES);
 const loadingCreateMatchNewGameScoresForLastGamePlayers = store =>
@@ -90,7 +92,7 @@ const selectors = {
     matchPhase,
     matchScoreboards,
     matchNewGame,
-    matchPlayerSelection,
+    matchPlayersSelection,
     matchEndPhase,
     matchOfflineScoreboards,
 
@@ -98,6 +100,7 @@ const selectors = {
     loadingMatchSummary,
     loadingMatchScoreboards,
     loadingMatchTeamAvailablePlayers,
+    loadingMatchTeamLastGamePlayers,
     loadingCreateMatchNewGameScores,
     loadingCreateMatchNewGameScoresForLastGamePlayers,
 };

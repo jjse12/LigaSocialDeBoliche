@@ -7,6 +7,7 @@ use App\Http\Resources\MatchSummaryResource;
 use App\Http\Resources\MatchResultsSummaryResource;
 use App\Http\Resources\MatchScoreboardResource;
 use App\Http\Resources\MatchTeamAvailablePlayersResource;
+use App\Http\Resources\MatchTeamLastGamePlayersResource;
 use App\Http\Resources\MatchTeamScoreboardResource;
 use App\Http\Resources\MatchSeasonTeamEndPhaseResource;
 use App\Match;
@@ -43,6 +44,10 @@ class MatchController extends Controller
     // Get a team's available players (those whom have not played any game yet in the given match)
     public function seasonTeamAvailablePlayers(Request $request): JsonResponse {
         return response()->json(new MatchTeamAvailablePlayersResource($request));
+    }
+
+    public function seasonTeamLastGamePlayers(Request $request): JsonResponse {
+        return response()->json(new MatchTeamLastGamePlayersResource($request));
     }
 
     public function teamEndPhase(MatchTeamEndPhaseRequest $request): JsonResponse {

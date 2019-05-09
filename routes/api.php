@@ -66,6 +66,7 @@ Route::group(['prefix' => 'match'], function() {
         Route::group(['prefix' => '/season-team/{seasonTeam}'], function() {
             Route::get('/scoreboard', 'MatchController@seasonTeamScoreboard');
             Route::get('/available-players', 'MatchController@seasonTeamAvailablePlayers');
+            Route::get('/last-game-players', 'MatchController@seasonTeamLastGamePlayers');
             Route::get('/create-scores', 'MatchController@seasonTeamAvailablePlayers');
         });
     });

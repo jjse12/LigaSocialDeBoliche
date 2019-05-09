@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { IconTimesLg } from "../../../utilities/icons";
+import { shape, object, string, number, array, func } from 'prop-types';
 import Select from 'react-select';
-import {IconTimesLg} from "../../../utilities/icons";
 
 const turnPlaceholders = [
     'Jugador abridor', 'Segundo jugador', 'Tercer Jugador', 'Jugador cerrador'
@@ -46,11 +46,23 @@ const PlayerBox = data => {
 
 export default class PlayerSelectBox extends Component {
     static propTypes = {
-        player: PropTypes.object,
-        turnNumber: PropTypes.number.isRequired,
-        selectablePlayers: PropTypes.array.isRequired,
-        handlePlayerSelected: PropTypes.func.isRequired,
-        handlePlayerDeselect: PropTypes.func.isRequired,
+        player: object,
+        turnNumber: number.isRequired,
+        selectablePlayers: array.isRequired,
+        handlePlayerSelected: func.isRequired,
+        handlePlayerDeselect: func.isRequired,
+    };
+
+    formatPlayer = player => {
+        let formattedPlayer = player;
+        formattedPlayer.label = player.fullName;
+        formattedPlayer.name = player.fullName;
+        return formattedPlayer;
+    };
+
+    formatSelectablePlayers = () => {
+        const { selectablePlayers } = this.props;
+        return selectablePlayers.map(player => (this.formatPlayer(player)));
     };
 
     render() {
@@ -64,15 +76,15 @@ export default class PlayerSelectBox extends Component {
                     components={{Option: CustomOption}}
                     className='mb-3 mt-2'
                     placeholder={turnPlaceholders[turnNumber-1]}
-                    value={player}
+                    value={null}
                     onChange={(value, action) => handlePlayerSelected(value, action, turnNumber)}
-                    options={this.props.selectablePlayers}
+                    options={this.formatSelectablePlayers()}
                 />
             );
         }
         return PlayerBox({
             type: 'selected',
-            player: player,
+            player: this.formatPlayer(player),
             playerDeselectHandler: () => handlePlayerDeselect(turnNumber)
         });
     }

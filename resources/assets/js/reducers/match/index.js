@@ -16,8 +16,10 @@ export {
 
 export {
     MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS,
+    MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS,
     setPlayerSelectionDialogOpen,
     getMatchTeamAvailablePlayers,
+    getMatchTeamLastGamePlayers,
     setNewGameDialogOpen,
     MATCH_CREATE_NEW_GAME_SCORES,
     MATCH_CREATE_NEW_GAME_SCORES_FOR_LAST_GAME_PLAYERS,
