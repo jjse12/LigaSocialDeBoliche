@@ -5,51 +5,59 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import PropTypes from 'prop-types';
+import { bool, func, string, any, arrayOf, shape } from 'prop-types';
 
 export default class ActionsDialog extends Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        onEnter: PropTypes.func,
-        onClose: PropTypes.func,
-        easyDisposable: PropTypes.bool.isRequired,
-        title: PropTypes.string,
-        description: PropTypes.string,
-        customContentComponent: PropTypes.any,
-        actions: PropTypes.arrayOf(PropTypes.object),
-        customActionsComponent: PropTypes.any
+        isOpen: bool.isRequired,
+        onEnter: func,
+        onClose: func,
+        easyDisposable: bool.isRequired,
+        title: string,
+        description: string,
+        customContentComponent: any,
+        actions: arrayOf(shape({
+            props: object.isRequired,
+            text: string.isRequired,
+        })),
+        customActionsComponent: any
     };
 
     renderDialogTitle = () => {
-        if (_.isUndefined(this.props.title) || _.isNull(this.props.title))
+        const { title } = this.props;
+        if (_.isUndefined(title) || _.isNull(title))
             return null;
-        return <DialogTitle id='dialog-title'>{this.props.title}</DialogTitle>;
+        return <DialogTitle id='dialog-title'>{title}</DialogTitle>;
     };
 
     renderDialogContent = () => {
-        if (!_.isUndefined(this.props.customContentComponent) && !_.isNull(this.props.customContentComponent))
-            return this.props.customContentComponent;
+        const { customContentComponent, description } = this.props;
+        if (!_.isUndefined(customContentComponent) && !_.isNull(customContentComponent))
+            return customContentComponent;
 
         return <DialogContent>
             <DialogContentText id="dialog-description">
-                {this.props.description}
+                {description}
             </DialogContentText>
         </DialogContent>;
     };
 
     renderDialogActions = () => {
+        const { customActionsComponent, actions } = this.props;
+        if (!_.isUndefined(customActionsComponent) && !_.isNull(customActionsComponent))
+            return customActionsComponent;
 
-        if (!_.isUndefined(this.props.customActionsComponent) && !_.isNull(this.props.customActionsComponent))
-            return this.props.customActionsComponent;
-
-        if (_.isUndefined(this.props.actions) || _.isNull(this.props.actions) || _.isEmpty(this.props.actions))
+        if (_.isUndefined(actions) || _.isNull(actions) || _.isEmpty(actions))
             return null;
 
         let keys = 0;
         return <DialogActions>
             {
-                this.props.actions.map(action =>
-                    <Button {...action.props} key={keys++}>
+                actions.map(action =>
+                    <Button
+                        {...action.props}
+                        key={keys++}
+                    >
                         {action.text}
                     </Button>)
             }
@@ -57,15 +65,16 @@ export default class ActionsDialog extends Component {
     };
 
     render() {
+        const { isOpen, onEnter, onClose, easyDisposable } = this.props;
         return (
             <Dialog
+                open={isOpen}
+                onEnter={onEnter}
+                onClose={onClose}
                 aria-labelledby='dialog-title'
                 aria-describedby='dialog-description'
-                disableBackdropClick={!this.props.easyDisposable}
-                disableEscapeKeyDown={!this.props.easyDisposable}
-                open={this.props.isOpen}
-                onEnter={this.props.onEnter}
-                onClose={this.props.onClose}
+                disableBackdropClick={!easyDisposable}
+                disableEscapeKeyDown={!easyDisposable}
             >
                 {this.renderDialogTitle()}
                 {this.renderDialogContent()}
