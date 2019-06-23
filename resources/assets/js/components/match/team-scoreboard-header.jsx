@@ -26,7 +26,7 @@ export default class TeamScoreboardHeader extends Component {
         requestEndPhase: PropTypes.func,
         updateLocalScoreboard: PropTypes.func,
         teamMatchPhase: PropTypes.string,
-        playerSelectionDialogOpen: PropTypes.bool,
+        playersSelectionDialogOpen: PropTypes.bool,
         loadMatchScoreboards: PropTypes.func,
     };
 
@@ -104,7 +104,7 @@ export default class TeamScoreboardHeader extends Component {
     renderTeamActions = () => {
         let element = null;
 
-        if (this.props.playerSelectionDialogOpen){
+        if (this.props.playersSelectionDialogOpen){
             if (this.props.isPlayerTeam)
                 return <div className={`btn btn-md `} style={{background: 'gray', color: 'white'}}>Seleccionando jugadores</div>;
             return null;

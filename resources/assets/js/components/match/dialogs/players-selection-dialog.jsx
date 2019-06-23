@@ -8,12 +8,12 @@ import ReactLoading from "react-loading";
 import {IconQuestionCircleLg, IconQuestionCircleSm} from "../../../utilities/icons";
 import { number, array, string, bool, func } from "prop-types";
 import _ from "lodash";
-import PlayerSelectBox from "./player-select-box";
+import PlayersSelectBox from "./players-select-box";
 import ActionsDialog from "../../utils/actions-dialog";
 import {
     getMatchTeamAvailablePlayers,
     getMatchTeamLastGamePlayers,
-    setPlayerSelectionDialogOpen
+    setplayersSelectionDialogOpen
 } from "../../../reducers/match";
 
 const blind = {
@@ -40,7 +40,7 @@ const scoreIdGameNumberIndex = [
         isLoadingCreateMatchNewGameScores: selectors.loadingCreateMatchNewGameScores(store),
     }),
     {
-        setPlayerSelectionDialogOpen,
+        setplayersSelectionDialogOpen,
         getMatchTeamAvailablePlayers,
         getMatchTeamLastGamePlayers,
         createMatchNewGameScores
@@ -62,7 +62,7 @@ export default class PlayersSelectionDialog extends Component {
         isLoadingMatchLastGamePlayers: bool.isRequired,
         isLoadingCreateMatchNewGameScores: bool.isRequired,
 
-        setPlayerSelectionDialogOpen: func.isRequired,
+        setplayersSelectionDialogOpen: func.isRequired,
         getMatchTeamAvailablePlayers: func.isRequired,
         getMatchTeamLastGamePlayers: func.isRequired,
         createMatchNewGameScores: func.isRequired,
@@ -84,7 +84,7 @@ export default class PlayersSelectionDialog extends Component {
         this.setState({ playerCategoryDescriptionOpen: !open });
     };
 
-    handlePlayerSelectionDialogEnter = async () => {
+    handleplayersSelectionDialogEnter = async () => {
         const {
             matchId,
             userSeasonTeamId,
@@ -128,13 +128,13 @@ export default class PlayersSelectionDialog extends Component {
             matchId,
             userSeasonTeamId,
             createMatchNewGameScores,
-            setPlayerSelectionDialogOpen,
+            setplayersSelectionDialogOpen,
             loadMatchScoreboards
         } = this.props;
         const scoresData = this.prepareScoreDataForSelectedPlayers();
         createMatchNewGameScores(matchId, userSeasonTeamId, scoresData)
             .then(() => {
-                setPlayerSelectionDialogOpen(false);
+                setplayersSelectionDialogOpen(false);
                 loadMatchScoreboards();
             })
             .catch(jqXHR => {
@@ -296,11 +296,11 @@ export default class PlayersSelectionDialog extends Component {
         this.setState({ selectedPlayers : updatedSelectedPlayers })
     };
 
-    playerSelectBox = (turnNumber, selectablePlayers) => {
+    playersSelectBox = (turnNumber, selectablePlayers) => {
         const { selectedPlayers } = this.state;
         const player = selectedPlayers[(turnNumber-1)];
         return (
-            <PlayerSelectBox
+            <PlayersSelectBox
                 player={player}
                 turnNumber={turnNumber}
                 selectablePlayers={selectablePlayers}
@@ -343,7 +343,7 @@ export default class PlayersSelectionDialog extends Component {
                     isOpened={descriptionOpen}
                     hasNestedCollapse={true}
                 >
-                    <div className='player-selection-dialog-legend'>
+                    <div className='players-selection-dialog-legend'>
                         <span className='handicap-description'>Handicap</span>
                         <span onClick={this.pendingHandicapExplanationDialog} style={{cursor: 'pointer'}}
                           className='pending-handicap-description'>Handicap pendiente <IconQuestionCircleSm/></span>
@@ -353,7 +353,7 @@ export default class PlayersSelectionDialog extends Component {
                     <span style={{color: 'blue', textDecoration: 'underline', width: '100%', margin: '0 auto', cursor: 'pointer'}}
                         onClick={this.togglePlayerCategoryDescriptionOpen}> Categorías de Jugador:</span>
                         <Collapse style={{margin: '0 auto'}} isOpened={playerCategoryDescriptionOpen}>
-                            <div className='player-selection-dialog-legend-player-categories'>
+                            <div className='players-selection-dialog-legend-player-categories'>
                                 <span className='player-category-AA'>AA</span>
                                 <span className='player-category-A'>A</span>
                                 <span className='player-category-B'>B</span>
@@ -402,10 +402,10 @@ export default class PlayersSelectionDialog extends Component {
                         <div className='d-flex flex-column justify-content-center'>
                             <div style={{alignContent: 'center'}}><p>Total Handicap: <b>{this.getTotalHandicap()}</b>
                             </p></div>
-                            {this.playerSelectBox(1, selectablePlayers)}
-                            {this.playerSelectBox(2, selectablePlayers)}
-                            {this.playerSelectBox(3, selectablePlayers)}
-                            {this.playerSelectBox(4, selectablePlayers)}
+                            {this.playersSelectBox(1, selectablePlayers)}
+                            {this.playersSelectBox(2, selectablePlayers)}
+                            {this.playersSelectBox(3, selectablePlayers)}
+                            {this.playersSelectBox(4, selectablePlayers)}
                             {this.renderDescription()}
                         </div> : null // Render "No available players" message in dialog
                     }
@@ -430,7 +430,7 @@ export default class PlayersSelectionDialog extends Component {
         const { dialogTitle, dialogContent, dialogAction } = this.getDialogComponents();
         return <ActionsDialog
             isOpen={isOpen}
-            onEnter={this.handlePlayerSelectionDialogEnter}
+            onEnter={this.handleplayersSelectionDialogEnter}
             easyDisposable={false}
             title={dialogTitle}
             customContentComponent={dialogContent}

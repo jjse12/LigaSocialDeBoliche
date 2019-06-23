@@ -15,7 +15,7 @@ export const MATCH_PLAYER_SELECTION_DIALOG_OPEN = 'MATCH_EDITION_PLAYER_SELECTIO
 export const MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS = 'MATCH_PLAYER_SELECTION_AVAILABLE_PLAYERS';
 export const MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS = 'MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS';
 
-export const setPlayerSelectionDialogOpen = isDialogOpen => ({
+export const setplayersSelectionDialogOpen = isDialogOpen => ({
    isDialogOpen,
    type: MATCH_PLAYER_SELECTION_DIALOG_OPEN
 });

@@ -44,7 +44,7 @@ const PlayerBox = data => {
     );
 };
 
-export default class PlayerSelectBox extends Component {
+export default class PlayersSelectBox extends Component {
     static propTypes = {
         player: object,
         turnNumber: number.isRequired,

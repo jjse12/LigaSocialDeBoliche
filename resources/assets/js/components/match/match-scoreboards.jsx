@@ -29,7 +29,7 @@ export default class MatchScoreboards extends Component {
         matchMyTeamGameScoresCount: PropTypes.func.isRequired,
         requestEndPhase: PropTypes.func,
         fetchingMatchScoreboards: PropTypes.bool.isRequired,
-        playerSelectionDialogOpen: PropTypes.bool.isRequired,
+        playersSelectionDialogOpen: PropTypes.bool.isRequired,
 
         matchMyTeamOfflineScoreboard: PropTypes.object,
         matchRivalTeamOfflineScoreboard: PropTypes.object,
@@ -142,7 +142,7 @@ export default class MatchScoreboards extends Component {
                         usingOfflineScoreboard={team1.usingOfflineScoreboard}
                         offlineScoreboardToggler={team1.toggleOfflineScoreboard}
                         isPlayerTeam={team1.isTeamPlayer}
-                        playerSelectionDialogOpen={this.props.playerSelectionDialogOpen}
+                        playersSelectionDialogOpen={this.props.playersSelectionDialogOpen}
                         teamMatchPhase={this.props.matchPhaseByMyTeamGamesConfirmed}
                         matchStatus={this.props.matchStatus}
                         requestEndPhase={this.props.requestEndPhase}
@@ -163,7 +163,7 @@ export default class MatchScoreboards extends Component {
                         usingOfflineScoreboard={team2.usingOfflineScoreboard}
                         offlineScoreboardToggler={team2.toggleOfflineScoreboard}
                         isPlayerTeam={team2.isTeamPlayer}
-                        playerSelectionDialogOpen={this.props.playerSelectionDialogOpen}
+                        playersSelectionDialogOpen={this.props.playersSelectionDialogOpen}
                         teamMatchPhase={this.props.matchPhaseByMyTeamGamesConfirmed}
                         matchStatus={this.props.matchStatus}
                         requestEndPhase={this.props.requestEndPhase}
