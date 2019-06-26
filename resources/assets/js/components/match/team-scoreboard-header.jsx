@@ -1,21 +1,14 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
 import {
-    IconCloudDownloadLg,
+    IconCheckSm,
     IconCloudDownloadSm,
     IconCloudLg,
     IconDesktopLg,
     IconEllipsisVLg,
-    IconEllipsisVSm
 } from "../../utilities/icons";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { Menu, MenuItem , Typography} from "@material-ui/core";
 
-@connect(
-    null,
-    { }
-)
 export default class TeamScoreboardHeader extends Component {
     static propTypes = {
         data: PropTypes.object.isRequired,
@@ -55,7 +48,10 @@ export default class TeamScoreboardHeader extends Component {
                     this.props.requestEndPhase();
                     this.closeMenu();
                 }}>
-                Terminar Linea
+                <IconCheckSm className='menu-option-icon'/>
+                <Typography>
+                    Terminar Linea
+                </Typography>
             </MenuItem>
         );
 
@@ -65,7 +61,10 @@ export default class TeamScoreboardHeader extends Component {
                     this.props.updateLocalScoreboard();
                     this.closeMenu();
                 }}>
-                <IconCloudDownloadSm/>
+                <IconCloudDownloadSm className='menu-option-icon'/>
+                <Typography variant='inherit'>
+                    Copiar a Offline
+                </Typography>
             </MenuItem>
         );
 

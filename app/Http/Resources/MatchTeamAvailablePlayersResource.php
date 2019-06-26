@@ -43,6 +43,6 @@ class MatchTeamAvailablePlayersResource extends JsonResource
             throw new BadRequestHttpException("¡El equipo $teamName ya ha concluido este juego!" );
         }
 
-        return $availablePlayers;
+        return array_sort($availablePlayers, 'fullName');
     }
 }

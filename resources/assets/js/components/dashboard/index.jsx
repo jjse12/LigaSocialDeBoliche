@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
 import { getCurrentSeason } from "../../reducers/currentSeason";
 import { getMatchResults} from "../../reducers/matches";

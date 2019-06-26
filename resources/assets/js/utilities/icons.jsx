@@ -1,10 +1,11 @@
 import React from 'react';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBowlingBall, faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight,
+import { faBowlingBall, faCheck, faTimes, faDesktop, faCloud, faCloudDownloadAlt, faCloudUploadAlt, faArrowRight,
   faQuestionCircle, faQuestion, faAngleDown, faAngleUp, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 
 library.add(faBowlingBall);
+library.add(faCheck);
 library.add(faTimes);
 library.add(faDesktop);
 library.add(faCloud);
@@ -24,6 +25,13 @@ export const IconBowlingBallX = (size, props) => IconBowlingBall(`${size}x`, pro
 export const IconBowlingBallLg = (props) => IconBowlingBall('lg', props);
 export const IconBowlingBallSm = (props) => IconBowlingBall('sm', props);
 export const IconBowlingBallXs = (props) => IconBowlingBall('xs', props);
+
+export const IconCheck = (size, props) => FAIcon('check', size, props);
+export const IconCheckX = (size, props) => IconCheck(`${size}x`, props);
+export const IconCheckLg = (props) => IconCheck('lg', props);
+export const IconCheckSm = (props) => IconCheck('sm', props);
+export const IconCheckXs = (props) => IconCheck('xs', props);
+
 
 export const IconTimes = (size, props) => FAIcon('times', size, props);
 export const IconTimesX = (size, props) => IconTimes(`${size}x`, props);

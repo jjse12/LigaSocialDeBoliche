@@ -262,12 +262,18 @@ export default class Match extends Component {
     };
 
     render() {
-        const { id, userSeasonTeamId, isplayersSelectionDialogOpen, matchStatus, matchPhase } = this.props;
+        const {
+            id,
+            userSeasonTeamId,
+            isplayersSelectionDialogOpen,
+            matchStatus,
+            matchPhase
+        } = this.props;
         return (
             <div style={{alignItems: 'center', alignContent: 'center'}} className={'mr-2 ml-2 mt-2 mb-2'}>
                 <MatchSummary/>
                 <MatchScoreboards
-                    matchId={Number(id)}
+                    matchId={id}
                     matchScoreboards={this.props.matchScoreboards}
                     loadMatchScoreboards={this.loadMatchScoreboardsWithCallbacks}
                     fetchingMatchScoreboards={this.props.fetchingMatchScoreboards}

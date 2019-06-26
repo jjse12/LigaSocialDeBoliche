@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import Promise from 'promise';
 import update from 'immutability-helper';
 Axios.defaults.headers.common['Accept'] = 'application/json';
 Axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
