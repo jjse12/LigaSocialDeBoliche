@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes, { shape } from 'prop-types';
+import { number, string, object, func, bool, shape } from 'prop-types';
 import { connect } from "react-redux";
 import {
     getMatchSummary,
@@ -56,26 +56,26 @@ export default class Match extends Component {
     static propTypes = {
         match: shape({
             params: shape({
-                id: PropTypes.string.isRequired
+                id: string.isRequired
             })
         }).isRequired,
 
-        id: PropTypes.number.isRequired,
-        matchStatus: PropTypes.string.isRequired,
-        matchPhase: PropTypes.string,
-        matchScoreboards: PropTypes.object.isRequired,
-        userSeasonTeamId: PropTypes.number.isRequired,
-        fetchingMatchScoreboards: PropTypes.bool.isRequired,
-        isplayersSelectionDialogOpen: PropTypes.bool.isRequired,
-        isNewGameDialogOpen: PropTypes.bool.isRequired,
-        isEndPhaseDialogOpen: PropTypes.bool.isRequired,
+        id: number.isRequired,
+        matchStatus: string.isRequired,
+        matchPhase: string,
+        matchScoreboards: object.isRequired,
+        userSeasonTeamId: number.isRequired,
+        fetchingMatchScoreboards: bool.isRequired,
+        isplayersSelectionDialogOpen: bool.isRequired,
+        isNewGameDialogOpen: bool.isRequired,
+        isEndPhaseDialogOpen: bool.isRequired,
 
-        getMatchSummary: PropTypes.func.isRequired,
-        getMatchScoreboards: PropTypes.func.isRequired,
-        setplayersSelectionDialogOpen: PropTypes.func.isRequired,
-        setNewGameDialogOpen: PropTypes.func.isRequired,
-        setEndPhaseDialogOpen: PropTypes.func.isRequired,
-        matchTeamEndPhase: PropTypes.func.isRequired,
+        getMatchSummary: func.isRequired,
+        getMatchScoreboards: func.isRequired,
+        setplayersSelectionDialogOpen: func.isRequired,
+        setNewGameDialogOpen: func.isRequired,
+        setEndPhaseDialogOpen: func.isRequired,
+        matchTeamEndPhase: func.isRequired,
     };
 
     state = {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { bool, func } from "prop-types";
 import { connect } from "react-redux";
 import { getUser } from "../reducers/user";
 import routes from './routes';
@@ -9,8 +9,8 @@ import routes from './routes';
 )
 export default class Main extends Component {
     static propTypes = {
-        auth: PropTypes.bool.isRequired,
-        getUser: PropTypes.func
+        auth: bool.isRequired,
+        getUser: func
     };
 
     constructor(props) {
@@ -20,12 +20,12 @@ export default class Main extends Component {
         }
     }
 
-    async componentWillMount() {
+    componentWillMount = async() => {
         if (this.props.auth){
             await this.props.getUser();
             this.setState({authChecked: true});
         }
-    }
+    };
 
     render(){
         if (!this.state.authChecked)

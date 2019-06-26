@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types';
+import { object, array, func } from "prop-types";
 import {Carousel} from 'react-responsive-carousel';
 import { withStyles } from '@material-ui/core/styles';
 import { getNextMatchdayFromStore, getNextMatchdayMatchesFromStore} from "../../reducers/selectors";
@@ -15,10 +15,10 @@ import { getNextMatchday, getNextMatchdayMatches } from "../../reducers/currentS
 )
 export default class NextMatches extends Component {
     static propTypes = {
-        nextMatchday: PropTypes.object,
-        nextMatchdayMatches: PropTypes.array,
-        getNextMatchday: PropTypes.func,
-        getNextMatchdayMatches: PropTypes.func,
+        nextMatchday: object,
+        nextMatchdayMatches: array,
+        getNextMatchday: func,
+        getNextMatchdayMatches: func,
     };
 
     componentWillMount() {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { object, number, bool, func } from "prop-types";
 import {connect} from 'react-redux';
 import { getMatchSeasonTeamScoreboard} from "../../reducers/matches";
 import {getMatchSeasonTeamScoreboardFetchingFromStore, getMatchSeasonTeamScoreboardFromStore} from "../../reducers/selectors";
@@ -18,12 +18,12 @@ import _ from "lodash";
 export default class TeamScoreboardsTable extends Component {
 
     static propTypes = {
-        match: PropTypes.object,
-        matchId: PropTypes.number,
-        seasonTeamId: PropTypes.number,
-        matchSeasonTeamScoreboard: PropTypes.object,
-        fetchingMatchSeasonTeamScoreboard: PropTypes.bool,
-        getMatchSeasonTeamScoreboard: PropTypes.func.isRequired
+        match: object,
+        matchId: number,
+        seasonTeamId: number,
+        matchSeasonTeamScoreboard: object,
+        fetchingMatchSeasonTeamScoreboard: bool,
+        getMatchSeasonTeamScoreboard: func.isRequired
     };
 
     componentWillMount() {

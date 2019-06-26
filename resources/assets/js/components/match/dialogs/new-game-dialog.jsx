@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { setNewGameDialogOpen } from "../../../reducers/match/edition";
 import { setplayersSelectionDialogOpen, createMatchNewGameScoresForLastGamePlayers } from "../../../reducers/match";
 import selectors from '../../../reducers/selectors';
-import PropTypes from 'prop-types';
+import { number, bool, func, string } from "prop-types";
 import DialogContent from '@material-ui/core/DialogContent';
 import ReactLoading from "react-loading";
 import ActionsDialog from "../../utils/actions-dialog";
@@ -24,17 +24,17 @@ import {gameNumberStrings} from "../match";
 )
 export default class NewGameDialog extends Component {
     static propTypes = {
-        matchPhase: PropTypes.string.isRequired,
-        loadMatchScoreboards: PropTypes.func.isRequired,
+        matchPhase: string.isRequired,
+        loadMatchScoreboards: func.isRequired,
 
-        isOpen: PropTypes.bool.isRequired,
-        matchId: PropTypes.number.isRequired,
-        userSeasonTeamId: PropTypes.number.isRequired,
-        loadingCreateScoresForLastGamePlayers: PropTypes.bool.isRequired,
+        isOpen: bool.isRequired,
+        matchId: number.isRequired,
+        userSeasonTeamId: number.isRequired,
+        loadingCreateScoresForLastGamePlayers: bool.isRequired,
 
-        setNewGameDialogOpen: PropTypes.func.isRequired,
-        createMatchNewGameScoresForLastGamePlayers: PropTypes.func.isRequired,
-        setplayersSelectionDialogOpen: PropTypes.func.isRequired,
+        setNewGameDialogOpen: func.isRequired,
+        createMatchNewGameScoresForLastGamePlayers: func.isRequired,
+        setplayersSelectionDialogOpen: func.isRequired,
     };
 
     handleChangePlayers= () => {

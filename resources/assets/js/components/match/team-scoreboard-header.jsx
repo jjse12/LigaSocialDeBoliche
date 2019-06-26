@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import PropTypes from 'prop-types';
+import { number, element, string, bool, func, shape} from 'prop-types';
 import {
     IconCheckSm,
     IconCloudDownloadSm,
@@ -12,15 +12,15 @@ import { Menu, MenuItem , Typography} from "@material-ui/core";
 export default class TeamScoreboardHeader extends Component {
     static propTypes = {
         data: PropTypes.object.isRequired,
-        matchStatus: PropTypes.string.isRequired,
-        isPlayerTeam: PropTypes.bool,
-        usingOfflineScoreboard: PropTypes.bool,
-        offlineScoreboardToggler: PropTypes.func,
-        requestEndPhase: PropTypes.func,
-        updateLocalScoreboard: PropTypes.func,
-        teamMatchPhase: PropTypes.string,
-        playersSelectionDialogOpen: PropTypes.bool,
-        loadMatchScoreboards: PropTypes.func,
+        matchStatus: string.isRequired,
+        isPlayerTeam: bool,
+        usingOfflineScoreboard: bool,
+        offlineScoreboardToggler: func,
+        requestEndPhase: func,
+        updateLocalScoreboard: func,
+        teamMatchPhase: string,
+        playersSelectionDialogOpen: bool,
+        loadMatchScoreboards: func,
     };
 
     state = {

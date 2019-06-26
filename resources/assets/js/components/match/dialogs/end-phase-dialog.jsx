@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { bool, func, string } from "prop-types";
 import ActionsDialog from "../../utils/actions-dialog";
 import {gameNumberStrings} from "../match";
 import {connect} from "react-redux";
@@ -18,10 +18,10 @@ import {
 )
 export default class EndPhaseDialog extends Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        setEndPhaseDialogOpen: PropTypes.func.isRequired,
-        matchPhase: PropTypes.string.isRequired,
-        endPhaseCallback: PropTypes.func.isRequired
+        isOpen: bool.isRequired,
+        setEndPhaseDialogOpen: func.isRequired,
+        matchPhase: string.isRequired,
+        endPhaseCallback: func.isRequired
     };
 
     handleDialogClose = () => {

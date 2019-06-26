@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { bool, func } from "prop-types";
 import ActionsDialog from "../../utils/actions-dialog";
 import {gameNumberStrings} from "../match";
 
 export default class FillOfflineScoreboard extends Component {
     static propTypes = {
-        isOpen: PropTypes.bool.isRequired,
-        setFillOfflineScoreboardDialogOpen: PropTypes.func.isRequired,
-        fillScoreboardCallback: PropTypes.func.isRequired
+        isOpen: bool.isRequired,
+        setFillOfflineScoreboardDialogOpen: func.isRequired,
+        fillScoreboardCallback: func.isRequired
     };
 
     render() {

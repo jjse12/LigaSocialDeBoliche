@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux'
-import PropTypes from 'prop-types';
+import { func } from "prop-types";
 import { withStyles } from '@material-ui/core/styles';
 import { getSeasonMatchdaysFromStore } from "../../reducers/selectors";
 import { getCurrentSeasonMatchdays } from "../../reducers/currentSeason";
@@ -13,9 +13,9 @@ import { getCurrentSeasonMatchdays } from "../../reducers/currentSeason";
 )
 export default class SeasonMatchdays extends Component {
     static propTypes = {
-        // currentSeason: PropTypes.array.isRequired || PropTypes.object,
-        // matchdays: PropTypes.func,
-        getCurrentSeasonMatchdays: PropTypes.func.isRequired,
+        // currentSeason: array.isRequired || object,
+        // matchdays: func,
+        getCurrentSeasonMatchdays: func.isRequired,
     };
 
     componentDidMount() {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import {number, bool, object, string, shape, func } from 'prop-types';
 import { connect } from "react-redux";
 import { setMatchMyTeamOfflineScoreboard, setMatchRivalTeamOfflineScoreboard} from "../../reducers/matches";
 import { getMatchMyTeamOfflineScoreboardFromStore, getMatchRivalTeamOfflineScoreboardFromStore } from "../../reducers/selectors";
@@ -16,25 +16,25 @@ import TeamScoreboardHeader from "./team-scoreboard-header";
 )
 export default class MatchScoreboards extends Component {
     static propTypes = {
-        matchId: PropTypes.number.isRequired,
-        isMatchPlayer: PropTypes.bool.isRequired,
-        matchPlayerSeasonTeamId: PropTypes.number.isRequired,
-        matchScoreboards: PropTypes.object.isRequired,
-        loadMatchScoreboards: PropTypes.func.isRequired,
-        matchStatus: PropTypes.string.isRequired,
-        matchPhase: PropTypes.string,
-        matchMyTeam: PropTypes.object,
-        matchRivalTeam: PropTypes.object,
-        matchPhaseByMyTeamGamesConfirmed: PropTypes.string,
-        matchMyTeamGameScoresCount: PropTypes.func.isRequired,
-        requestEndPhase: PropTypes.func,
-        fetchingMatchScoreboards: PropTypes.bool.isRequired,
-        playersSelectionDialogOpen: PropTypes.bool.isRequired,
+        matchId: number.isRequired,
+        isMatchPlayer: bool.isRequired,
+        matchPlayerSeasonTeamId: number.isRequired,
+        matchScoreboards: object.isRequired,
+        loadMatchScoreboards: func.isRequired,
+        matchStatus: string.isRequired,
+        matchPhase: string,
+        matchMyTeam: object,
+        matchRivalTeam: object,
+        matchPhaseByMyTeamGamesConfirmed: string,
+        matchMyTeamGameScoresCount: func.isRequired,
+        requestEndPhase: func,
+        fetchingMatchScoreboards: bool.isRequired,
+        playersSelectionDialogOpen: bool.isRequired,
 
-        matchMyTeamOfflineScoreboard: PropTypes.object,
-        matchRivalTeamOfflineScoreboard: PropTypes.object,
-        setMatchRivalTeamOfflineScoreboard: PropTypes.func,
-        setMatchMyTeamOfflineScoreboard: PropTypes.func,
+        matchMyTeamOfflineScoreboard: object,
+        matchRivalTeamOfflineScoreboard: object,
+        setMatchRivalTeamOfflineScoreboard: func,
+        setMatchMyTeamOfflineScoreboard: func,
     };
 
     constructor(props) {

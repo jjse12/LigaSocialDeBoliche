@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { object, func } from "prop-types";
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from "react-redux";
 import { getCurrentSeason } from "../../reducers/currentSeason";
@@ -14,8 +14,8 @@ import { getCurrentSeasonFromStore} from "../../reducers/selectors";
 )
 export default class Dashboard extends Component {
     static propTypes = {
-        currentSeason: PropTypes.object.isRequired,
-        getCurrentSeason: PropTypes.func.isRequired
+        currentSeason: object.isRequired,
+        getCurrentSeason: func.isRequired
     };
 
     componentWillMount() {

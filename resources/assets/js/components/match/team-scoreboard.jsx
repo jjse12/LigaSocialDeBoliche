@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import { object, number, bool, func } from 'prop-types';
 import { connect } from "react-redux";
 import { totalsObject } from "../../reducers/matches";
 import { updateScore } from "../../reducers/match/edition/scores";
@@ -16,14 +16,14 @@ import {scoreIdGameNumberIndex} from "./match";
 )
 export default class TeamScoreboard extends Component {
     static propTypes = {
-        results: PropTypes.object.isRequired,
-        gamesConfirmed: PropTypes.number,
-        isEditable: PropTypes.bool.isRequired,
-        isOfflineScoreboard: PropTypes.bool.isRequired,
-        loadMatchScoreboards: PropTypes.func.isRequired,
+        results: object.isRequired,
+        gamesConfirmed: number,
+        isEditable: bool.isRequired,
+        isOfflineScoreboard: bool.isRequired,
+        loadMatchScoreboards: func.isRequired,
 
-        fetchingUpdateScore: PropTypes.bool,
-        updateScore: PropTypes.func,
+        fetchingUpdateScore: bool,
+        updateScore: func,
     };
 
     constructor(props) {

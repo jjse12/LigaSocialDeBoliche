@@ -4,7 +4,7 @@ import { Collapse } from "react-collapse";
 import { IconAngleDownLg, IconAngleUpLg } from "../../utilities/icons";
 import { gameNumberStrings } from "./match";
 import selectors from '../../reducers/selectors';
-import PropTypes from 'prop-types';
+import { number, shape, string, bool } from 'prop-types';
 import ReactLoading from "react-loading";
 import moment from 'moment';
 
@@ -17,29 +17,29 @@ import moment from 'moment';
 )
 export default class MatchSummary extends Component {
     static propTypes = {
-        matchSummary: PropTypes.shape({
-            id: PropTypes.number.isRequired,
-            statusData: PropTypes.shape({
-                status: PropTypes.string,
-                phase: PropTypes.string,
-                diffForHumans: PropTypes.string
+        matchSummary: shape({
+            id: number.isRequired,
+            statusData: shape({
+                status: string,
+                phase: string,
+                diffForHumans: string
             }).isRequired,
-            date: PropTypes.string.isRequired,
-            matchdayNumber: PropTypes.number.isRequired,
-            isRedPinGame: PropTypes.bool.isRequired,
-            isVirtualGame: PropTypes.bool.isRequired,
-            results: PropTypes.shape({
-                team1: PropTypes.shape({
-                    points: PropTypes.number.isRequired,
-                    pins: PropTypes.number.isRequired
+            date: string.isRequired,
+            matchdayNumber: number.isRequired,
+            isRedPinGame: bool.isRequired,
+            isVirtualGame: bool.isRequired,
+            results: shape({
+                team1: shape({
+                    points: number.isRequired,
+                    pins: number.isRequired
                 }).isRequired,
-                team2: PropTypes.shape({
-                    points: PropTypes.number.isRequired,
-                    pins: PropTypes.number.isRequired
+                team2: shape({
+                    points: number.isRequired,
+                    pins: number.isRequired
                 }).isRequired
             }).isRequired
         }).isRequired,
-        loadingMatchSummary: PropTypes.bool.isRequired,
+        loadingMatchSummary: bool.isRequired,
     };
 
     state = {
