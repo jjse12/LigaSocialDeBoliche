@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { setNewGameDialogOpen } from "../../../reducers/match/edition";
-import { setplayersSelectionDialogOpen, createMatchNewGameScoresForLastGamePlayers } from "../../../reducers/match";
+import { setPlayersSelectionDialogOpen, createMatchNewGameScoresForLastGamePlayers } from "../../../reducers/match";
 import selectors from '../../../reducers/selectors';
 import { number, bool, func, string } from "prop-types";
 import DialogContent from '@material-ui/core/DialogContent';
@@ -19,7 +19,7 @@ import {gameNumberStrings} from "../match";
     {
         setNewGameDialogOpen,
         createMatchNewGameScoresForLastGamePlayers,
-        setplayersSelectionDialogOpen
+        setPlayersSelectionDialogOpen
     }
 )
 export default class NewGameDialog extends Component {
@@ -34,12 +34,12 @@ export default class NewGameDialog extends Component {
 
         setNewGameDialogOpen: func.isRequired,
         createMatchNewGameScoresForLastGamePlayers: func.isRequired,
-        setplayersSelectionDialogOpen: func.isRequired,
+        setPlayersSelectionDialogOpen: func.isRequired,
     };
 
     handleChangePlayers= () => {
-        const { setplayersSelectionDialogOpen, setNewGameDialogOpen } = this.props;
-        setplayersSelectionDialogOpen(true);
+        const { setPlayersSelectionDialogOpen, setNewGameDialogOpen } = this.props;
+        setPlayersSelectionDialogOpen(true);
         setNewGameDialogOpen(false);
     };
 

@@ -54,8 +54,21 @@ const userCurrentSeasonTeamId = store => {
         return 0;
     return getUser(store).currentSeason.team.id;
 };
+const isMatchPlayer = store => {
+    return userCurrentSeasonTeamId(store) !== 0;
+};
 const getMatch = store => store.match;
 const matchSummary = store => getMatch(store).summary;
+const getTeamScoreboardHeaderData = (store, teamNumber = 1) => {
+    const { results } = matchSummary(store);
+    let team = results.team1;
+    if (teamNumber === 2)
+        team = results.team2;
+    return {
+        laneNumber: team.lane,
+        name: team.name,
+    }
+};
 const matchStatus = store => getMatch(store).summary.statusData.status;
 const matchScoreboards = store => getMatch(store).scoreboards;
 const matchEdition = store => getMatch(store).edition;
@@ -87,9 +100,11 @@ const selectors = {
     isGuestUser,
     userInfo,
     userCurrentSeasonTeamId,
+    isMatchPlayer,
     matchSummary,
     matchStatus,
     matchPhase,
+    getTeamScoreboardHeaderData,
     matchScoreboards,
     matchNewGame,
     matchPlayersSelection,

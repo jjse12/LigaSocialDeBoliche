@@ -15,7 +15,7 @@ export {
     MATCH_PLAYER_SELECTION_LAST_GAME_PLAYERS,
     getMatchTeamAvailablePlayers,
     getMatchTeamLastGamePlayers,
-    setplayersSelectionDialogOpen,
+    setPlayersSelectionDialogOpen,
 } from './playersSelection';
 
 export {

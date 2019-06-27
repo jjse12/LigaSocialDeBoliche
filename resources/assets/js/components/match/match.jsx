@@ -4,12 +4,11 @@ import { connect } from "react-redux";
 import {
     getMatchSummary,
     getMatchScoreboards,
-    setplayersSelectionDialogOpen,
+    setPlayersSelectionDialogOpen,
     setNewGameDialogOpen,
     setEndPhaseDialogOpen,
     matchTeamEndPhase,
 } from "../../reducers/match";
-import { updateScore} from "../../reducers/match/edition/scores";
 import selectors from "../../reducers/selectors";
 import _ from 'lodash';
 import NewGameDialog from "./dialogs/new-game-dialog";
@@ -38,15 +37,16 @@ export const gameNumberStrings = {
         matchPhase: selectors.matchPhase(store),
         matchScoreboards: selectors.matchScoreboards(store),
         userSeasonTeamId: selectors.userCurrentSeasonTeamId(store),
+        isMatchPlayer: selectors.isMatchPlayer(store),
         fetchingMatchScoreboards: selectors.loadingMatchScoreboards(store),
-        isplayersSelectionDialogOpen: selectors.matchPlayersSelection(store).isDialogOpen,
+        isPlayersSelectionDialogOpen: selectors.matchPlayersSelection(store).isDialogOpen,
         isNewGameDialogOpen: selectors.matchNewGame(store).isDialogOpen,
         isEndPhaseDialogOpen: selectors.matchEndPhase(store).isDialogOpen,
     }),
     {
         getMatchSummary,
         getMatchScoreboards,
-        setplayersSelectionDialogOpen,
+        setPlayersSelectionDialogOpen,
         setNewGameDialogOpen,
         setEndPhaseDialogOpen,
         matchTeamEndPhase,
@@ -65,14 +65,15 @@ export default class Match extends Component {
         matchPhase: string,
         matchScoreboards: object.isRequired,
         userSeasonTeamId: number.isRequired,
+        isMatchPlayer: bool.isRequired,
         fetchingMatchScoreboards: bool.isRequired,
-        isplayersSelectionDialogOpen: bool.isRequired,
+        isPlayersSelectionDialogOpen: bool.isRequired,
         isNewGameDialogOpen: bool.isRequired,
         isEndPhaseDialogOpen: bool.isRequired,
 
         getMatchSummary: func.isRequired,
         getMatchScoreboards: func.isRequired,
-        setplayersSelectionDialogOpen: func.isRequired,
+        setPlayersSelectionDialogOpen: func.isRequired,
         setNewGameDialogOpen: func.isRequired,
         setEndPhaseDialogOpen: func.isRequired,
         matchTeamEndPhase: func.isRequired,
@@ -163,21 +164,22 @@ export default class Match extends Component {
 
     setNewGameDialogOpenAsRequired = () => {
         const {
-            isplayersSelectionDialogOpen,
-            setplayersSelectionDialogOpen,
+            isMatchPlayer,
+            isPlayersSelectionDialogOpen,
+            setPlayersSelectionDialogOpen,
             isNewGameDialogOpen,
             setNewGameDialogOpen,
         } = this.props;
-        if (this.isMatchPlayer()){
+        if (isMatchPlayer){
             if (this.matchPhaseByMyTeamGamesConfirmed().includes('Game')) {
                 if ( this.matchMyTeamGameScoresCount(this.matchPhaseByMyTeamGamesConfirmed()) === 0) {
-                    if (isplayersSelectionDialogOpen)
+                    if (isPlayersSelectionDialogOpen)
                         return;
 
                     if (this.matchPhaseByMyTeamGamesConfirmed() === 'firstGame'){
                         // For first game there are no players to keep, open the players selection dialog immediately
-                        if (!isplayersSelectionDialogOpen)
-                            setplayersSelectionDialogOpen(true);
+                        if (!isPlayersSelectionDialogOpen)
+                            setPlayersSelectionDialogOpen(true);
                     }
                     else {
                         if (!isNewGameDialogOpen)
@@ -188,20 +190,15 @@ export default class Match extends Component {
             }
         }
 
-        if (isplayersSelectionDialogOpen)
-            setplayersSelectionDialogOpen(false);
+        if (isPlayersSelectionDialogOpen)
+            setPlayersSelectionDialogOpen(false);
         if (isNewGameDialogOpen)
             setNewGameDialogOpen(false);
     };
 
-    isMatchPlayer = () => {
-        const { userSeasonTeamId } = this.props;
-        return userSeasonTeamId !== 0;
-    };
-
     getMatchMyTeam = () => {
-        const { matchScoreboards, userSeasonTeamId } = this.props;
-        if (!this.isMatchPlayer() || _.isEmpty(matchScoreboards))
+        const { isMatchPlayer, matchScoreboards, userSeasonTeamId } = this.props;
+        if (!isMatchPlayer || _.isEmpty(matchScoreboards))
             return null;
 
         if (userSeasonTeamId === matchScoreboards.team1.data.id)
@@ -214,8 +211,8 @@ export default class Match extends Component {
     };
 
     getMatchRivalTeam = () => {
-        const { matchScoreboards, userSeasonTeamId } = this.props;
-        if (!this.isMatchPlayer() || _.isEmpty(matchScoreboards))
+        const { isMatchPlayer, matchScoreboards, userSeasonTeamId } = this.props;
+        if (!isMatchPlayer || _.isEmpty(matchScoreboards))
             return null;
 
         if (userSeasonTeamId !== matchScoreboards.team1.data.id)
@@ -228,9 +225,9 @@ export default class Match extends Component {
     };
 
     matchPhaseByMyTeamGamesConfirmed = () => {
-        if (!this.isMatchPlayer()) return null;
+        const { isMatchPlayer, matchStatus } = this.props;
+        if (!isMatchPlayer) return null;
 
-        const { matchStatus } = this.props;
         if (matchStatus === 'active'){
             const myTeam = this.getMatchMyTeam();
             if (myTeam === null) return null;
@@ -262,31 +259,16 @@ export default class Match extends Component {
     };
 
     render() {
-        const {
-            id,
-            userSeasonTeamId,
-            isplayersSelectionDialogOpen,
-            matchStatus,
-            matchPhase
-        } = this.props;
         return (
             <div style={{alignItems: 'center', alignContent: 'center'}} className={'mr-2 ml-2 mt-2 mb-2'}>
                 <MatchSummary/>
                 <MatchScoreboards
-                    matchId={id}
-                    matchScoreboards={this.props.matchScoreboards}
                     loadMatchScoreboards={this.loadMatchScoreboardsWithCallbacks}
                     fetchingMatchScoreboards={this.props.fetchingMatchScoreboards}
                     requestEndPhase={this.requestEndPhase}
-                    isMatchPlayer={this.isMatchPlayer()}
-                    matchPlayerSeasonTeamId={userSeasonTeamId}
-                    matchStatus={matchStatus}
-                    matchPhase={matchPhase}
                     matchMyTeam={this.getMatchMyTeam()}
                     matchRivalTeam={this.getMatchRivalTeam()}
                     matchMyTeamGameScoresCount={this.matchMyTeamGameScoresCount}
-                    matchPhaseByMyTeamGamesConfirmed={this.matchPhaseByMyTeamGamesConfirmed()}
-                    playersSelectionDialogOpen={isplayersSelectionDialogOpen}
                 />
                 {
                     this.getMatchMyTeam() !== null && (

@@ -13,7 +13,7 @@ import ActionsDialog from "../../utils/actions-dialog";
 import {
     getMatchTeamAvailablePlayers,
     getMatchTeamLastGamePlayers,
-    setplayersSelectionDialogOpen
+    setPlayersSelectionDialogOpen
 } from "../../../reducers/match";
 
 const blind = {
@@ -40,7 +40,7 @@ const scoreIdGameNumberIndex = [
         isLoadingCreateMatchNewGameScores: selectors.loadingCreateMatchNewGameScores(store),
     }),
     {
-        setplayersSelectionDialogOpen,
+        setPlayersSelectionDialogOpen,
         getMatchTeamAvailablePlayers,
         getMatchTeamLastGamePlayers,
         createMatchNewGameScores
@@ -62,7 +62,7 @@ export default class PlayersSelectionDialog extends Component {
         isLoadingMatchLastGamePlayers: bool.isRequired,
         isLoadingCreateMatchNewGameScores: bool.isRequired,
 
-        setplayersSelectionDialogOpen: func.isRequired,
+        setPlayersSelectionDialogOpen: func.isRequired,
         getMatchTeamAvailablePlayers: func.isRequired,
         getMatchTeamLastGamePlayers: func.isRequired,
         createMatchNewGameScores: func.isRequired,
@@ -128,13 +128,13 @@ export default class PlayersSelectionDialog extends Component {
             matchId,
             userSeasonTeamId,
             createMatchNewGameScores,
-            setplayersSelectionDialogOpen,
+            setPlayersSelectionDialogOpen,
             loadMatchScoreboards
         } = this.props;
         const scoresData = this.prepareScoreDataForSelectedPlayers();
         createMatchNewGameScores(matchId, userSeasonTeamId, scoresData)
             .then(() => {
-                setplayersSelectionDialogOpen(false);
+                setPlayersSelectionDialogOpen(false);
                 loadMatchScoreboards();
             })
             .catch(jqXHR => {
