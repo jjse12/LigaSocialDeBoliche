@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             SeasonTeamsSeeder::class,
             SeasonPlayersSeeder::class,
             MatchesSeeder::class,
-            ScoresSeeder::class
+            ScoresSeeder::class,
+            OauthClientsSeeder::class,
         ]);
     }
 }
